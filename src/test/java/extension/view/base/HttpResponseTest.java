@@ -185,7 +185,7 @@ public class HttpResponseTest {
         System.out.println("getGuessCharset");
         try {
             HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER1);
-            String expResult = "US-ASCII";
+            String expResult = null;
             String result = instance.getGuessCharset();
             assertEquals(expResult, result);
         } catch (ParseException ex) {
