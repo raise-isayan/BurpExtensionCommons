@@ -22,11 +22,11 @@ public class StringUtil {
     public static final String NEW_LINE = System.getProperty("line.separator");
 
     private static final SecureRandom RANDOM = new SecureRandom();
-    
+
     public static String repeat(String str, int n) {
       return String.join("", Collections.nCopies(n, str));
-    }    
-    
+    }
+
     /**
      * 生のバイト文字列取得
      *
@@ -40,7 +40,7 @@ public class StringUtil {
     public static String getStringRaw(byte[] message) {
         return new String(message, StandardCharsets.ISO_8859_1);
     }
-        
+
     /**
      * UTF-8のバイト文字列取得
      *
@@ -73,7 +73,7 @@ public class StringUtil {
     public static String getStringCharset(byte[] message, int offset, int length, Charset charset) {
         return new String(message, offset, length, charset);
     }
-    
+
     public static String getStringCharset(byte[] message, int offset, int length, String encoding) {
         String decodeStr = null;
         try {
@@ -82,7 +82,7 @@ public class StringUtil {
         }
         return decodeStr;
     }
-    
+
     /**
      * 指定した文字コードのバイト文字列取得
      *
@@ -106,7 +106,7 @@ public class StringUtil {
         byte[] encodeByte = message.getBytes(encoding);
         return new String(encodeByte, StandardCharsets.ISO_8859_1);
     }
-    
+
     public static String getBytesRawString(String message, Charset charset) throws UnsupportedEncodingException {
         byte[] encodeByte = message.getBytes(charset);
         return new String(encodeByte, StandardCharsets.ISO_8859_1);
@@ -129,7 +129,7 @@ public class StringUtil {
             return String.valueOf(value);
         }
     }
-    
+
     public static String toString(Integer value) {
         if (value == null) {
             return "";
@@ -156,7 +156,7 @@ public class StringUtil {
             return String.valueOf(value);
         }
     }
-        
+
     private final static char[] NUM_CHARS = "1234567890".toCharArray();
     private final static char[] IDENT_CHARS
             = "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -188,15 +188,15 @@ public class StringUtil {
 
     public static boolean isNullOrEmpty(String value) {
         return !(value != null && !"".equals(value));
-    }    
-    
+    }
+
     public static boolean equalsString(String a1, String a2) {
         if (a1 == null || a2 == null) {
             return false;
         }
         return Arrays.equals(a1.toCharArray(), a2.toCharArray());
     }
-        
+
     public static int compareToString(String a1, String a2) {
         int len1 = a1.length();
         int len2 = a2.length();
@@ -236,13 +236,13 @@ public class StringUtil {
         if (ch.length > 0) {
             ch[0] = Character.toUpperCase(ch[0]);
         }
-        return  new String(ch);    
+        return  new String(ch);
     }
-    
+
     public static String getStackTraceMessage(Exception ex) {
         return String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
     }
-    
+
     public static String getStackTrace(Throwable ex) {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
@@ -286,5 +286,5 @@ public class StringUtil {
         }
         return list.toArray(new String[0]);
     }
-    
+
 }

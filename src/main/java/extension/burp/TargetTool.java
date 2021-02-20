@@ -24,8 +24,9 @@ public enum TargetTool {
         if (content.isEmpty()) {
             return targetTool;
         }
-        for (String v : content.split(",")) {
-            targetTool.add(parseEnum(v.trim()));
+        for (String t : content.split(",")) {
+            String v = t.trim();
+            targetTool.add(parseEnum(v.replaceAll("\"", "")));
         }
         return targetTool;
     }
