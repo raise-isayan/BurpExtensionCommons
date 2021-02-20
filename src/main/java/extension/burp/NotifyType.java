@@ -24,8 +24,9 @@ public enum NotifyType {
         if (content.isEmpty()) {
             return notifyType;
         }
-        for (String v : content.split(",")) {
-            notifyType.add(parseEnum(v.trim()));
+        for (String t : content.split(",")) {
+            String v = t.trim();
+            notifyType.add(parseEnum(v.replaceAll("\"", "")));
         }
         return notifyType;
     }

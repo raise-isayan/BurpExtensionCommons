@@ -33,6 +33,31 @@ public class SeverityTest {
     public void tearDown() {
     }
 
+    /**
+     * Test of parseEnum method, of class Severity.
+     */
+    @Test
+    public void testParseEnum() {
+        System.out.println("parseEnum");
+        String s = "LOW";
+        Severity expResult = Severity.LOW;
+        Severity result = Severity.parseEnum(s);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of parseEnumSet method, of class Severity.
+     */
+    @Test
+    public void testParseEnumSet() {
+        System.out.println("parseEnumSet");
+        {
+            String s = "[\"HIGH\",\"MEDIUM\",\"LOW\"]";
+            EnumSet<Severity> expResult = EnumSet.of(Severity.HIGH, Severity.MEDIUM, Severity.LOW);
+            EnumSet<Severity> result = Severity.parseEnumSet(s);
+            assertEquals(expResult, result);        
+        }
+    }
 
     /**
      * Test of toString method, of class Severity.

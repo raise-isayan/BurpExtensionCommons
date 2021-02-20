@@ -5,6 +5,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
+
 /**
  * base code https://sourceforge.net/projects/jutf7/
  */

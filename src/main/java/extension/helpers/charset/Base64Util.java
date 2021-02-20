@@ -14,7 +14,7 @@ public class Base64Util {
     private final char[] alphabet;
     private final int[] inverseAlphabet;
 
-    public Base64Util() {
+    Base64Util() {
         this(BASE64_ALPHABET);
     }
 
@@ -25,7 +25,7 @@ public class Base64Util {
      * @throws IllegalArgumentException if alphabet is not 64 characters long or
      * contains characters which are not 7-bit ASCII
      */
-    protected Base64Util(final String alphabet) {
+    Base64Util(final String alphabet) {
         this.alphabet = alphabet.toCharArray();
         if (alphabet.length() != ALPHABET_LENGTH) {
             throw new IllegalArgumentException("alphabet has incorrect length (should be 64, not "

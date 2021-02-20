@@ -6,7 +6,7 @@ import extension.helpers.ConvertUtil;
  *
  * @author isayan
  */
-public class ICustomVersion {
+public class CustomVersion {
 
     private static int MAJOR_VERSION = 0;
     private static int MINOR_VERSION = 0;

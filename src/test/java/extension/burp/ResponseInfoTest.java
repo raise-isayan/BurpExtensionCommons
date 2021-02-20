@@ -1,14 +1,10 @@
 package extension.burp;
 
 import burp.ICookie;
-import burp.IParameter;
-import burp.IRequestInfo;
 import burp.IResponseInfo;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;

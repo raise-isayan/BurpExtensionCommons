@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
@@ -208,7 +207,7 @@ public class CertUtil {
             (byte) 0x30, (byte) 0x0d, (byte) 0x06, (byte) 0x09, (byte) 0x2a, (byte) 0x86, (byte) 0x48, (byte) 0x86, (byte) 0xf7, (byte) 0x0d, (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0x05, (byte) 0x00, // Sequence: 1.2.840.113549.1.1.1, NULL
             (byte) 0x04, (byte) 0x82, (byte) ((pkcs1Length >> 8) & 0xff), (byte) (pkcs1Length & 0xff) // Octet string + length
         };
-        byte[] pkcs8bytes = appandByte(pkcs8Header, pkcs1Bytes);
+        byte[] pkcs8bytes = ConvertUtil.appandByte(pkcs8Header, pkcs1Bytes);
         return readPkcs8PrivateKey(pkcs8bytes);
     }
     
@@ -225,14 +224,4 @@ public class CertUtil {
         return alias;
     }
     
-    private static byte[] appandByte(byte[] byteArray1, byte[] byteArray2) {
-        ByteBuffer buf = ByteBuffer.allocate(byteArray1.length + byteArray2.length);
-        buf.put(byteArray1);
-        buf.put(byteArray2);
-        buf.flip();
-        byte[] bytes = new byte[buf.limit()];
-        buf.get(bytes);
-        return bytes;
-    }
-
 }

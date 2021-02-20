@@ -12,9 +12,9 @@ import static org.junit.Assert.*;
  *
  * @author isayan
  */
-public class HighlightColorTest {
+public class NotifyTypeTest {
     
-    public HighlightColorTest() {
+    public NotifyTypeTest() {
     }
     
     @BeforeClass
@@ -39,9 +39,9 @@ public class HighlightColorTest {
     @Test
     public void testParseEnum() {
         System.out.println("parseEnum");
-        String s = "RED";
-        HighlightColor expResult = HighlightColor.RED;
-        HighlightColor result = HighlightColor.parseEnum(s);
+        String s = "ALERTS_TAB";
+        NotifyType expResult = NotifyType.ALERTS_TAB;
+        NotifyType result = NotifyType.parseEnum(s);
         assertEquals(expResult, result);
     }
 
@@ -51,9 +51,9 @@ public class HighlightColorTest {
     @Test
     public void testParseEnumSet() {
         System.out.println("parseEnumSet");
-        String s = "[\"WHITE\",\"BLUE\",\"YELLOW\"]";
-        EnumSet<HighlightColor> expResult = EnumSet.of(HighlightColor.WHITE, HighlightColor.BLUE, HighlightColor.YELLOW);
-        EnumSet<HighlightColor> result = HighlightColor.parseEnumSet(s);
+        String s = "[\"ALERTS_TAB\",\"ITEM_HIGHLIGHT\",\"COMMENT\"]";
+        EnumSet<NotifyType> expResult = EnumSet.of(NotifyType.ALERTS_TAB, NotifyType.ITEM_HIGHLIGHT, NotifyType.COMMENT);
+        EnumSet<NotifyType> result = NotifyType.parseEnumSet(s);
         assertEquals(expResult, result);
     }
 
@@ -63,17 +63,17 @@ public class HighlightColorTest {
     @Test
     public void testToString() {
         System.out.println("toString");
-        EnumSet<HighlightColor> instance = EnumSet.allOf(HighlightColor.class);
-        for (HighlightColor e : instance) {
+        EnumSet<NotifyType> instance = EnumSet.allOf(NotifyType.class);
+        for (NotifyType e : instance) {
             System.out.println("name:" + e.name());
-            assertEquals(e, HighlightColor.parseEnum(e.name()));
+            assertEquals(e, NotifyType.parseEnum(e.name()));
         }
         
-        for (HighlightColor e : HighlightColor.values()) {
+        for (NotifyType e : NotifyType.values()) {
             System.out.println("value:" + e.toString());            
-            assertEquals(e, HighlightColor.parseEnum(e.toString()));
+            assertEquals(e, NotifyType.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }
-
+    
 }

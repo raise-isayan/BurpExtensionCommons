@@ -2,6 +2,7 @@ package extension.burp;
 
 import burp.IHttpRequestResponse;
 import burp.IHttpService;
+import extension.helpers.HttpUtil;
 import java.net.URL;
 
 /**
@@ -51,6 +52,36 @@ public class HttpService implements IHttpService {
         return PROTOCOL_HTTPS.equalsIgnoreCase(protocol);
     }
 
+    public static String getURLString(IHttpService httpService) {
+        if (HttpUtil.getDefaultPort(httpService.getProtocol()) == httpService.getPort()) {
+            return String.format("%s://%s/", httpService.getProtocol(), httpService.getHost());    
+        }
+        else {
+            return String.format("%s://%s:%d/", httpService.getProtocol(), httpService.getHost(), httpService.getPort());        
+        }
+    }
+    
+    public static IHttpService getHttpService(final String host, final int port, final String protocol) {
+        return new IHttpService() {
+
+            @Override
+            public String getHost() {
+                return host;
+            }
+
+            @Override
+            public int getPort() {
+                return port;
+            }
+
+            @Override
+            public String getProtocol() {
+                return protocol;
+            }
+
+        };
+    }
+    
     public static IHttpService getHttpService(final IHttpRequestResponse messageInfo) {
         try {
             return messageInfo.getHttpService();

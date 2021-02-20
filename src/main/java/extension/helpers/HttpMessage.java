@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpMessage {
-    
+   public enum ContentType { JAVA_SCRIPT, JSON, XML };
+ 
     public final static String LINE_TERMINATE = "\r\n";
     private final Pattern CONTENT_LENGTH = Pattern.compile("^(Content-Length:\\s*)(\\d+)$", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;]+?)(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
@@ -176,7 +177,40 @@ public class HttpMessage {
         }
         return mimeType;
     }
-        
+
+    public String getContentMimeType() {
+        return this.getContentTypeHeader();
+    }
+
+    public boolean isContentMimeType(String mime) {
+        String mimeType = this.getContentTypeHeader();
+        if (mimeType != null) {
+            return mimeType.contains(mime);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isContentMimeType(ContentType contentType) {
+        String mimeType = this.getContentTypeHeader();
+        if (mimeType == null) {
+            return false;
+        }        
+        boolean result = false;
+        switch (contentType) {
+            case JAVA_SCRIPT:
+                result = mimeType.equalsIgnoreCase("text/javascript") || mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("application/x-javascript");
+                break;
+            case JSON:
+                result = mimeType.equalsIgnoreCase("application/json") || mimeType.equalsIgnoreCase("application/javascript");
+                break;
+            case XML:
+                result = mimeType.equalsIgnoreCase("application/xml") && mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("text/xml");
+                break;
+        }
+        return result;
+    }
+    
     public String getGuessCharset() {
         String charset = null;
         Matcher m = CONTENT_TYPE.matcher(this.getHeader());

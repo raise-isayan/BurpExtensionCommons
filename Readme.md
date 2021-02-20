@@ -1,7 +1,7 @@
 Burp suite Extension common library
 =============
 
-Language/[English](Readme.md)
+Language/[Japanese](Readme-ja.md)
 
 This library is a collection of libraries often used to create extensions to PortSwigger Burp Suite, which is a product of PortSwigger.
 

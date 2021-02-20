@@ -19,7 +19,11 @@ public class UTF7Charset extends Charset {
         "UTF-8", "UTF-16", "UTF-16LE", "UTF-16BE"});
     final boolean strict;
 
-    UTF7Charset(String name, String[] aliases, boolean includeOptional) {
+    public UTF7Charset(String name, String[] aliases) {
+        this(name, aliases, false);
+    }
+    
+    public UTF7Charset(String name, String[] aliases, boolean includeOptional) {
         super(name, aliases);
         this.strict = false;
         if (includeOptional) {

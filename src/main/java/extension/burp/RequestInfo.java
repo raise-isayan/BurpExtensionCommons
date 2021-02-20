@@ -5,7 +5,6 @@ import burp.IRequestInfo;
 import extension.helpers.StringUtil;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -74,4 +73,9 @@ public class RequestInfo implements IRequestInfo {
     public final byte [] getBodyBytes() { 
         return Arrays.copyOfRange(this.content, this.requestInfo.getBodyOffset(), content.length);
     }
+
+    public static byte[] getBodyBytes(IRequestInfo reqInfo, byte[] content) {
+        return Arrays.copyOfRange(content, reqInfo.getBodyOffset(), content.length);
+    }
+    
 }

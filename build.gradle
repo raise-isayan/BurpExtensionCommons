@@ -21,7 +21,7 @@ clean.doFirst {
 
 jar {
     destinationDirectory = file('release')
-    archiveVersion =  "v${release_version_major}"
+    archiveVersion =  "v${release_version_major}.${release_version_minor}"
 }
 
 task release(type: Zip, dependsOn: ['build']) {

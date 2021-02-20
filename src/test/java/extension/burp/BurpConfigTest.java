@@ -1,14 +1,14 @@
 package extension.burp;
 
-import java.io.File;
 import java.security.KeyStore;
+import java.util.Enumeration;
 import java.util.Properties;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -41,9 +41,14 @@ public class BurpConfigTest {
     @Test
     public void testLoadCACeart() throws Exception {
         System.out.println("loadCACeart");
-        BurpConfig instance = new BurpConfig();
-        KeyStore expResult = null;
-        KeyStore result = instance.loadCACeart();
+        KeyStore result = BurpConfig.loadCACeart();
+        Properties p = System.getProperties();
+        Enumeration<String> e = result.aliases();
+        while (e.hasMoreElements()) {
+            // cacert
+            String alias = e.nextElement();
+            assertEquals("cacert", alias);
+        }
     }
 
     @Test

@@ -62,7 +62,7 @@ public enum HighlightColor {
         value = value.replace(' ', '_');
         return Enum.valueOf(HighlightColor.class, value);
     }
-
+    
     public static EnumSet<HighlightColor> parseEnumSet(String s) {
         EnumSet<HighlightColor> highlightColor = EnumSet.noneOf(HighlightColor.class);
         if (!s.startsWith("[") && s.endsWith("]")) {
@@ -72,8 +72,9 @@ public enum HighlightColor {
         if (content.isEmpty()) {
             return highlightColor;
         }
-        for (String v : content.split(",")) {
-            highlightColor.add(parseEnum(v.trim()));
+        for (String t : content.split(",")) {
+            String v = t.trim();
+            highlightColor.add(parseEnum(v.replaceAll("\"", "")));
         }
         return highlightColor;
     }

@@ -1,5 +1,4 @@
 package extension.helpers.json;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -11,6 +10,7 @@ import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -143,17 +143,21 @@ public class JsonUtil {
             return false;    
         }
     }
+    
+    private static final Map<Class<?>, Object> typeAdapterMap = new HashMap<>();
+    
+    public static void registerTypeHierarchyAdapter(Class<?> baseType, Object typeAdapter) {
+        typeAdapterMap.put(baseType, typeAdapter);
+    }
 
-    public static void saveToJson(File fo, Object bean, boolean exludeFields) throws IOException {
-        saveToJson(fo, bean, exludeFields, null);
+    public static void removeTypeHierarchyAdapter(Class<?> baseType) {
+        typeAdapterMap.remove(baseType);
     }
     
-    public static void saveToJson(File fo, Object bean, boolean exludeFields, Map<Class<?>, Object> typeAdapterMap) throws IOException {
+    public static void saveToJson(File fo, Object bean, boolean exludeFields) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
-        if (typeAdapterMap != null) {
-            for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
-                gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
-            }        
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
         if (exludeFields) {            
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
@@ -164,15 +168,9 @@ public class JsonUtil {
     }
 
     public static <T> T loadFromJson(File fi, Class<T> classOfT, boolean exludeFields) throws IOException {
-        return loadFromJson(fi, classOfT, exludeFields, null);        
-    }
-    
-    public static <T> T loadFromJson(File fi, Class<T> classOfT, boolean exludeFields, Map<Class<?>, Object> typeAdapterMap) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
-        if (typeAdapterMap != null) {
-            for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
-                gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
-            }            
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
         if (exludeFields) {            
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
@@ -183,15 +181,9 @@ public class JsonUtil {
     }
 
     public static String jsonToString(Object bean, boolean exludeFields) {
-        return jsonToString(bean, exludeFields, null);        
-    }
-    
-    public static String jsonToString(Object bean, boolean exludeFields, Map<Class<?>, Object> typeAdapterMap) {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
-        if (typeAdapterMap != null) {
-            for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
-                gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
-            }            
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
         if (exludeFields) {            
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
@@ -201,15 +193,9 @@ public class JsonUtil {
     }
     
     public static <T> T jsonFromString(String jsonString, Class<T> classOfT, boolean exludeFields) {
-        return jsonFromString(jsonString, classOfT, exludeFields, null);        
-    }
-
-    public static <T> T jsonFromString(String jsonString, Class<T> classOfT, boolean exludeFields, Map<Class<?>, Object> typeAdapterMap) {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
-        if (typeAdapterMap != null) {
-            for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
-                gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
-            }            
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
         if (exludeFields) {            
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();

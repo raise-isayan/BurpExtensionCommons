@@ -9,12 +9,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +33,14 @@ import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Text;
 
 /**
  *
@@ -36,10 +49,6 @@ import java.util.zip.Inflater;
 public class ConvertUtil {
 
     private final static Logger logger = Logger.getLogger(ConvertUtil.class.getName());
-
-    public static String repeat(String str, int n) {
-      return String.join("", Collections.nCopies(n, str));
-    }    
     
     public static String newLine(String separator, String value, int length) {
         Pattern p = Pattern.compile(String.format("(.{%d})", length));
@@ -131,7 +140,6 @@ public class ConvertUtil {
         }
     }
 
-
     /**
      * 文字列を対応するEnum型に変換
      *
@@ -150,6 +158,34 @@ public class ConvertUtil {
         }
     }
 
+    public static String enumSetToString(EnumSet<?> enumset) {
+        Iterator<?> it = enumset.iterator();
+        if (!it.hasNext()) {
+            return "[]";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (;;) {
+            Enum<?> e = (Enum<?>) it.next();
+            sb.append(e.name());
+            if (!it.hasNext()) {
+                return sb.append(']').toString();
+            }
+            sb.append(',').append(' ');
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Enum parseEnumValue(Class enumType, String value) {
+        if (value != null) {
+            value = value.toUpperCase();
+            value = value.replace(' ', '_');
+            return Enum.valueOf(enumType, value);
+        }
+        return null;
+    }
+    
     public static <T> List<T> toList(Iterator<T> e) {
         List<T> l = new ArrayList<>();
         while (e.hasNext()) {
@@ -179,12 +215,44 @@ public class ConvertUtil {
         return toList(mapUniq.keySet().iterator());
     }
 
+    public static int toInteger(byte[] input) {
+        int value = 0;
+        for (int i = 0; i < input.length; i++) {
+            value = (value << 8) | (input[i] & 0xff);
+        }
+        return value;
+    }
+    
+    public static String toHexString(byte input) {
+        return toHexString(new byte [] { input }); 
+    }
+    public static String toHexString(int input) {
+        BigInteger hex = BigInteger.valueOf(input);
+        return hex.toString(16);
+    }
+    
     public static String toHexString(byte [] data) {
         return String.valueOf(encodeHex(data));
     }
 
     public static byte [] fromHexString(String data) {
         return decodeHex(data.toCharArray());
+    }
+
+    public static String escapeXml(String target) throws Exception {
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Text text = document.createTextNode(target);
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        DOMSource source = new DOMSource(text);
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        transformer.transform(source, result);
+        return writer.toString();
+    }
+
+    public static String escapeJson(String value) {
+        return value.replaceAll("([\"\\\\/])", "\\\\$1");        
     }
     
     private static final char[] HEX_UPPER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -235,6 +303,27 @@ public class ConvertUtil {
         return file;
     }
 
+    public static byte[] appandByte(byte[] byteArray1, byte[] byteArray2) {
+        ByteBuffer buf = ByteBuffer.allocate(byteArray1.length + byteArray2.length);
+        buf.put(byteArray1);
+        buf.put(byteArray2);
+        buf.flip();
+        byte[] bytes = new byte[buf.limit()];
+        buf.get(bytes);
+        return bytes;
+    }
+    
+    public static byte[] replaceByte(byte[] base, int startPos, int endPos, byte[] replace) {
+        ByteBuffer buf = ByteBuffer.allocate(startPos + replace.length + base.length - endPos);
+        buf.put(base, 0, startPos);
+        buf.put(replace);
+        buf.put(base, endPos, base.length - endPos);
+        buf.flip();
+        byte[] bytes = new byte[buf.limit()];
+        buf.get(bytes);
+        return bytes;
+    }
+    
     public static byte[] bytesFromFile(File file) throws IOException {
         ByteArrayOutputStream bostm = new ByteArrayOutputStream();
         try (FileInputStream fstm = new FileInputStream(file)) {
@@ -446,5 +535,32 @@ public class ConvertUtil {
     public static String decompressZlibBase64(String content) {
         return decompressZlibBase64(content, StandardCharsets.ISO_8859_1);
     }
+
+    public static Process executeFormat(String target, String args[]) throws IOException {
+        Process process = null;
+        String command = "";
+        MessageFormat msgfmt = new MessageFormat(target);
+        if (msgfmt.getFormats().length > 0) {
+            command = msgfmt.format(target, (Object[]) args);
+            process = Runtime.getRuntime().exec(command);
+        } else {
+            ArrayList<String> list = new ArrayList<String>(Arrays.asList(args));
+            list.add(0, target);
+            process = Runtime.getRuntime().exec((String[]) list.toArray(new String[0]));
+        }
+        //Runtime.getRuntime().exec(args);
+        return process;
+    }
+    
+    /**
+     * 正規表現のエンコード(エスケープ)
+     *
+     * @param value
+     * @return エンコードされた値
+     */
+    public static String regexQuote(String value) {
+        return value.replaceAll("([\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-])", "\\\\$1");
+    }
+
     
 }

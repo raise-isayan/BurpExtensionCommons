@@ -12,6 +12,7 @@ import org.junit.Test;
  * @author isayan
  */
 public class StringUtilTest {
+  
     
     public StringUtilTest() {
     }
@@ -54,4 +55,22 @@ public class StringUtilTest {
             assertEquals(false, result);        
         }
     }
+    
+    @Test
+    public void testString_0() {
+        String rep0 = StringUtil.stringReplace("1234567890", 0, 0, "abc");
+        System.out.println("testString_0:" + rep0);
+        String rep1 = StringUtil.stringReplace("1234567890", 1, 3, "abc");
+        System.out.println("testString_1_3:" + rep1);
+    }
+    
+    @Test
+    public void testGetAvailableEncodingList() {
+        System.out.println("getAvailableEncodingList");
+        String[] list = StringUtil.getAvailableEncodingList();
+        for (String l : list) {
+            System.out.println(l);
+        }
+    }
+    
 }

@@ -2,10 +2,10 @@ package extension.burp;
 
 import burp.IBurpExtender;
 import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import extension.helpers.StringUtil;
 import java.awt.TrayIcon;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,21 +35,15 @@ public class BurpExtenderImpl implements IBurpExtender {
         return callbacks;
     }
 
-    public static IExtensionHelpers getHelpers() {
+    public static ExtensionHelpers getHelpers() {
         if (callbacks != null) {
-            try {
-                return callbacks.getHelpers();
-            } catch (AbstractMethodError ex) {
-            } catch (IllegalArgumentException ex) {
-            } catch (LinkageError ex) {
-            } catch (Exception ex) {
-            }
-            return null;
+            final ExtensionHelpers helpers = new ExtensionHelpers(callbacks.getHelpers());
+            return helpers;
         } else {
             return null;
         }
     }
-
+       
     public BurpVersion getBurpVersion() {
         return burp_version;
     }
@@ -105,4 +99,8 @@ public class BurpExtenderImpl implements IBurpExtender {
         }
     }
 
+    public static boolean isInScope(URL url) {
+        return callbacks.isInScope(url);        
+    }
+    
 }

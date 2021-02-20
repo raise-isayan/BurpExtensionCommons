@@ -8,14 +8,24 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.SortedMap;
 
 /**
  *
  * @author isayan
  */
 public class StringUtil {
+    public static final String DEFAULT_ENCODING = System.getProperty("file.encoding");
+    public static final String NEW_LINE = System.getProperty("line.separator");
+
     private static final SecureRandom RANDOM = new SecureRandom();
+    
+    public static String repeat(String str, int n) {
+      return String.join("", Collections.nCopies(n, str));
+    }    
     
     /**
      * 生のバイト文字列取得
@@ -30,7 +40,7 @@ public class StringUtil {
     public static String getStringRaw(byte[] message) {
         return new String(message, StandardCharsets.ISO_8859_1);
     }
-
+        
     /**
      * UTF-8のバイト文字列取得
      *
@@ -60,6 +70,19 @@ public class StringUtil {
         return new String(message, charset);
     }
 
+    public static String getStringCharset(byte[] message, int offset, int length, Charset charset) {
+        return new String(message, offset, length, charset);
+    }
+    
+    public static String getStringCharset(byte[] message, int offset, int length, String encoding) {
+        String decodeStr = null;
+        try {
+            decodeStr = new String(message, offset, length, encoding);
+        } catch (UnsupportedEncodingException ex) {
+        }
+        return decodeStr;
+    }
+    
     /**
      * 指定した文字コードのバイト文字列取得
      *
@@ -89,6 +112,51 @@ public class StringUtil {
         return new String(encodeByte, StandardCharsets.ISO_8859_1);
     }
 
+    public static String toString(String value) {
+        if (value == null) {
+            return "";
+        }
+        else {
+            return String.valueOf(value);
+        }
+    }
+
+    public static String toString(Boolean value) {
+        if (value == null) {
+            return "";
+        }
+        else {
+            return String.valueOf(value);
+        }
+    }
+    
+    public static String toString(Integer value) {
+        if (value == null) {
+            return "";
+        }
+        else {
+            return String.valueOf(value);
+        }
+    }
+
+    public static String toString(Float value) {
+        if (value == null) {
+            return "";
+        }
+        else {
+            return String.valueOf(value);
+        }
+    }
+
+    public static String toString(Object value) {
+        if (value == null) {
+            return "";
+        }
+        else {
+            return String.valueOf(value);
+        }
+    }
+        
     private final static char[] NUM_CHARS = "1234567890".toCharArray();
     private final static char[] IDENT_CHARS
             = "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -128,7 +196,7 @@ public class StringUtil {
         }
         return Arrays.equals(a1.toCharArray(), a2.toCharArray());
     }
-
+        
     public static int compareToString(String a1, String a2) {
         int len1 = a1.length();
         int len2 = a2.length();
@@ -147,6 +215,30 @@ public class StringUtil {
         return len1 - len2;
     }
 
+    /**
+     * 文字列置換
+     *
+     * @param str 置換元文字列
+     * @param startPos 開始位置
+     * @param endPos 終了位置
+     * @param repstr 置換文字列
+     * @return 置換後文字列
+     */
+    public static String stringReplace(String str, int startPos, int endPos, String repstr) {
+        StringBuilder buff = new StringBuilder(str);
+        buff.delete(startPos, endPos);
+        buff.insert(startPos, repstr);
+        return buff.toString();
+    }
+
+    public static String toPascalCase(String s) {
+        char ch[] = s.toLowerCase().toCharArray();
+        if (ch.length > 0) {
+            ch[0] = Character.toUpperCase(ch[0]);
+        }
+        return  new String(ch);    
+    }
+    
     public static String getStackTraceMessage(Exception ex) {
         return String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
     }
@@ -178,12 +270,21 @@ public class StringUtil {
         return null;
     }
 
-    public static String toPascalCase(String s) {
-        char ch[] = s.toLowerCase().toCharArray();
-        if (ch.length > 0) {
-            ch[0] = Character.toUpperCase(ch[0]);
+    /**
+     * 有効な文字列エンコーディングリストの取得
+     *
+     * @return エンコーディングリスト
+     */
+    public static String[] getAvailableEncodingList() {
+        java.util.List<String> list = new ArrayList<String>();
+        SortedMap<String, Charset> map = Charset.availableCharsets();
+        Charset charsets[] = (Charset[]) map.values().toArray(
+                new Charset[]{});
+        for (int i = 0; i < charsets.length; i++) {
+            String charname = charsets[i].displayName();
+            list.add(charname);
         }
-        return  new String(ch);    
+        return list.toArray(new String[0]);
     }
     
 }

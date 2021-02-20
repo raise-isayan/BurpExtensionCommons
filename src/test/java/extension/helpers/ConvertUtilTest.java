@@ -1,5 +1,12 @@
 package extension.helpers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,152 +39,180 @@ public class ConvertUtilTest {
     public void tearDown() {
     }
 
-//    /**
-//     * Test of parseIntDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseIntDefault() {
-//        System.out.println("parseIntDefault");
-//        String value = "";
-//        int defvalue = 0;
-//        int expResult = 0;
-//        int result = ConvertUtil.parseIntDefault(value, defvalue);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of parseLongDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseLongDefault() {
-//        System.out.println("parseLongDefault");
-//        String value = "";
-//        long defvalue = 0L;
-//        long expResult = 0L;
-//        long result = ConvertUtil.parseLongDefault(value, defvalue);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of parseFloatDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseFloatDefault() {
-//        System.out.println("parseFloatDefault");
-//        String value = "";
-//        float defvalue = 0.0F;
-//        float expResult = 0.0F;
-//        float result = ConvertUtil.parseFloatDefault(value, defvalue);
-//        assertEquals(expResult, result, 0.0);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of parseDoubleDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseDoubleDefault() {
-//        System.out.println("parseDoubleDefault");
-//        String value = "";
-//        double defvalue = 0.0;
-//        double expResult = 0.0;
-//        double result = ConvertUtil.parseDoubleDefault(value, defvalue);
-//        assertEquals(expResult, result, 0.0);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of parseBooleanDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseBooleanDefault() {
-//        System.out.println("parseBooleanDefault");
-//        String value = "";
-//        boolean defvalue = false;
-//        boolean expResult = false;
-//        boolean result = ConvertUtil.parseBooleanDefault(value, defvalue);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of parseEnumDefault method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testParseEnumDefault() {
-//        System.out.println("parseEnumDefault");
-//        Enum expResult = null;
-//        Enum result = ConvertUtil.parseEnumDefault(null);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of toList method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testToList() {
-//        System.out.println("toList");
-//        List expResult = null;
-//        List result = ConvertUtil.toList(null);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of toUniqList method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testToUniqList_List() {
-//        System.out.println("toUniqList");
-//        List expResult = null;
-//        List result = ConvertUtil.toUniqList(null);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-//
-//    /**
-//     * Test of toUniqList method, of class ConvertUtil.
-//     */
-//    @Test
-//    public void testToUniqList_String_List() {
-//        System.out.println("toUniqList");
-//        String regex = "";
-//        List<String> list = null;
-//        List<String> expResult = null;
-//        List<String> result = ConvertUtil.toUniqList(regex, list);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-
     /**
-     * Test of toHexString method, of class ConvertUtil.
      */
     @Test
-    public void testToHexString() {
-        System.out.println("toHexString");
-        final byte[] data = new byte [] { (byte)0x00, (byte)0x01, (byte)0x09, (byte)0x0a, (byte)0x0f, (byte)0x1f, (byte)0xaf, (byte)0xff };           
-        {        
-            String expResult = "0001090A0F1FAFFF";
-            String result = ConvertUtil.toHexString(data);
-            assertEquals(expResult, result);
+    public void testAppandByte() {
+        System.out.println("appandByte");
+        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
+        {
+            byte [] add = new byte [] {21,22,23}; 
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23}; 
+            byte [] result = ConvertUtil.appandByte(base, add);
+            assertArrayEquals(expResult, result);        
         }
         {
-            byte [] expResult = data; ;
-            byte [] result = ConvertUtil.fromHexString("0001090A0F1FAFFF");
-            assertArrayEquals(expResult, result);
+            byte [] add = new byte [] {}; 
+            byte [] result = ConvertUtil.appandByte(base, add);
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
+            assertArrayEquals(expResult, result);        
         }
     }
+
+    public static byte[] byteReplace(byte[] base, int startPos, int endPos, byte[] replace) {
+        ByteArrayOutputStream bstm = new ByteArrayOutputStream();
+        try {
+            bstm.write(Arrays.copyOfRange(base, 0, startPos));
+            bstm.write(replace);
+            bstm.write(Arrays.copyOfRange(base, endPos, base.length));
+        } catch (IOException ex) {
+        }
+        return bstm.toByteArray();
+    }
+    
+    /**
+     */
+    @Test
+    public void testByteReplace_0() {
+        System.out.println("byteReplace");
+        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
+        byte [] replace = new byte [] {21,22,23};
+        {
+            byte [] expResult = new byte [] {21,22,23,1,2,3,4,5,6,7,8,9,10}; 
+            byte [] testResult = byteReplace(base, 0, 0, replace);
+            byte [] result = ConvertUtil.replaceByte(base, 0, 0, replace);
+            assertArrayEquals(expResult, result);
+            assertArrayEquals(testResult, result);
+        }
+        {
+            byte [] expResult = new byte [] {1,2,21,22,23,4,5,6,7,8,9,10}; 
+            byte [] result = ConvertUtil.replaceByte(base, 2, 3, replace);
+            byte [] testResult = byteReplace(base, 2, 3, replace);
+            assertArrayEquals(expResult, result);
+            assertArrayEquals(testResult, result);
+        }
+        {
+            byte [] expResult = new byte [] {1,21,22,23,4,5,6,7,8,9,10}; 
+            byte [] result = ConvertUtil.replaceByte(base, 1, 3, replace);
+            byte [] testResult = byteReplace(base, 1, 3, replace);
+            assertArrayEquals(expResult, result);
+            assertArrayEquals(testResult, result);
+        }
+        {
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,21,22,23,10}; 
+            byte [] result = ConvertUtil.replaceByte(base, 9, 9, replace);
+            byte [] testResult = byteReplace(base, 9, 9, replace);
+            assertArrayEquals(expResult, result);
+            assertArrayEquals(testResult, result);
+        }
+        {
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23}; 
+            byte [] result = ConvertUtil.replaceByte(base, 10, 10, replace);
+            byte [] testResult = byteReplace(base, 10, 10, replace);
+            assertArrayEquals(expResult, result);     
+            assertArrayEquals(testResult, result);
+        }
+    }
+            
+    /**
+     * Test of escapeXml method, of class ConvertUtil.
+     */
+    @Test
+    public void testEscapeXml() throws Exception {
+        System.out.println("escapeXml");
+        String target = "<s a=\"x\">&";
+        String expResult = "&lt;s a=\"x\"&gt;&amp;";
+        String result = ConvertUtil.escapeXml(target);
+        assertEquals(expResult, result);
+    }
+    
+    @Test
+    public void testRegexQuote() {
+        System.out.println("regexQuote");
+        {
+            String target = "aa.com";
+            String expResult = "aa\\.com";
+            String result = ConvertUtil.regexQuote(target);
+            assertEquals(expResult, result);
+            Pattern ptn1 = Pattern.compile(result);
+            assertTrue(ptn1.matcher(target).matches());
+        }
+        {
+            String target = "\\/{}<>[]()";
+            String expResult = "\\\\/\\{\\}\\<\\>\\[\\]\\(\\)";
+            String result = ConvertUtil.regexQuote(target);
+            assertEquals(expResult, result);
+            Pattern ptn2 = Pattern.compile(result);
+            assertTrue(ptn2.matcher(target).matches());       
+        }
+        {
+            String target = ".\\+*?[^]$(){}=!<>|:-";
+            String expResult = "\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-";
+            String result = ConvertUtil.regexQuote(target);
+            assertEquals(expResult, result);
+            Pattern ptn3 = Pattern.compile(result);
+            assertTrue(ptn3.matcher(target).matches());       
+        
+        
+        }
+    
+    }
+
+    /**
+     * Test of toInteger method, of class ConvertUtil.
+     */
+    @Test
+    public void testToInteger() {
+        System.out.println("toInteger");
+        assertEquals(0x7fff, ConvertUtil.toInteger(new byte[]{(byte) 0x7f, (byte) 0xff}));
+        assertEquals(0xff7f, ConvertUtil.toInteger(new byte[]{(byte) 0xff, (byte) 0x7f}));
+        assertEquals(0x8080, ConvertUtil.toInteger(new byte[]{(byte) 0x80, (byte) 0x80}));
+    }
+
+    /**
+     * Test of toBASE64Encoder method, of class ConvertUtil.
+     */
+    @Test
+    public void testToBASE64Encoder() {
+        try {
+            System.out.println("toBASE64Encoder");
+            assertEquals("PA==", ConvertUtil.toBase64Encode("<", "8859_1", true));
+            assertEquals("dGVzdA==", ConvertUtil.toBase64Encode("test", "8859_1", true));
+            assertEquals("ZnVnYWY=", ConvertUtil.toBase64Encode("fugaf", "8859_1", true));
+            assertEquals("aG9nZWhv", ConvertUtil.toBase64Encode("hogeho", "8859_1", true));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(false);
+        }
+    }
+
+    /**
+     * Test of toBASE64Decode method, of class ConvertUtil.
+     */
+    @Test
+    public void testToBASE64Decoder() {
+        try {
+            System.out.println("toBASE64Decoder");
+            assertEquals("<", ConvertUtil.toBase64Decode("PA==", "8859_1"));
+            assertEquals("hogeho", ConvertUtil.toBase64Decode("aG9nZWhv", "8859_1"));
+            assertEquals("fugaf", ConvertUtil.toBase64Decode("ZnVnYWY=", "8859_1"));
+            assertEquals("test", ConvertUtil.toBase64Decode("dGVzdA==", "8859_1"));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(false);
+        }
+        try {
+            System.out.println("toBASE64Decoder");
+            System.out.println(ConvertUtil.toBase64Decode("absdadbd", "8859_1"));
+            System.out.println(ConvertUtil.toBase64Decode("!\"#$%&'()=~|", "8859_1"));
+        } catch (IllegalArgumentException ex) {
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+       }
+    }
+
+
+    
+
     
 }

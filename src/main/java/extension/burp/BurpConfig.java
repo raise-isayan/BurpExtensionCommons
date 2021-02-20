@@ -17,7 +17,7 @@ import java.util.prefs.Preferences;
 public class BurpConfig {
     private static final String CA_PASSWORD = "/burp/media/ps.p12";
     
-    public KeyStore loadCACeart() throws KeyStoreException {
+    public static KeyStore loadCACeart() throws KeyStoreException {
         try {
             final KeyStore ks;
             ks = KeyStore.getInstance("PKCS12");

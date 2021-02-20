@@ -49,7 +49,7 @@ public final class BurpVersion {
     public boolean isProfessional() {
         return this.productName.contains("Professional");
     }
-    
+
     /**
      * バージョン番号
      *
@@ -65,7 +65,7 @@ public final class BurpVersion {
         MAC,
         UNKOWN,       
     }
-    
+
     public static OSType getOSType() {
         String os_name = System.getProperty("os.name").toLowerCase();
         if (os_name.startsWith("win")) {
@@ -93,7 +93,7 @@ public final class BurpVersion {
      *   %HOME%.BurpSuite\UserConfigCommunity.json
      *   %HOME%.BurpSuite\UserConfigPro.json     * 
      */
-    
+
     private final String USER_CONFIG_COMMUNITY = "UserConfigCommunity.json";
     private final String USER_CONFIG_PRO = "UserConfigPro.json";
 
@@ -107,7 +107,7 @@ public final class BurpVersion {
             return burpConfig;
         }        
     }
-        
+
     public File getBurpConfigHome() {                
         if (BurpVersion.getOSType() == BurpVersion.OSType.WINDOWS) {
             String home = System.getenv("APPDATA");
@@ -125,5 +125,5 @@ public final class BurpVersion {
         }        
         return null;
     }
-        
+
 }

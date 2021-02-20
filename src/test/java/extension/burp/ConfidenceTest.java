@@ -12,9 +12,9 @@ import static org.junit.Assert.*;
  *
  * @author isayan
  */
-public class HighlightColorTest {
+public class ConfidenceTest {
     
-    public HighlightColorTest() {
+    public ConfidenceTest() {
     }
     
     @BeforeClass
@@ -33,28 +33,31 @@ public class HighlightColorTest {
     public void tearDown() {
     }
 
+
     /**
-     * Test of parseEnum method, of class NotifyType.
+     * Test of parseEnum method, of class Severity.
      */
     @Test
     public void testParseEnum() {
         System.out.println("parseEnum");
-        String s = "RED";
-        HighlightColor expResult = HighlightColor.RED;
-        HighlightColor result = HighlightColor.parseEnum(s);
+        String s = "CERTAIN";
+        Confidence expResult = Confidence.CERTAIN;
+        Confidence result = Confidence.parseEnum(s);
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of parseEnumSet method, of class NotifyType.
+     * Test of parseEnumSet method, of class Severity.
      */
     @Test
     public void testParseEnumSet() {
         System.out.println("parseEnumSet");
-        String s = "[\"WHITE\",\"BLUE\",\"YELLOW\"]";
-        EnumSet<HighlightColor> expResult = EnumSet.of(HighlightColor.WHITE, HighlightColor.BLUE, HighlightColor.YELLOW);
-        EnumSet<HighlightColor> result = HighlightColor.parseEnumSet(s);
-        assertEquals(expResult, result);
+        {
+            String s = "[\"CERTAIN\",\"FIRM\",\"TENTATIVE\"]";
+            EnumSet<Confidence> expResult = EnumSet.of(Confidence.CERTAIN, Confidence.FIRM, Confidence.TENTATIVE);
+            EnumSet<Confidence> result = Confidence.parseEnumSet(s);
+            assertEquals(expResult, result);        
+        }
     }
 
     /**
@@ -63,17 +66,16 @@ public class HighlightColorTest {
     @Test
     public void testToString() {
         System.out.println("toString");
-        EnumSet<HighlightColor> instance = EnumSet.allOf(HighlightColor.class);
-        for (HighlightColor e : instance) {
+        EnumSet<Severity> instance = EnumSet.allOf(Severity.class);
+        for (Severity e : instance) {
             System.out.println("name:" + e.name());
-            assertEquals(e, HighlightColor.parseEnum(e.name()));
+            assertEquals(e, Severity.parseEnum(e.name()));
         }
-        
-        for (HighlightColor e : HighlightColor.values()) {
+        for (Severity e : Severity.values()) {
             System.out.println("value:" + e.toString());            
-            assertEquals(e, HighlightColor.parseEnum(e.toString()));
+            assertEquals(e, Severity.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }
-
+    
 }

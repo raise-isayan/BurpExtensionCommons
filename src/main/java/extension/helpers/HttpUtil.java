@@ -13,6 +13,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -427,16 +428,21 @@ public final class HttpUtil {
         CHARSET_ALIAS.put("X-ISO-10646-UCS-4-34121", "UTF-32");
         CHARSET_ALIAS.put("X-ISO-10646-UCS-4-21431", "UTF-32");
     }
-
+        
     public static String normalizeCharset(String charsetName) {
-        String charset = charsetName;
         String aliasName = CHARSET_ALIAS.get(charsetName);
         if (aliasName == null) {
-            charset = HttpUtil.normalizeCharset(charsetName);
+            try {
+                Charset charst = Charset.forName(charsetName);
+                return charst.name();
+            } catch (IllegalCharsetNameException ex) {
+                return null;
+            } catch (IllegalArgumentException ex) {
+                return null;
+            }
         } else {
-            charset = aliasName;
+            return aliasName;
         }
-        return charset;
     }
 
     public static String toHtmlEncode(String input) {

@@ -72,5 +72,10 @@ public class ResponseInfo implements IResponseInfo {
     public final byte [] getBodyBytes() { 
         return Arrays.copyOfRange(this.content, this.responseInfo.getBodyOffset(), content.length);
     }
+
+    public static byte[] getBodyBytes(IResponseInfo resInfo, byte[] content) {
+        return Arrays.copyOfRange(content, resInfo.getBodyOffset(), content.length);
+    }
+
     
 }
