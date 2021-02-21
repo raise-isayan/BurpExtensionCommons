@@ -102,12 +102,12 @@ public class StringUtil {
         return new String(message, StandardCharsets.ISO_8859_1);
     }
 
-    public static String getBytesRawString(String message, String encoding) throws UnsupportedEncodingException {
+    public static String getBytesCharsetString(String message, String encoding) throws UnsupportedEncodingException {
         byte[] encodeByte = message.getBytes(encoding);
         return new String(encodeByte, StandardCharsets.ISO_8859_1);
     }
 
-    public static String getBytesRawString(String message, Charset charset) throws UnsupportedEncodingException {
+    public static String getBytesCharsetString(String message, Charset charset) throws UnsupportedEncodingException {
         byte[] encodeByte = message.getBytes(charset);
         return new String(encodeByte, StandardCharsets.ISO_8859_1);
     }

@@ -3,6 +3,9 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'application'
 
+sourceCompatibility = '11' // -source
+targetCompatibility = '11' // -target
+
 mainClassName = 'BurpExtensionCommons.Main'
 
 repositories {
@@ -13,7 +16,7 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-clean.doFirst { 
+clean.doFirst {
     delete fileTree('release') {
       include '*.jar'
     }
