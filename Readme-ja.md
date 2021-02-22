@@ -27,12 +27,12 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 ## 利用ライブラリ
 
 * Google gson (https://github.com/google/gson)
-** Apache License
-** https://github.com/google/gson/blob/master/LICENSE
+  * Apache License
+  * https://github.com/google/gson/blob/master/LICENSE
 
 * juniversalchardet (https://code.google.com/archive/p/juniversalchardet/)
-**  Mozilla Public License 1.1
-** https://www.mozilla.org/en-US/MPL/
+  *  Mozilla Public License 1.1
+  * https://www.mozilla.org/en-US/MPL/
 
 ## 開発環境
 

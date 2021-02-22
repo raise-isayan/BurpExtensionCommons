@@ -63,7 +63,7 @@ public final class BurpVersion {
         WINDOWS,
         LINUX,
         MAC,
-        UNKOWN,       
+        UNKOWN,
     }
 
     public static OSType getOSType() {
@@ -72,14 +72,14 @@ public final class BurpVersion {
             return OSType.WINDOWS;
         }
         else if (os_name.startsWith("linux")) {
-            return OSType.LINUX;        
+            return OSType.LINUX;
         }
         else if (os_name.startsWith("mac")) {
-            return OSType.MAC;                
+            return OSType.MAC;
         }
         else {
-            return OSType.UNKOWN;                        
-        }        
+            return OSType.UNKOWN;
+        }
     }
 
     /*
@@ -87,42 +87,42 @@ public final class BurpVersion {
      *   %APPDATA%\BurpSuite\UserConfigCommunity.json
      *   %APPDATA%\BurpSuite\UserConfigPro.json
      * Linux
-     *   %HOME%.BurpSuite\UserConfigCommunity.json
-     *   %HOME%.BurpSuite\UserConfigPro.json
+     *   %HOME%/.BurpSuite/UserConfigCommunity.json
+     *   %HOME%/.BurpSuite/UserConfigPro.json
      * Mac
-     *   %HOME%.BurpSuite\UserConfigCommunity.json
-     *   %HOME%.BurpSuite\UserConfigPro.json     * 
+     *   %HOME%/.BurpSuite/UserConfigCommunity.json
+     *   %HOME%/.BurpSuite/UserConfigPro.json     *
      */
 
     private final String USER_CONFIG_COMMUNITY = "UserConfigCommunity.json";
     private final String USER_CONFIG_PRO = "UserConfigPro.json";
 
-    public File getBurpConfigFile() {                
+    public File getBurpConfigFile() {
         if (isProfessional()) {
-            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_PRO);   
+            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_PRO);
             return burpConfig;
         }
         else {
-            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_COMMUNITY);   
+            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_COMMUNITY);
             return burpConfig;
-        }        
+        }
     }
 
-    public File getBurpConfigHome() {                
+    public File getBurpConfigHome() {
         if (BurpVersion.getOSType() == BurpVersion.OSType.WINDOWS) {
             String home = System.getenv("APPDATA");
             if (home != null) {
-                final File burpHome = new File(home, "BurpSuite");   
+                final File burpHome = new File(home, "BurpSuite");
                 return burpHome;
             }
         }
         else {
             String home = System.getenv("HOME");
             if (home != null) {
-                final File burpHome = new File(home, ".BurpSuite");        
+                final File burpHome = new File(home, ".BurpSuite");
                 return burpHome;
             }
-        }        
+        }
         return null;
     }
 
