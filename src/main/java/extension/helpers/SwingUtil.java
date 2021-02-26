@@ -12,14 +12,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.SortedMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import static javax.swing.TransferHandler.NONE;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
@@ -53,6 +50,38 @@ public final class SwingUtil {
             Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
         return robot;
+    }
+
+    public static JFrame getRootJFrame(Component c) {
+        for(Container p = c.getParent(); p != null; p = p.getParent()) {
+            if (p instanceof JFrame) {
+                return (JFrame)p;
+            }
+        }
+        return null;
+    }
+
+    public static JFrame [] getJFrames() {
+        java.util.List<JFrame> jframes = new ArrayList<>();
+        Frame [] frames = Frame.getFrames();
+        for (int i = 0; i < frames.length; i++) {
+            if (frames[i] instanceof JFrame) {
+                jframes.add((JFrame)frames[i]);
+            }
+        }
+        return jframes.toArray(new JFrame[0]);
+    }
+
+    public static JMenuBar[] getJMenuBars() {
+        java.util.List<JMenuBar> menuBars = new ArrayList<>();
+        JFrame[] frames = getJFrames();
+        for (int i = 0; i < frames.length; i++) {
+            JMenuBar menuBar = frames[i].getJMenuBar();
+            if (menuBar != null) {
+                menuBars.add(menuBar);
+            }
+        }
+        return menuBars.toArray(new JMenuBar[menuBars.size()]);
     }
 
     /**
@@ -95,7 +124,7 @@ public final class SwingUtil {
             }
 //            else {
 //                throw new java.lang.ClassCastException("class cast Excaption:" + modelSrc.getClass().getName());
-//            }                
+//            }
         } else {
             throw new java.lang.ClassCastException("class cast Excaption:" + modelSrc.getClass().getName());
         }
@@ -112,8 +141,8 @@ public final class SwingUtil {
             }
             //            else if (modelSrc instanceof DefaultObjectTableModel) {
             //                ((DefaultObjectTableModel)modelSrc).removeRow(rowIndex);
-            //                ((DefaultObjectTableModel)modelSrc).insertRow(rowIndex, items);                
-            //            }            
+            //                ((DefaultObjectTableModel)modelSrc).insertRow(rowIndex, items);
+            //            }
             else {
                 throw new java.lang.ClassCastException("class cast Excaption:" + modelSrc.getClass().getName());
             }
@@ -311,7 +340,7 @@ public final class SwingUtil {
         public long getLongValue() {
             return currentValue.longValue();
         }
-        
+
         public BigInteger getValue() {
             return currentValue;
         }
@@ -475,9 +504,9 @@ public final class SwingUtil {
     public static class FileDropAndClipbordTransferHandler extends TransferHandler {
 
         public FileDropAndClipbordTransferHandler() {
-        
+
         }
-                
+
         @Override
         public void exportToClipboard(JComponent comp, Clipboard clipboard,
                 int action) throws IllegalStateException {
@@ -576,12 +605,12 @@ public final class SwingUtil {
             return false;
         }
 
-        
+
         public void setData(byte[] rawData) {
-        
+
         }
-        
-        
+
+
         @Override
         public int getSourceActions(JComponent c) {
             return NONE;
@@ -599,5 +628,5 @@ public final class SwingUtil {
         }
 
     }
-            
+
 }
