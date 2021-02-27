@@ -2,7 +2,13 @@ package extension.helpers;
 
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
+import burp.ITab;
+import java.awt.Color;
+import java.awt.Container;
 import java.nio.charset.StandardCharsets;
+import java.util.Timer;
+import java.util.TimerTask;
+import javax.swing.JTabbedPane;
 
 /**
  *
@@ -80,5 +86,28 @@ public class BurpUtil {
             messageInfo[0].setResponse(StringUtil.getBytesRaw(text));
         }
     }
-    
+
+    public static void sendToTextHighlight(ITab tab) {
+        final Color burpTextHighlightColor = new Color(255, 102, 52);
+        if (tab.getUiComponent() == null) return;
+        Container container = tab.getUiComponent().getParent();
+        if (container instanceof JTabbedPane) {
+            JTabbedPane tabbet = (JTabbedPane) container;
+            int index = tabbet.indexOfTab(tab.getTabCaption());
+            if (index > -1) {
+                tabbet.setBackgroundAt(index, burpTextHighlightColor);
+                // 解除
+                final Timer timer = new Timer(false);
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        tabbet.setForegroundAt(index, null);
+                        tabbet.setBackgroundAt(index, null);
+                    }
+                };
+                timer.schedule(task, 5000);
+            }
+        }
+    }
+
 }

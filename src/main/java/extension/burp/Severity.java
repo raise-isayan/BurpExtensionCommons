@@ -1,6 +1,5 @@
 package extension.burp;
 
-import static extension.burp.NotifyType.parseEnum;
 import java.util.EnumSet;
 
 /**
@@ -30,7 +29,7 @@ public enum Severity {
         }
         return severity;
     }
-    
+
     @Override
     public String toString() {
         char ch[] = name().toLowerCase().toCharArray();
@@ -40,5 +39,5 @@ public enum Severity {
         String value = new String(ch);
         return value.replace('_', ' ');
     }
-    
+
 }
