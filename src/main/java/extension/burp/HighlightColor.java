@@ -58,11 +58,17 @@ public enum HighlightColor {
     }
 
     public static HighlightColor parseEnum(String value) {
-        value = value.toUpperCase();
-        value = value.replace(' ', '_');
-        return Enum.valueOf(HighlightColor.class, value);
+        if (value == null) {
+            // no select color
+            return HighlightColor.WHITE;
+        }
+        else {
+            value = value.toUpperCase();
+            value = value.replace(' ', '_');
+            return Enum.valueOf(HighlightColor.class, value);
+        }
     }
-    
+
     public static EnumSet<HighlightColor> parseEnumSet(String s) {
         EnumSet<HighlightColor> highlightColor = EnumSet.noneOf(HighlightColor.class);
         if (!s.startsWith("[") && s.endsWith("]")) {

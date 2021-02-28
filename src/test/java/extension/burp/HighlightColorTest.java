@@ -13,22 +13,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HighlightColorTest {
-    
+
     public HighlightColorTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -39,10 +39,18 @@ public class HighlightColorTest {
     @Test
     public void testParseEnum() {
         System.out.println("parseEnum");
-        String s = "RED";
-        HighlightColor expResult = HighlightColor.RED;
-        HighlightColor result = HighlightColor.parseEnum(s);
-        assertEquals(expResult, result);
+        {
+            String s = null;
+            HighlightColor expResult = HighlightColor.WHITE;
+            HighlightColor result = HighlightColor.parseEnum(s);
+            assertEquals(expResult, result);
+        }
+        {
+            String s = "RED";
+            HighlightColor expResult = HighlightColor.RED;
+            HighlightColor result = HighlightColor.parseEnum(s);
+            assertEquals(expResult, result);
+        }
     }
 
     /**
@@ -68,9 +76,9 @@ public class HighlightColorTest {
             System.out.println("name:" + e.name());
             assertEquals(e, HighlightColor.parseEnum(e.name()));
         }
-        
+
         for (HighlightColor e : HighlightColor.values()) {
-            System.out.println("value:" + e.toString());            
+            System.out.println("value:" + e.toString());
             assertEquals(e, HighlightColor.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
