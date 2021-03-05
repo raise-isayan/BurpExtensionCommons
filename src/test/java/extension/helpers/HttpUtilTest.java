@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HttpUtilTest {
-    
+
     public HttpUtilTest() {
     }
 
@@ -38,13 +38,39 @@ public class HttpUtilTest {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
+    }
+
+    /**
+     * Test of buildHost method, of class HttpUtil.
+     */
+    @Test
+    public void testBuildHost() {
+        assertEquals("example.com", HttpUtil.buildHost("example.com", 80, false));
+        assertEquals("example.com:443", HttpUtil.buildHost("example.com", 443, false));
+        assertEquals("example.com", HttpUtil.buildHost("example.com", 443, true));
+        assertEquals("example.com:80", HttpUtil.buildHost("example.com", 80, true));
+        assertEquals("example.com:8080", HttpUtil.buildHost("example.com", 8080, false));
+        assertEquals("example.com:8443", HttpUtil.buildHost("example.com", 8443, true));
+        assertEquals("example.com", HttpUtil.buildHost("example.com", -1, true));
+        assertEquals("example.com", HttpUtil.buildHost("example.com", -1, false));
+    }
+
+    /**
+     * Test of isValidUrl method, of class HttpUtil.
+     */
+    @Test
+    public void testIsValidUrl() {
+        System.out.println("isValidUrl");
+        assertEquals(true, HttpUtil.isValidUrl("http://example.com/dir/file/path.exe?1328319481"));
+        assertEquals(true, HttpUtil.isValidUrl("http://example.com/dir/file/?<xss>"));
+        assertEquals(false, HttpUtil.isValidUrl("http<xss>://example.com/dir/file/"));
     }
 
     /**
@@ -57,6 +83,18 @@ public class HttpUtilTest {
         assertEquals(true, HttpUtil.startsWithHttp("https://"));
         assertEquals(false, HttpUtil.startsWithHttp("shttp://"));
         assertEquals(false, HttpUtil.startsWithHttp("httpx://"));
+    }
+
+    /**
+     * Test of isSSL method, of class HttpUtil.
+     */
+    @Test
+    public void testIsSSL() {
+        System.out.println("testIsSSL");
+        assertEquals(false, HttpUtil.isSSL("http"));
+        assertEquals(true, HttpUtil.isSSL("https"));
+        assertEquals(false, HttpUtil.isSSL("shttp"));
+        assertEquals(false, HttpUtil.isSSL("httpx"));
     }
 
     /**
@@ -90,19 +128,26 @@ public class HttpUtilTest {
             Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
         }
    }
-    
+
     /**
      * Test of buildGetRequestByte method, of class HttpUtil.
      */
     @Test
    public void testBuildGetRequestByte() {
        System.out.println("testBuildGetRequestByte");
-       assertEquals("GET / HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/"))));   
-       assertEquals("GET / HTTP/1.1\r\nHost: example.com:443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:443/"))));   
-       assertEquals("GET /?xxx=yyy&ccc=ddd HTTP/1.1\r\nHost: example.com:8443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:8443/?xxx=yyy&ccc=ddd"))));   
-       assertEquals("GET /?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/?abc=123"))));   
-       assertEquals("GET /dir/file/?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file/?abc=123"))));   
-       assertEquals("GET /dir/file?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file?abc=123"))));   
+        try {
+            assertEquals("GET / HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/"))));
+            assertEquals("GET / HTTP/1.1\r\nHost: example.com:443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:443/"))));
+            assertEquals("GET /?xxx=yyy&ccc=ddd HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("https://example.com:443/?xxx=yyy&ccc=ddd"))));
+            assertEquals("GET /?xxx=yyy&ccc=ddd HTTP/1.1\r\nHost: example.com:8443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:8443/?xxx=yyy&ccc=ddd"))));
+            assertEquals("GET /?xxx=yyy&ccc=ddd HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("https://example.com:443/?xxx=yyy&ccc=ddd#test123"))));
+            assertEquals("GET /?xxx=yyy&ccc=ddd HTTP/1.1\r\nHost: example.com:8443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:8443/?xxx=yyy&ccc=ddd#test123"))));
+            assertEquals("GET /?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/?abc=123"))));
+            assertEquals("GET /dir/file/?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file/?abc=123"))));
+            assertEquals("GET /dir/file?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file?abc=123"))));
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
    }
 
     /**
@@ -113,28 +158,28 @@ public class HttpUtilTest {
        System.out.println("testGetParameter");
        {
             Map.Entry keyval = HttpUtil.getParameter("abc");
-            assertEquals("abc", keyval.getKey());               
-            assertEquals("", keyval.getValue());               
+            assertEquals("abc", keyval.getKey());
+            assertEquals("", keyval.getValue());
        }
        {
             Map.Entry keyval = HttpUtil.getParameter("abc=edf");
-            assertEquals("abc", keyval.getKey());               
-            assertEquals("edf", keyval.getValue());               
+            assertEquals("abc", keyval.getKey());
+            assertEquals("edf", keyval.getValue());
        }
        {
             Map.Entry keyval = HttpUtil.getParameter("abc=edf=fgh");
-            assertEquals("abc", keyval.getKey());               
-            assertEquals("edf=fgh", keyval.getValue());               
+            assertEquals("abc", keyval.getKey());
+            assertEquals("edf=fgh", keyval.getValue());
        }
        {
             Map.Entry keyval = HttpUtil.getParameter("=");
-            assertEquals("", keyval.getKey());               
-            assertEquals("", keyval.getValue());               
+            assertEquals("", keyval.getKey());
+            assertEquals("", keyval.getValue());
        }
        {
             Map.Entry keyval = HttpUtil.getParameter("==");
-            assertEquals("", keyval.getKey());               
-            assertEquals("=", keyval.getValue());               
+            assertEquals("", keyval.getKey());
+            assertEquals("=", keyval.getValue());
        }
     }
 
@@ -144,8 +189,8 @@ public class HttpUtilTest {
     @Test
     public void testGetDefaultProtocol() {
         System.out.println("testGetDefaultProtocol");
-        assertEquals("https", HttpUtil.getDefaultProtocol(true));               
-        assertEquals("http", HttpUtil.getDefaultProtocol(false));               
+        assertEquals("https", HttpUtil.getDefaultProtocol(true));
+        assertEquals("http", HttpUtil.getDefaultProtocol(false));
     }
 
     /**
@@ -154,8 +199,8 @@ public class HttpUtilTest {
     @Test
     public void testGetDefaultPort() {
         System.out.println("testGetDefaultPort");
-        assertEquals(443, HttpUtil.getDefaultPort(true));               
-        assertEquals(80, HttpUtil.getDefaultPort(false));               
+        assertEquals(443, HttpUtil.getDefaultPort(true));
+        assertEquals(80, HttpUtil.getDefaultPort(false));
     }
 
     /**
@@ -164,9 +209,9 @@ public class HttpUtilTest {
     @Test
     public void testGetDefaultPort_String() {
         System.out.println("testGetDefaultPort_String");
-        assertEquals(443, HttpUtil.getDefaultPort("https"));               
-        assertEquals(80, HttpUtil.getDefaultPort("http"));               
-        assertEquals(-1, HttpUtil.getDefaultPort("httpxxx"));               
+        assertEquals(443, HttpUtil.getDefaultPort("https"));
+        assertEquals(80, HttpUtil.getDefaultPort("http"));
+        assertEquals(-1, HttpUtil.getDefaultPort("httpxxx"));
     }
 
     /**
@@ -217,8 +262,8 @@ public class HttpUtilTest {
         }
 
     }
-    
-    
+
+
     /**
      * Test of testNormalizeCharset method, of class HttpUtil.
      */
@@ -266,5 +311,5 @@ public class HttpUtilTest {
             fail(ex.getMessage());
         }
     }
-    
+
 }

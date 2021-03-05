@@ -45,6 +45,7 @@ public final class HttpUtil {
 
     private HttpUtil() {
     }
+
     private final static Pattern HEADER_VALUE = Pattern.compile("^([^:]+)\\s*:\\s*(.*)");
 
     public static String getHeader(String key, String[] headers) {
@@ -70,7 +71,7 @@ public final class HttpUtil {
         }
         return contentType;
     }
-        
+
     public static boolean isUrlEencoded(String header) {
         return (header == null || header.equals("application/x-www-form-urlencoded"));
     }
@@ -89,17 +90,29 @@ public final class HttpUtil {
             return true;
         }
         catch (MalformedURLException ex) {
-            return false;    
+            return false;
         }
     }
-    
-    
+
     public static boolean startsWithHttp(String url) {
         return url.startsWith("http://") || url.startsWith("https://");
     }
 
     public static boolean isSSL(String protocol) {
         return "https".equals(protocol);
+    }
+
+    public static String buildHost(String host, int port, String protocol) {
+        return buildHost(host, port, isSSL(protocol));
+    }
+
+    public static String buildHost(String host, int port, boolean useHttps) {
+        if (HttpUtil.getDefaultPort(useHttps) == port || port == -1) {
+            return host;
+        }
+        else {
+            return host + ":" + port;
+        }
     }
 
     /**
@@ -121,7 +134,7 @@ public final class HttpUtil {
         // Text出力
         outMultipartText(boundary, out, name, text, null);
     }
-    
+
     public static void outMultipartText(String boundary, OutputStream out, String name, String text, Charset charset) throws IOException {
         // Text出力
         out.write(StringUtil.getBytesRaw("--" + boundary + LINE_TERMINATE));
@@ -131,7 +144,7 @@ public final class HttpUtil {
             out.write(StringUtil.getBytesRaw(text));
         }
         else {
-            out.write(StringUtil.getBytesRaw("Content-Type: text/plain; charset=" + charset.displayName() + LINE_TERMINATE + LINE_TERMINATE));        
+            out.write(StringUtil.getBytesRaw("Content-Type: text/plain; charset=" + charset.displayName() + LINE_TERMINATE + LINE_TERMINATE));
             out.write(StringUtil.getBytesCharset(text, charset));
         }
         out.write(StringUtil.getBytesRaw(LINE_TERMINATE));
@@ -183,7 +196,7 @@ public final class HttpUtil {
         sslcontext.init(km, trustAllCerts(), new SecureRandom());
         return sslcontext;
     }
-        
+
     public static SSLSocketFactory ignoreSocketFactory()
             throws NoSuchAlgorithmException, KeyManagementException {
         return ignoreSSLContext().getSocketFactory();
@@ -256,7 +269,7 @@ public final class HttpUtil {
 
     public static String[] extractHTMLComments(String message, boolean uniqe) {
         ArrayList<String> list = new ArrayList<>();
-        // Create matcher 
+        // Create matcher
         Matcher matcher = HTML_COMMENT.matcher(message);
         while (matcher.find()) {
             String comment = matcher.group();
@@ -270,25 +283,23 @@ public final class HttpUtil {
         }
     }
 
-    public static byte[] buildGetRequestByte(String url) {
+    public static byte[] buildGetRequestByte(URL url) {
         StringBuilder buff = new StringBuilder();
-        Pattern pattern = Pattern.compile("^(https?)://(.*?)((:\\d+)?)(/\\??.*)");
-        Matcher m = pattern.matcher(url);
-        if (m.find()) {
-            String protocol = m.group(1);
-            String host = m.group(2);
-            String port = m.group(3);
-            String query = m.group(5);
-            buff.append("GET ");
-            buff.append(query);
-            buff.append(" HTTP/1.1");
-            buff.append("\r\n");
-            buff.append("Host: ");
-            buff.append(host);
-            buff.append(port);
-            buff.append("\r\n");
-        }
+        String protocol = url.getProtocol();
+        String host = buildHost(url.getHost(), url.getPort(), url.getProtocol());
+        String file = url.getFile();
+        buff.append("GET ");
+        buff.append(file);
+        buff.append(" HTTP/1.1");
+        buff.append("\r\n");
+        buff.append("Host: ");
+        buff.append(host);
+        buff.append("\r\n");
         return StringUtil.getBytesRaw(buff.toString());
+    }
+
+    public static byte[] buildGetRequestByte(String urlString) throws MalformedURLException {
+        return buildGetRequestByte(new URL(urlString));
     }
 
     public static String getBaseName(URL url) {
@@ -352,7 +363,7 @@ public final class HttpUtil {
 
     public static String toURL(String schema, String host, int port) {
         String url = String.format("%s://%s", schema, host);
-        if (port != 80 && port != 443) {
+        if (port != getDefaultPort(false) && port != getDefaultPort(true)) {
             url += ":" + port;
         }
         return url;
@@ -400,7 +411,7 @@ public final class HttpUtil {
     }
 
     /**
-     * 文字コードを判別する 
+     * 文字コードを判別する
      * 以下の移植 http://dobon.net/vb/dotnet/string/detectcode.html
      *
      * @param bytes 文字コードを調べるデータ
@@ -428,7 +439,7 @@ public final class HttpUtil {
         CHARSET_ALIAS.put("X-ISO-10646-UCS-4-34121", "UTF-32");
         CHARSET_ALIAS.put("X-ISO-10646-UCS-4-21431", "UTF-32");
     }
-        
+
     public static String normalizeCharset(String charsetName) {
         String aliasName = CHARSET_ALIAS.get(charsetName);
         if (aliasName == null) {
@@ -503,19 +514,19 @@ public final class HttpUtil {
         }
         return normalizeCharset(guessCharset);
     }
-    
-    
+
+
     public static class StaticProxySelector extends ProxySelector {
 
         private static final List<Proxy> NO_PROXY_LIST = new ArrayList<>();
 
         static {
             NO_PROXY_LIST.add(Proxy.NO_PROXY);
-        }        
+        }
 
         private final List<Proxy> list = new ArrayList<>();
 
-        public StaticProxySelector(Proxy proxy){     
+        public StaticProxySelector(Proxy proxy){
             Proxy p;
             if (proxy == null) {
                 p = Proxy.NO_PROXY;
@@ -545,7 +556,7 @@ public final class HttpUtil {
         }
 
     }
-        
+
     public static class DummyOutputStream extends OutputStream {
 
         private int size = 0;
@@ -569,5 +580,5 @@ public final class HttpUtil {
             return this.size;
         }
     }
-        
+
 }
