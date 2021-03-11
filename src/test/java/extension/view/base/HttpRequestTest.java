@@ -19,22 +19,22 @@ import static org.junit.Assert.*;
  * @author raise.isayan
  */
 public class HttpRequestTest {
-    
+
     public HttpRequestTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -53,7 +53,7 @@ public class HttpRequestTest {
         "Accept-Language: ja,en-US;q=0.9,en;q=0.8\r\n" +
         "Connection: close\r\n" +
         "\r\n" +
-        "text=%82%A0%82%A2%82%A4%82%A6%82%A8&OS=win&submit=%91%97%90M\r\n";    
+        "text=%82%A0%82%A2%82%A4%82%A6%82%A8&OS=win&submit=%91%97%90M\r\n";
 
     private final static String REQ_MESSAGE_URLENCODE2 =
         "POST /jvuln/CSRFVuln HTTP/1.1\n" +
@@ -168,14 +168,15 @@ public class HttpRequestTest {
 
         } catch (ParseException ex) {
             Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
     }
-        
+
     /**
      * Test of parseHttpRequest method, of class HttpRequest.
      */
     @Test
-    public void testParseHttpRequest_urlencoded() {        
+    public void testParseHttpRequest_urlencoded() {
         try {
             System.out.println("makeGetRequest");
             {
@@ -188,6 +189,7 @@ public class HttpRequestTest {
             }
         } catch (ParseException ex) {
             Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
     }
 
@@ -206,7 +208,8 @@ public class HttpRequestTest {
             assertEquals("UTF-8", result.getGuessCharset());
         } catch (ParseException ex) {
             Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
     }
-    
+
 }

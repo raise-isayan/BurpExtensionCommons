@@ -53,7 +53,7 @@ public class RequestInfoTest {
         System.out.println("testReqestInfo");
         try {
             URL requestPath = RequestInfoTest.class.getResource("/resources/request.multipart.UTF-8");
-            
+
             byte[] content = Files.readAllBytes(Path.of(requestPath.toURI()));
             final IRequestInfo expResult = new IRequestInfo() {
                 @Override
@@ -104,8 +104,10 @@ public class RequestInfoTest {
 
         } catch (IOException ex) {
             Logger.getLogger(RequestInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (URISyntaxException ex) {
             Logger.getLogger(RequestInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
 
     }

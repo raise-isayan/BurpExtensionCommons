@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,22 +19,22 @@ import org.junit.Test;
  * @author isayan
  */
 public class UtilTest {
-    
+
     public UtilTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -43,9 +44,8 @@ public class UtilTest {
     @Test
     public void testCalc() {
         double pow = Math.pow(16, 20);
-        System.out.println(String.format("%4.2f", Math.log(pow) / Math.log(2.0)));        
+        System.out.println(String.format("%4.2f", Math.log(pow) / Math.log(2.0)));
     }
-    
     
     /**
      */
@@ -62,8 +62,10 @@ public class UtilTest {
             System.out.println("url3:" + u2.toURI().normalize().toString());
         } catch (URISyntaxException ex) {
             Logger.getLogger(UtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         } catch (MalformedURLException ex) {
             Logger.getLogger(UtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
     }
 
@@ -77,5 +79,5 @@ public class UtilTest {
             System.out.println("match");
         }
     }
-                
+
 }

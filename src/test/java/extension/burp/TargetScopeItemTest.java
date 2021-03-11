@@ -17,22 +17,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class TargetScopeItemTest {
-    
+
     public TargetScopeItemTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -50,20 +50,21 @@ public class TargetScopeItemTest {
             {
                 String expResult = "^\\Qwww.google.com\\E$";
                 System.out.println(url.getHost());
-                assertEquals(expResult, result.getHost());            
+                assertEquals(expResult, result.getHost());
             }
             {
                 String expResult = "^\\Q/aaa?test=bbb\\E.*";
                 System.out.println(result.getFile());
-                assertEquals(expResult, result.getFile());            
+                assertEquals(expResult, result.getFile());
             }
             {
                 int expResult = 443;
                 System.out.println(result.getPort());
-                assertEquals(expResult, ConvertUtil.parseIntDefault(result.getPort(), -1));            
+                assertEquals(expResult, ConvertUtil.parseIntDefault(result.getPort(), -1));
             }
         } catch (MalformedURLException ex) {
             Logger.getLogger(TargetScopeItemTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
         try {
             URL url = new URL("https://www.google.com");
@@ -72,7 +73,8 @@ public class TargetScopeItemTest {
             System.out.println(">" + url.getFile());
         } catch (MalformedURLException ex) {
             Logger.getLogger(TargetScopeItemTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
     }
-    
+
 }

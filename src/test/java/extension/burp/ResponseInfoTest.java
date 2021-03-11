@@ -24,22 +24,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class ResponseInfoTest {
-    
+
     public ResponseInfoTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -86,26 +86,28 @@ public class ResponseInfoTest {
                 public String getInferredMimeType() {
                     return "HTML";
                 }
-            
+
             };
             ResponseInfo resInfo = new ResponseInfo(expResult, content);
-            assertEquals(expResult.getStatusCode(), resInfo.getStatusCode());        
-            assertEquals(expResult.getBodyOffset(), resInfo.getBodyOffset());        
-            assertEquals(expResult.getInferredMimeType(), resInfo.getInferredMimeType());        
-            assertEquals(expResult.getStatedMimeType(), resInfo.getStatedMimeType());        
+            assertEquals(expResult.getStatusCode(), resInfo.getStatusCode());
+            assertEquals(expResult.getBodyOffset(), resInfo.getBodyOffset());
+            assertEquals(expResult.getInferredMimeType(), resInfo.getInferredMimeType());
+            assertEquals(expResult.getStatedMimeType(), resInfo.getStatedMimeType());
 
             System.out.println("==========");
             System.out.println(resInfo.getHeader());
             System.out.println("==========");
             System.out.println(resInfo.getBody(StandardCharsets.UTF_8));
             System.out.println("==========");
-            
+
         } catch (IOException ex) {
             Logger.getLogger(ResponseInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         } catch (URISyntaxException ex) {
             Logger.getLogger(ResponseInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail();
         }
-        
+
     }
-    
+
 }

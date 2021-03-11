@@ -2,6 +2,7 @@ package extension.helpers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -12,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -126,6 +128,7 @@ public class HttpUtilTest {
             assertEquals("example.com", HttpUtil.getBaseName(new URL("http://example.com/?1328319481")));
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
    }
 
@@ -147,6 +150,7 @@ public class HttpUtilTest {
             assertEquals("GET /dir/file?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file?abc=123"))));
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
    }
 
@@ -259,10 +263,151 @@ public class HttpUtilTest {
             }
         } catch (IOException ex) {
             Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         }
 
     }
 
+    /**
+     */
+    @Test
+    public void testGetUniversalGuessCode() {
+        System.out.println("testGetUniversalGuessCode");
+        {
+            try {
+                assertEquals("US-ASCII", HttpUtil.getUniversalGuessCode("0123456ABCDEF".getBytes("UTF-8"), "US-ASCII"));
+                assertEquals("Shift_JIS", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("Shift_JIS")));
+                assertEquals("EUC-JP", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("EUC-JP")));
+                assertEquals("UTF-8", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("UTF-8")));
+//                assertEquals("UTF-16", HttpUtil.getUniversalGuessCode("ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこ".getBytes("UTF-16BE")));
+//                assertEquals("UTF-16", HttpUtil.getUniversalGuessCode("ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこ".getBytes("UTF-16LE"))); // UTF-16LE になるのがベスト
+                assertEquals("UTF-16", HttpUtil.getUniversalGuessCode("ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこ".getBytes("UTF-16")));
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex.getMessage());
+            }
+        }
+
+        {
+            try {
+                String expResult = "Shift_JIS";
+                String expValue = "あいうえお";
+                String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("Shift_JIS"), "UTF-8");
+                assertEquals(expResult, guessCharset);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex.getMessage());
+            }
+        }
+
+        {
+            try {
+                String expResult = "Shift_JIS";
+                String expValue = "①②③④⑤⑥⑦ⅩⅨあいうえおかきくけこ";
+                String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("MS932"), "UTF-8");
+                assertEquals(expResult, guessCharset);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex.getMessage());
+            }
+        }
+
+        {
+            try {
+                String expResult = "EUC-JP";
+                String expValue = "あいうえお";
+                String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("EUC-JP"), "UTF-8");
+                assertEquals(expResult, guessCharset);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex.getMessage());
+            }
+        }
+
+        {
+            try {
+                String expResult = "ISO-2022-JP";
+                String expValue = "あいうえお";
+                String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("ISO-2022-JP"), "UTF-8");
+                assertEquals(expResult, guessCharset);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail(ex.getMessage());
+            }
+        }
+
+    }
+
+    /**
+     */
+    @Test
+    public void testUniversalCharCode() {
+        System.out.println("testUniversalCharCode");
+        // Chinese
+        String[] list = {
+            "ISO-2022-CN",
+            "BIG5",
+            "EUC-TW",
+            "GB18030",
+            "HZ-GB-23121",
+            // Cyrillic
+            "ISO-8859-5",
+            "KOI8-R",
+            "WINDOWS-1251",
+            // MACCYRILLIC
+            "IBM866",
+            "IBM855",
+            // Greek
+            "ISO-8859-7",
+            "WINDOWS-1253",
+            // Hebrew
+            "ISO-8859-8",
+            "WINDOWS-1255",
+            // Japanese
+            "ISO-2022-JP",
+            "SHIFT_JIS",
+            "EUC-JP",
+            // Korean
+            "ISO-2022-KR",
+            "EUC-KR",
+            // Unicode
+            "UTF-8",
+            "UTF-16BE",
+            "UTF-16LE",
+            "UTF-32BE",
+            "UTF-32LE",
+            "X-ISO-10646-UCS-4-34121", // unk
+            "X-ISO-10646-UCS-4-21431", // unk
+            // Others
+            "WINDOWS-1252",};
+        for (String l : list) {
+            String normChar = HttpUtil.normalizeCharset(l);
+            if (normChar == null) {
+                System.out.println("unk=" + l);
+
+            } else {
+                if (l.compareToIgnoreCase(normChar) != 0) {
+                    System.out.println(l + "=" + normChar);
+                }
+            }
+
+        }
+
+    }
+
+    @Test
+    public void testLocale() {
+        System.out.println(Locale.JAPANESE.toString());
+        System.out.println(Locale.JAPANESE.getCountry());
+        System.out.println(Locale.JAPANESE.getDisplayLanguage());
+        System.out.println(Locale.JAPANESE.getDisplayName());
+        System.out.println(Locale.JAPANESE.toLanguageTag());
+        System.out.println(Locale.JAPANESE.getISO3Language());
+        System.out.println(Locale.JAPANESE.getLanguage());
+        System.out.println(Locale.JAPANESE.getDisplayScript());
+        System.out.println(Locale.JAPANESE.getVariant());
+        System.out.println(Locale.JAPANESE.toLanguageTag());
+    }
 
     /**
      * Test of testNormalizeCharset method, of class HttpUtil.

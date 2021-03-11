@@ -49,7 +49,7 @@ public class CookieTest {
 
     private final String COOKIE_REQ = "SID=31d4d96e407aad42; lang=en-US;";
 
-    
+
     /**
      * Test of parseResponse method, of class Cookie.
      */
@@ -145,12 +145,12 @@ public class CookieTest {
         {
             String cookieString = COOKIE_EMPTY;
             Cookie [] result = Cookie.parseResuest(cookieString);
-            assertEquals(0, result.length);       
+            assertEquals(0, result.length);
         }
         {
             String cookieString = COOKIE1;
             Cookie [] result = Cookie.parseResuest(cookieString);
-            assertEquals(1, result.length);        
+            assertEquals(1, result.length);
             assertEquals("SID", result[0].getName());
             assertEquals("31d4d96e407aad42", result[0].getValue());
             assertNull(result[0].getDomain());
@@ -163,15 +163,15 @@ public class CookieTest {
         {
             String cookieString = COOKIE_REQ;
             Cookie [] result = Cookie.parseResuest(cookieString);
-            assertEquals(2, result.length);        
-            assertEquals("SID", result[0].getName());        
-            assertEquals("31d4d96e407aad42", result[0].getValue());        
+            assertEquals(2, result.length);
+            assertEquals("SID", result[0].getName());
+            assertEquals("31d4d96e407aad42", result[0].getValue());
             assertEquals("lang", result[1].getName());
             assertEquals("en-US", result[1].getValue());
-        }            
+        }
     }
-    
-    
+
+
     /**
      */
     @Test
@@ -213,14 +213,14 @@ public class CookieTest {
             assertFalse(result.isSecure());
         }
     }
-    
+
     /**
      * Test of toString method, of class Cookie.
      */
     @Test
     public void testToString() {
         System.out.println("toString");
-        {        
+        {
             try {
                 SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
                 Date expirationDate = fmt.parse("Wed, 09 Jun 2021 10:18:14 GMT");
@@ -237,8 +237,8 @@ public class CookieTest {
                 assertFalse(result.isHttpOnly());
                 assertFalse(result.isSecure());
             } catch (ParseException ex) {
-                assertTrue(true);
-            }        
+                fail();
+            }
         }
         {
             try {
@@ -257,8 +257,8 @@ public class CookieTest {
                 assertFalse(result.isHttpOnly());
                 assertFalse(result.isSecure());
             } catch (ParseException ex) {
-                assertTrue(true);
-            }        
+                fail();
+            }
         }
     }
 

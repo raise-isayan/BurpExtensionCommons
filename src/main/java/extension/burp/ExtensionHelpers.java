@@ -1,5 +1,6 @@
 package extension.burp;
 
+import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IHttpService;
@@ -150,19 +151,19 @@ public class ExtensionHelpers implements IExtensionHelpers {
     }
 
     @Override
-    public IScannerInsertionPoint makeScannerInsertionPoint(String insertionPointName, 
+    public IScannerInsertionPoint makeScannerInsertionPoint(String insertionPointName,
             byte[] baseRequest, int from, int to) {
         return this.helpers.makeScannerInsertionPoint(insertionPointName, baseRequest, from, to);
     }
 
     @Override
-    public IResponseVariations analyzeResponseVariations(byte[]  
+    public IResponseVariations analyzeResponseVariations(byte[]
         ... responses) {
         return this.helpers.analyzeResponseVariations(responses);
     }
 
     @Override
-    public IResponseKeywords analyzeResponseKeywords(List<String> keywords, byte[]  
+    public IResponseKeywords analyzeResponseKeywords(List<String> keywords, byte[]
         ... responses) {
         return this.helpers.analyzeResponseKeywords(keywords, responses);
     }

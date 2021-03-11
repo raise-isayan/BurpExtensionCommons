@@ -19,22 +19,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class ConvertUtilTest {
-    
+
     public ConvertUtilTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -44,18 +44,18 @@ public class ConvertUtilTest {
     @Test
     public void testAppandByte() {
         System.out.println("appandByte");
-        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
+        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10};
         {
-            byte [] add = new byte [] {21,22,23}; 
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23}; 
+            byte [] add = new byte [] {21,22,23};
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23};
             byte [] result = ConvertUtil.appandByte(base, add);
-            assertArrayEquals(expResult, result);        
+            assertArrayEquals(expResult, result);
         }
         {
-            byte [] add = new byte [] {}; 
+            byte [] add = new byte [] {};
             byte [] result = ConvertUtil.appandByte(base, add);
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
-            assertArrayEquals(expResult, result);        
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10};
+            assertArrayEquals(expResult, result);
         }
     }
 
@@ -66,54 +66,55 @@ public class ConvertUtilTest {
             bstm.write(replace);
             bstm.write(Arrays.copyOfRange(base, endPos, base.length));
         } catch (IOException ex) {
+            fail(ex.getMessage());
         }
         return bstm.toByteArray();
     }
-    
+
     /**
      */
     @Test
     public void testByteReplace_0() {
         System.out.println("byteReplace");
-        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10}; 
+        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10};
         byte [] replace = new byte [] {21,22,23};
         {
-            byte [] expResult = new byte [] {21,22,23,1,2,3,4,5,6,7,8,9,10}; 
+            byte [] expResult = new byte [] {21,22,23,1,2,3,4,5,6,7,8,9,10};
             byte [] testResult = byteReplace(base, 0, 0, replace);
             byte [] result = ConvertUtil.replaceByte(base, 0, 0, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,21,22,23,4,5,6,7,8,9,10}; 
+            byte [] expResult = new byte [] {1,2,21,22,23,4,5,6,7,8,9,10};
             byte [] result = ConvertUtil.replaceByte(base, 2, 3, replace);
             byte [] testResult = byteReplace(base, 2, 3, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,21,22,23,4,5,6,7,8,9,10}; 
+            byte [] expResult = new byte [] {1,21,22,23,4,5,6,7,8,9,10};
             byte [] result = ConvertUtil.replaceByte(base, 1, 3, replace);
             byte [] testResult = byteReplace(base, 1, 3, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,21,22,23,10}; 
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,21,22,23,10};
             byte [] result = ConvertUtil.replaceByte(base, 9, 9, replace);
             byte [] testResult = byteReplace(base, 9, 9, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23}; 
+            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23};
             byte [] result = ConvertUtil.replaceByte(base, 10, 10, replace);
             byte [] testResult = byteReplace(base, 10, 10, replace);
-            assertArrayEquals(expResult, result);     
+            assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
     }
-            
+
     /**
      * Test of escapeXml method, of class ConvertUtil.
      */
@@ -125,7 +126,7 @@ public class ConvertUtilTest {
         String result = ConvertUtil.escapeXml(target);
         assertEquals(expResult, result);
     }
-    
+
     @Test
     public void testRegexQuote() {
         System.out.println("regexQuote");
@@ -143,7 +144,7 @@ public class ConvertUtilTest {
             String result = ConvertUtil.regexQuote(target);
             assertEquals(expResult, result);
             Pattern ptn2 = Pattern.compile(result);
-            assertTrue(ptn2.matcher(target).matches());       
+            assertTrue(ptn2.matcher(target).matches());
         }
         {
             String target = ".\\+*?[^]$(){}=!<>|:-";
@@ -151,11 +152,9 @@ public class ConvertUtilTest {
             String result = ConvertUtil.regexQuote(target);
             assertEquals(expResult, result);
             Pattern ptn3 = Pattern.compile(result);
-            assertTrue(ptn3.matcher(target).matches());       
-        
-        
+            assertTrue(ptn3.matcher(target).matches());
         }
-    
+
     }
 
     /**
@@ -182,7 +181,7 @@ public class ConvertUtilTest {
             assertEquals("aG9nZWhv", ConvertUtil.toBase64Encode("hogeho", "8859_1", true));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertTrue(false);
+            fail(ex.getMessage());
         }
     }
 
@@ -199,20 +198,32 @@ public class ConvertUtilTest {
             assertEquals("test", ConvertUtil.toBase64Decode("dGVzdA==", "8859_1"));
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
-            assertTrue(false);
+            fail(ex.getMessage());
         }
         try {
             System.out.println("toBASE64Decoder");
             System.out.println(ConvertUtil.toBase64Decode("absdadbd", "8859_1"));
-            System.out.println(ConvertUtil.toBase64Decode("!\"#$%&'()=~|", "8859_1"));
         } catch (IllegalArgumentException ex) {
+            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
+       }
+        try {
+            System.out.println("toBASE64Decoder");
+            System.out.println(ConvertUtil.toBase64Decode("!\"#$%&'()=~|", "8859_1"));
+            fail();
+        } catch (IllegalArgumentException ex) {
+            assertTrue(true);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
        }
     }
 
 
-    
 
-    
+
+
 }

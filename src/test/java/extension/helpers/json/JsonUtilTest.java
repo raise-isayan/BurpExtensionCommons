@@ -80,7 +80,6 @@ public class JsonUtilTest {
             try {
                 String jsonElementString = "<html>test</test>";
                 boolean pretty = false;
-                String expResult = "{\"abc\":123,\"def\":\"test\"}";
                 String result = JsonUtil.prettyJson(jsonElementString, pretty);
                 fail();
             } catch (JsonSyntaxException ex) {
@@ -106,79 +105,79 @@ public class JsonUtilTest {
 
     @Test
     public void testisJson() {
-        System.out.println("isJson");        
+        System.out.println("isJson");
         {
             String json = "{\"abc\":123,\"def\":\"test\"}";
             boolean result = JsonUtil.isJson(json);
-            assertEquals(true, result);        
+            assertEquals(true, result);
         }
         {
             String json = "{ \n \"abc\": 123, \n \"def\": \"test\" }";
             boolean result = JsonUtil.isJson(json);
-            assertEquals(true, result);                
-        }        
+            assertEquals(true, result);
+        }
         {
             String json = "[\"abc\",\"def\",\"ghi\"]";
             boolean result = JsonUtil.isJson(json);
-            assertEquals(true, result);        
+            assertEquals(true, result);
         }
         {
             String json = "[\n \"abc\",\"def\",\"ghi\" \n]";
             boolean result = JsonUtil.isJson(json);
-            assertEquals(true, result);                
+            assertEquals(true, result);
         }
     }
-    
+
     @Test
     public void testisJsonp() {
         System.out.println("isJsonp");
         {
             String json = "{\"abc\":123,\"def\":\"test\"}";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(false, result);        
+            assertEquals(false, result);
         }
 
         {
             String json = "[\"abc\",\"def\",\"ghi\"]";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(false, result);                
+            assertEquals(false, result);
         }
 
         {
             String json = "callback({ \"abc\": 123, \"def\": \"test\" });";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);                
-        }        
+            assertEquals(true, result);
+        }
 
         {
             String json = "_callback({ \"abc\": 123, \"def\": \"test\" });";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);                
-        }        
+            assertEquals(true, result);
+        }
 
         {
             String json = " callback ({ \"abc\": 123, \"def\": \"test\" });";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);                
-        }        
-        
+            assertEquals(true, result);
+        }
+
         {
             String json = "window.open({ \"abc\": 123, \"def\": \"test\" });";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);                
-        }        
+            assertEquals(true, result);
+        }
 
         {
             String json = "$_({ \"abc\": 123, \"def\": \"test\" });";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);                
-        }        
+            assertEquals(true, result);
+        }
         {
             String json = "callback([\"abc\",\"def\",\"ghi\"])";
             boolean result = JsonUtil.isJsonp(json);
-            assertEquals(true, result);        
+            assertEquals(true, result);
         }
 
     }
-    
+
 }

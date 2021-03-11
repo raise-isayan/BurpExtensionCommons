@@ -488,12 +488,16 @@ public final class HttpUtil {
         return buff.toString();
     }
 
+    public static String getUniversalGuessCode(byte[] bytes) {
+        return getUniversalGuessCode(bytes, null);
+    }
+
     /**
      *
      * @param bytes 文字コードを調べるデータ
      * @return 適当と思われるEncoding、判断できなかった時はnull
      */
-    protected static String getUniversalGuessCode(byte[] bytes, String defaultCharset) {
+    public static String getUniversalGuessCode(byte[] bytes, String defaultCharset) {
         String guessCharset = null;
         ByteArrayInputStream fis = new ByteArrayInputStream(bytes);
         byte[] buf = new byte[4096];
@@ -512,9 +516,8 @@ public final class HttpUtil {
         if (guessCharset == null) {
             guessCharset = defaultCharset;
         }
-        return normalizeCharset(guessCharset);
+        return HttpUtil.normalizeCharset(guessCharset);
     }
-
 
     public static class StaticProxySelector extends ProxySelector {
 
