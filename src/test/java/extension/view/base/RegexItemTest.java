@@ -13,22 +13,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class RegexItemTest {
-    
+
     public RegexItemTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -44,20 +44,20 @@ public class RegexItemTest {
             boolean expResult = false;
             instance.setMatch("(");
             boolean result = instance.isValidRegex();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             boolean expResult = true;
             instance.setMatch("\\(");
             boolean result = instance.isValidRegex();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             boolean expResult = true;
             instance.setRegexp(false);
             instance.setMatch("(");
             boolean result = instance.isValidRegex();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             boolean expResult = false;
@@ -65,7 +65,7 @@ public class RegexItemTest {
             instance.setIgnoreCase(true);
             instance.setMatch("(");
             boolean result = instance.isValidRegex();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
     }
 
@@ -81,21 +81,93 @@ public class RegexItemTest {
             instance.setMatch("(");
             Pattern result = instance.compileRegex(false);
             assertEquals(expResult, result);
-        
+
         }
         {
             Pattern expResult = Pattern.compile(Pattern.quote("("));
             instance.setMatch("(");
             Pattern result = instance.compileRegex(true);
             assertEquals(expResult.pattern(), result.pattern());
-        
+
         }
         {
             Pattern expResult = Pattern.compile("\\(");
             instance.setMatch("\\(");
             Pattern result = instance.compileRegex(false);
-            assertEquals(expResult.pattern(), result.pattern());        
+            assertEquals(expResult.pattern(), result.pattern());
         }
     }
-    
+
+    /**
+     * Test of compileRegex method, of class RegexItem.
+     */
+    @Test
+    public void testCompileRegex() {
+        {
+            Pattern result = RegexItem.compileRegex("a(.*)z", 0, false);
+            assertTrue(result.matcher("aghjz").matches());
+            assertFalse(result.matcher("AGHJZ").matches());
+        }
+        {
+            Pattern result = RegexItem.compileRegex("a(.*)z",Pattern.CASE_INSENSITIVE,false);
+            assertTrue(result.matcher("aghjz").matches());
+            assertTrue(result.matcher("AGHJZ").matches());
+        }
+        {
+            Pattern result = RegexItem.compileRegex("a(.*)z", 0, true);
+            assertTrue(result.matcher("a(.*)z").matches());
+            assertFalse(result.matcher("A(.*)Z").matches());
+        }
+        {
+            Pattern result = RegexItem.compileRegex("a(.*)z", Pattern.CASE_INSENSITIVE, true);
+            assertTrue(result.matcher("a(.*)z").matches());
+            assertTrue(result.matcher("A(.*)Z").matches());
+        }
+        {
+            Pattern result = RegexItem.compileRegex("a(z", 0, false);
+            assertEquals(result, null);
+        }
+        {
+            RegexItem regItem = new RegexItem();
+            regItem.setMatch("a(.*)z");
+            regItem.setRegexp(true);
+            regItem.setIgnoreCase(false);
+            regItem.recompileRegex();
+            Pattern result = regItem.getRegexPattern();
+            assertTrue(result.matcher("aghjz").matches());
+            assertFalse(result.matcher("AGHJZ").matches());
+        }
+        {
+            RegexItem regItem = new RegexItem();
+            regItem.setMatch("a(.*)z");
+            regItem.setRegexp(true);
+            regItem.setIgnoreCase(true);
+            regItem.recompileRegex();
+            Pattern result = regItem.getRegexPattern();
+            assertTrue(result.matcher("aghjz").matches());
+            assertTrue(result.matcher("AGHJZ").matches());
+        }
+        {
+            RegexItem regItem = new RegexItem();
+            regItem.setMatch("a(.*)z");
+            regItem.setRegexp(false);
+            regItem.setIgnoreCase(false);
+            regItem.recompileRegex();
+            Pattern result = regItem.getRegexPattern();
+            assertTrue(result.matcher("a(.*)z").matches());
+            assertFalse(result.matcher("A(.*)Z").matches());
+        }
+        {
+            RegexItem regItem = new RegexItem();
+            regItem.setMatch("a(.*)z");
+            regItem.setRegexp(false);
+            regItem.setIgnoreCase(true);
+            regItem.recompileRegex();
+            Pattern result = regItem.getRegexPattern();
+            assertTrue(result.matcher("a(.*)z").matches());
+            assertTrue(result.matcher("A(.*)Z").matches());
+        }
+
+    }
+
 }

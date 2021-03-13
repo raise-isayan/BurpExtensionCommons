@@ -14,6 +14,7 @@ import java.util.logging.Logger;
  * @author isayan
  */
 public class BurpExtenderImpl implements IBurpExtender {
+    private final static Logger logger = Logger.getLogger(BurpExtenderImpl.class.getName());
 
     private static BurpExtenderImpl extenderImpl;
     private static IBurpExtenderCallbacks callbacks;
@@ -43,7 +44,7 @@ public class BurpExtenderImpl implements IBurpExtender {
             return null;
         }
     }
-       
+
     public BurpVersion getBurpVersion() {
         return burp_version;
     }
@@ -63,7 +64,7 @@ public class BurpExtenderImpl implements IBurpExtender {
                 System.out.print(message);
             }
         } catch (Exception ex) {
-            Logger.getLogger(BurpExtenderImpl.class.getName()).log(Level.SEVERE, null, ex);        
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -82,10 +83,10 @@ public class BurpExtenderImpl implements IBurpExtender {
                 System.err.print(message);
             }
         } catch (Exception ex) {
-            Logger.getLogger(BurpExtenderImpl.class.getName()).log(Level.SEVERE, null, ex);                
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
-    
+
     /**
      * burp alert 通知
      *
@@ -100,7 +101,7 @@ public class BurpExtenderImpl implements IBurpExtender {
     }
 
     public static boolean isInScope(URL url) {
-        return callbacks.isInScope(url);        
+        return callbacks.isInScope(url);
     }
-    
+
 }

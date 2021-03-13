@@ -13,7 +13,7 @@ public class NamedColor extends Color implements Comparable<NamedColor> {
     public NamedColor(Color color, String name) {
         super(color.getRGB());
         if (name == null) {
-            new NullPointerException();
+            new NullPointerException("name is null");
         }
         this.name = name;
     }

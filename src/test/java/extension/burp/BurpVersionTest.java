@@ -61,7 +61,7 @@ public class BurpVersionTest {
         "2.1",
         "02"
     };
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
@@ -103,7 +103,7 @@ public class BurpVersionTest {
         assertEquals("Burp Suite Community Edition 2.1.02", instance.getVersion());
         System.out.println(instance.getBurpConfigHome());
         System.out.println(instance.getBurpConfigFile());
-        
+
     }
 
 
@@ -132,7 +132,7 @@ public class BurpVersionTest {
         assertEquals("Burp Suite Professional Edition 2.1.02", instance.getVersion());
 
     }
-    
+
     class CallbacksAdaptr implements IBurpExtenderCallbacks {
 
         @Override
@@ -591,6 +591,7 @@ public class BurpVersionTest {
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public void registerMenuItem(String string, IMenuItemHandler imih) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }

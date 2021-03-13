@@ -1,6 +1,5 @@
 package extension.burp;
 
-import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import burp.IHttpService;

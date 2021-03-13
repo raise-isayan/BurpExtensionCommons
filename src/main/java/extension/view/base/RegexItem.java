@@ -10,7 +10,7 @@ import java.util.regex.PatternSyntaxException;
 public class RegexItem {
     private String match = "";
     private Pattern regex;
-    
+
     /**
      * @return the match
      */
@@ -25,7 +25,7 @@ public class RegexItem {
         this.match = match;
         this.regex = compileRegex(!this.regexp);
     }
-        
+
     private boolean regexp = true;
     private boolean ignoreCase = false;
 
@@ -60,7 +60,7 @@ public class RegexItem {
     public boolean isValidRegex() {
         return this.compileRegex(!this.regexp) != null;
     }
-    
+
     public Pattern compileRegex(boolean quote) {
         int flags = Pattern.MULTILINE;
         Pattern newregex = null;
@@ -76,6 +76,10 @@ public class RegexItem {
         } catch (PatternSyntaxException ex) {
         }
         return newregex;
+    }
+
+    public void recompileRegex() {
+       this.regex = compileRegex(!isRegexp());
     }
 
     public void recompileRegex(boolean quote) {
@@ -101,5 +105,5 @@ public class RegexItem {
         }
         return newregex;
     }
-    
+
 }
