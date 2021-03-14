@@ -94,8 +94,8 @@ public class MatchUtil {
             buff.append(String.format("&#(x%04x|0*%d);", code, code)); // unicode hex,decimal
             if (charset != null) {
                 buff.append('|');
-                String s = value.substring(i, value.offsetByCodePoints(i, 1));
-                byte decode[] = s.getBytes(charset);
+                String str = value.substring(i, value.offsetByCodePoints(i, 1));
+                byte decode[] = StringUtil.getBytesCharset(str, charset);
                 for (int k = 0; k < decode.length; k++) {
                     buff.append(String.format("((\\\\x|%%)0*%x)", 0xff & decode[k])); // byte hex
                 }

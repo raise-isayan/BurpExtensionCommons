@@ -2,6 +2,7 @@ package extension.burp;
 
 import burp.IParameter;
 import burp.IRequestInfo;
+import extension.helpers.SwingUtil;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -25,6 +26,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class RequestInfoTest {
+    private final static Logger logger = Logger.getLogger(RequestInfoTest.class.getName());
 
     public RequestInfoTest() {
     }
@@ -103,10 +105,10 @@ public class RequestInfoTest {
             System.out.println("==========");
 
         } catch (IOException ex) {
-            Logger.getLogger(RequestInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(RequestInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
 

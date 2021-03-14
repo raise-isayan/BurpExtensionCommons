@@ -19,6 +19,7 @@ import org.junit.Test;
  * @author isayan
  */
 public class UtilTest {
+    private final static Logger logger = Logger.getLogger(UtilTest.class.getName());
 
     public UtilTest() {
     }
@@ -46,7 +47,7 @@ public class UtilTest {
         double pow = Math.pow(16, 20);
         System.out.println(String.format("%4.2f", Math.log(pow) / Math.log(2.0)));
     }
-    
+
     /**
      */
     @Test
@@ -61,10 +62,10 @@ public class UtilTest {
             System.out.println("url2:" + u2.toExternalForm());
             System.out.println("url3:" + u2.toURI().normalize().toString());
         } catch (URISyntaxException ex) {
-            Logger.getLogger(UtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         } catch (MalformedURLException ex) {
-            Logger.getLogger(UtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }

@@ -49,7 +49,7 @@ import org.w3c.dom.Text;
 public class ConvertUtil {
 
     private final static Logger logger = Logger.getLogger(ConvertUtil.class.getName());
-    
+
     public static String newLine(String separator, String value, int length) {
         Pattern p = Pattern.compile(String.format("(.{%d})", length));
         StringBuffer sb = new StringBuffer();
@@ -60,7 +60,7 @@ public class ConvertUtil {
         m.appendTail(sb);
         return sb.toString();
     }
-    
+
     /**
      * 文字列をintに変換
      *
@@ -90,7 +90,7 @@ public class ConvertUtil {
             return defvalue;
         }
     }
-        
+
     /**
      * 文字列をFloatに変換
      *
@@ -120,7 +120,7 @@ public class ConvertUtil {
             return defvalue;
         }
     }
-        
+
     /**
      * 文字列をBoolean型に変換
      *
@@ -185,7 +185,7 @@ public class ConvertUtil {
         }
         return null;
     }
-    
+
     public static <T> List<T> toList(Iterator<T> e) {
         List<T> l = new ArrayList<>();
         while (e.hasNext()) {
@@ -222,15 +222,15 @@ public class ConvertUtil {
         }
         return value;
     }
-    
+
     public static String toHexString(byte input) {
-        return toHexString(new byte [] { input }); 
+        return toHexString(new byte [] { input });
     }
     public static String toHexString(int input) {
         BigInteger hex = BigInteger.valueOf(input);
         return hex.toString(16);
     }
-    
+
     public static String toHexString(byte [] data) {
         return String.valueOf(encodeHex(data));
     }
@@ -252,13 +252,13 @@ public class ConvertUtil {
     }
 
     public static String escapeJson(String value) {
-        return value.replaceAll("([\"\\\\/])", "\\\\$1");        
+        return value.replaceAll("([\"\\\\/])", "\\\\$1");
     }
-    
+
     private static final char[] HEX_UPPER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-    
+
     private static char [] encodeHex(final byte [] data) {
-        char [] out = new char[data.length * 2];        
+        char [] out = new char[data.length * 2];
         for (int i = 0; i < data.length; i++) {
             out[i*2+0] = HEX_UPPER[(0xF0 & data[i]) >>> 4];
             out[i*2+1] = HEX_UPPER[0x0F & data[i]];
@@ -268,7 +268,7 @@ public class ConvertUtil {
 
     private static byte [] decodeHex(final char [] data) {
         if (data.length % 2 != 0) new IllegalArgumentException();
-        byte [] out = new byte[data.length / 2];        
+        byte [] out = new byte[data.length / 2];
         for (int i = 0; i < out.length; i++) {
             final int digitH = Character.digit(data[i*2+0], 16);
             final int digitL = Character.digit(data[i*2+1], 16);
@@ -277,8 +277,8 @@ public class ConvertUtil {
             out[i] = (byte) (hex & 0xFF);
         }
         return out;
-    }    
-    
+    }
+
     public static File tempFile(byte[] buff, String prefix) {
         File file = null;
         FileOutputStream fostm = null;
@@ -312,7 +312,7 @@ public class ConvertUtil {
         buf.get(bytes);
         return bytes;
     }
-    
+
     public static byte[] replaceByte(byte[] base, int startPos, int endPos, byte[] replace) {
         ByteBuffer buf = ByteBuffer.allocate(startPos + replace.length + base.length - endPos);
         buf.put(base, 0, startPos);
@@ -323,7 +323,7 @@ public class ConvertUtil {
         buf.get(bytes);
         return bytes;
     }
-    
+
     public static byte[] bytesFromFile(File file) throws IOException {
         ByteArrayOutputStream bostm = new ByteArrayOutputStream();
         try (FileInputStream fstm = new FileInputStream(file)) {
@@ -348,17 +348,17 @@ public class ConvertUtil {
         return file;
     }
 
-    
+
     public static String toBase64Encode(String src, Charset charset) {
         return toBase64Encode(src, charset, true);
     }
 
     public static String toBase64Encode(String src, Charset charset, boolean padding) {
         if (padding) {
-            byte bytes[] = Base64.getEncoder().encode(src.getBytes(charset));
+            byte bytes[] = Base64.getEncoder().encode(StringUtil.getBytesCharset(src, charset));
             return StringUtil.getStringRaw(bytes);
         } else {
-            byte bytes[] = Base64.getEncoder().withoutPadding().encode(src.getBytes(charset));
+            byte bytes[] = Base64.getEncoder().withoutPadding().encode(StringUtil.getBytesCharset(src, charset));
             return StringUtil.getStringRaw(bytes);
         }
     }
@@ -371,10 +371,10 @@ public class ConvertUtil {
     public static String toBase64Encode(String src, String charset, boolean padding)
             throws UnsupportedEncodingException {
         if (padding) {
-            byte bytes[] = Base64.getEncoder().encode(src.getBytes(charset));
+            byte bytes[] = Base64.getEncoder().encode(StringUtil.getBytesCharset(src, charset));
             return StringUtil.getStringRaw(bytes);
         } else {
-            byte bytes[] = Base64.getEncoder().withoutPadding().encode(src.getBytes(charset));
+            byte bytes[] = Base64.getEncoder().withoutPadding().encode(StringUtil.getBytesCharset(src, charset));
             return StringUtil.getStringRaw(bytes);
         }
     }
@@ -402,7 +402,7 @@ public class ConvertUtil {
     public static String toBase64Decode(String str, String charset)
             throws UnsupportedEncodingException {
         byte bytes[] = Base64.getDecoder().decode(str);
-        return new String(bytes, charset);
+        return StringUtil.getStringCharset(bytes, charset);
     }
 
     public static byte[] toBase64Decode(String str) {
@@ -427,19 +427,19 @@ public class ConvertUtil {
 
     public static String toBase64URLSafeDecode(String str, Charset charset) {
         byte bytes[] = Base64.getUrlDecoder().decode(str);
-        return new String(bytes, charset);
+        return StringUtil.getStringCharset(bytes, charset);
     }
 
     public static String toBase64URLSafeDecode(String str, String charset)
             throws UnsupportedEncodingException {
         byte bytes[] = Base64.getUrlDecoder().decode(str);
-        return new String(bytes, charset);
+        return StringUtil.getStringCharset(bytes, charset);
     }
 
     public static byte[] toBase64URLSafeDecode(String str) {
         return Base64.getUrlDecoder().decode(str);
     }
-    
+
     public static byte[] compressGzip(byte[] content) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (BufferedInputStream in = new BufferedInputStream(new ByteArrayInputStream(content))) {
@@ -476,7 +476,7 @@ public class ConvertUtil {
         }
         return bout.toByteArray();
     }
-    
+
     public static String compressZlibBase64(String content, Charset charset) {
         return toBase64Encode(compressZlib(StringUtil.getBytesCharset(content, charset)), true);
     }
@@ -526,8 +526,8 @@ public class ConvertUtil {
         }
         return bout.toByteArray();
     }
-    
-    
+
+
     public static String decompressZlibBase64(String content, Charset charset) {
         return StringUtil.getStringCharset(decompressZlib(toBase64Decode(content)), charset);
     }
@@ -544,14 +544,14 @@ public class ConvertUtil {
             command = msgfmt.format(target, (Object[]) args);
             process = Runtime.getRuntime().exec(command);
         } else {
-            ArrayList<String> list = new ArrayList<String>(Arrays.asList(args));
+            ArrayList<String> list = new ArrayList<>(Arrays.asList(args));
             list.add(0, target);
             process = Runtime.getRuntime().exec((String[]) list.toArray(new String[0]));
         }
         //Runtime.getRuntime().exec(args);
         return process;
     }
-    
+
     /**
      * 正規表現のエンコード(エスケープ)
      *
@@ -562,5 +562,4 @@ public class ConvertUtil {
         return value.replaceAll("([\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-])", "\\\\$1");
     }
 
-    
 }

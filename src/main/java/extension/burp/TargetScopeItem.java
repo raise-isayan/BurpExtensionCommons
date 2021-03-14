@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class TargetScopeItem {
+    private final static Logger logger = Logger.getLogger(TargetScopeItem.class.getName());
 
     private boolean enabled = false;
     private String protocol = HttpService.PROTOCOL_ANY;
@@ -24,9 +25,9 @@ public class TargetScopeItem {
     private Pattern regexHost = Pattern.compile("");
     private Pattern regexPort = Pattern.compile("");
     private Pattern regexFile = Pattern.compile("");
-        
+
     public TargetScopeItem() {
-        
+
     }
 
     /**
@@ -42,7 +43,7 @@ public class TargetScopeItem {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-        
+
     /**
      * @return the protocol
      */
@@ -56,10 +57,10 @@ public class TargetScopeItem {
     public void setProtocol(String protocol) {
         this.protocol = protocol;
         if (HttpService.PROTOCOL_ANY.equals(protocol)) {
-            this.regexProtocol = regexAnyProtocol;        
+            this.regexProtocol = regexAnyProtocol;
         }
         else {
-            this.regexProtocol = Pattern.compile(this.protocol);        
+            this.regexProtocol = Pattern.compile(this.protocol);
         }
     }
 
@@ -107,7 +108,7 @@ public class TargetScopeItem {
         this.file = file;
         this.regexFile = Pattern.compile(this.file);
     }
-        
+
     public boolean isMatch(URL url) {
         Matcher matchProtocol = this.regexProtocol.matcher(url.getProtocol());
         Matcher matchHost = this.regexHost.matcher(url.getHost());
@@ -117,18 +118,18 @@ public class TargetScopeItem {
         }
         Matcher matchPort = this.regexPort.matcher(String.valueOf(urlPort));
         Matcher matchFile = this.regexFile.matcher(url.getFile());
-        
-        if ((HttpService.PROTOCOL_ANY.equals(this.getProtocol()) || matchProtocol.matches()) && 
-            ("".equals(this.getHost()) || matchHost.matches()) && 
-            ("".equals(this.getPort()) || matchPort.matches()) && 
+
+        if ((HttpService.PROTOCOL_ANY.equals(this.getProtocol()) || matchProtocol.matches()) &&
+            ("".equals(this.getHost()) || matchHost.matches()) &&
+            ("".equals(this.getPort()) || matchPort.matches()) &&
             ("".equals(this.getFile()) || matchFile.matches())) {
             return true;
         }
         else {
             return false;
         }
-    }    
-    
+    }
+
     public void dump() {
         try {
             System.out.println(String.format("getProtocol=%s", this.getProtocol()));
@@ -136,8 +137,8 @@ public class TargetScopeItem {
             System.out.println(String.format("getPort=%s", this.getPort()));
             System.out.println(String.format("getFile=%s", this.getFile()));
         } catch (Exception ex) {
-            Logger.getLogger(TargetScopeItem.class.getName()).log(Level.SEVERE, null, ex);
-        }   
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
     }
 
     @Override
@@ -171,5 +172,5 @@ public class TargetScopeItem {
         }
         return item;
     }
-    
+
 }

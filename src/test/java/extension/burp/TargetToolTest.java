@@ -13,22 +13,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class TargetToolTest {
-    
+
     public TargetToolTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -55,7 +55,7 @@ public class TargetToolTest {
             String s = "[\"PROXY\",\"REPEATER\",\"SCANNER\"]";
             EnumSet<TargetTool> expResult = EnumSet.of(TargetTool.PROXY, TargetTool.REPEATER, TargetTool.SCANNER);
             EnumSet<TargetTool> result = TargetTool.parseEnumSet(s);
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
     }
 
@@ -71,10 +71,10 @@ public class TargetToolTest {
             assertEquals(e, TargetTool.parseEnum(e.name()));
         }
         for (TargetTool e : TargetTool.values()) {
-            System.out.println("value:" + e.toString());            
+            System.out.println("value:" + e.toString());
             assertEquals(e, TargetTool.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }
-    
+
 }

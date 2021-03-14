@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class ResponseInfoTest {
+    private final static Logger logger = Logger.getLogger(ResponseInfoTest.class.getName());
 
     public ResponseInfoTest() {
     }
@@ -101,10 +102,10 @@ public class ResponseInfoTest {
             System.out.println("==========");
 
         } catch (IOException ex) {
-            Logger.getLogger(ResponseInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(ResponseInfoTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
 

@@ -14,22 +14,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class BurpUtilTest {
-    
+
     public BurpUtilTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -53,23 +53,23 @@ public class BurpUtilTest {
             String result = BurpUtil.parseFilterPattern(pattern);
             Pattern p = Pattern.compile(result);
             Matcher m = p.matcher(expResult);
-            assertFalse(m.matches());        
+            assertFalse(m.matches());
         }
         {
             String expResult = "test.gif";
             String result = BurpUtil.parseFilterPattern(pattern);
             Pattern p = Pattern.compile(result);
             Matcher m = p.matcher(expResult);
-            assertTrue(m.find());        
+            assertTrue(m.find());
         }
         {
             String expResult = "test.js.map";
             String result = BurpUtil.parseFilterPattern(pattern);
             Pattern p = Pattern.compile(result);
             Matcher m = p.matcher(expResult);
-            assertTrue(m.find());        
+            assertTrue(m.find());
         }
     }
 
-    
+
 }

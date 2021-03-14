@@ -35,6 +35,7 @@ import javax.swing.tree.TreePath;
  * @author isayan
  */
 public final class SwingUtil {
+    private final static Logger logger = Logger.getLogger(SwingUtil.class.getName());
 
     private SwingUtil() {
     }
@@ -47,7 +48,7 @@ public final class SwingUtil {
                 robot = new Robot();
             }
         } catch (AWTException ex) {
-            Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return robot;
     }
@@ -417,9 +418,9 @@ public final class SwingUtil {
                 selection = (String) t.getTransferData(DataFlavor.stringFlavor);
             }
         } catch (UnsupportedFlavorException ex) {
-            Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (IOException ex) {
-            Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return selection;
     }
@@ -446,8 +447,10 @@ public final class SwingUtil {
         String s = "";
         try {
             s = (String) t.getTransferData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException e) {
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException ex) {
+            logger.log(Level.WARNING, ex.getMessage(), ex);
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return s;
     }
@@ -469,6 +472,7 @@ public final class SwingUtil {
                     Thread.sleep(millis);
                     popTip.hide();
                 } catch (InterruptedException ex) {
+                    logger.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             }
         };
@@ -524,7 +528,8 @@ public final class SwingUtil {
                         if (action == TransferHandler.MOVE) {
                             doc.remove(p0, p1 - p0);
                         }
-                    } catch (BadLocationException ble) {
+                    } catch (BadLocationException ex) {
+                        logger.log(Level.SEVERE, ex.getMessage(), ex);
                     }
                 }
             }
@@ -544,9 +549,9 @@ public final class SwingUtil {
                         ((JTextComponent) comp).replaceSelection(data);
                         return true;
                     } catch (UnsupportedFlavorException ex) {
-                        Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.log(Level.WARNING, ex.getMessage(), ex);
                     } catch (IOException ex) {
-                        Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+                        logger.log(Level.SEVERE, ex.getMessage(), ex);
                     }
                 }
             }
@@ -579,9 +584,9 @@ public final class SwingUtil {
                         }
                     }
                 } catch (UnsupportedFlavorException ex) {
-                    Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.WARNING, ex.getMessage(), ex);
                 } catch (IOException ex) {
-                    Logger.getLogger(SwingUtil.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.log(Level.SEVERE, ex.getMessage(), ex);
                 }
             } else {
                 return support.getComponent() instanceof JComponent

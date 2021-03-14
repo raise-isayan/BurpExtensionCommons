@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class TargetScopeItemTest {
+    private final static Logger logger = Logger.getLogger(TargetScopeItemTest.class.getName());
 
     public TargetScopeItemTest() {
     }
@@ -63,7 +64,7 @@ public class TargetScopeItemTest {
                 assertEquals(expResult, ConvertUtil.parseIntDefault(result.getPort(), -1));
             }
         } catch (MalformedURLException ex) {
-            Logger.getLogger(TargetScopeItemTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
         try {
@@ -72,7 +73,7 @@ public class TargetScopeItemTest {
             URL url2 = new URL("https://www.google.com/");
             System.out.println(">" + url.getFile());
         } catch (MalformedURLException ex) {
-            Logger.getLogger(TargetScopeItemTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
     }

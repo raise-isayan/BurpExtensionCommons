@@ -1,11 +1,8 @@
 package extension.helpers;
 
-import extension.helpers.HttpUtil;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -13,19 +10,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneOffset;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
  *
  * @author isayan
  */
 public class MatchUtilTest {
+    private final static Logger logger = Logger.getLogger(MatchUtilTest.class.getName());
 
     public MatchUtilTest() {
     }
@@ -243,7 +234,7 @@ public class MatchUtilTest {
             }
 
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(MatchUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
     }

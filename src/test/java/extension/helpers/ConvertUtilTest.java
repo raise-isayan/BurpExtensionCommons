@@ -3,6 +3,7 @@ package extension.helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class ConvertUtilTest {
+    private final static Logger logger = Logger.getLogger(ConvertUtilTest.class.getName());
 
     public ConvertUtilTest() {
     }
@@ -168,6 +170,34 @@ public class ConvertUtilTest {
         assertEquals(0x8080, ConvertUtil.toInteger(new byte[]{(byte) 0x80, (byte) 0x80}));
     }
 
+    @Test
+    public void testBase64() {
+
+        assertEquals("!\"#$%&'()=~", ConvertUtil.toBase64Decode("ISIjJCUmJygpPX4=", StandardCharsets.ISO_8859_1));
+        assertEquals("qwertyuiopASDFGHJKL", ConvertUtil.toBase64Decode("cXdlcnR5dWlvcEFTREZHSEpLTA==", StandardCharsets.ISO_8859_1));
+
+        assertEquals(ConvertUtil.toBase64Encode("12345667890q", StandardCharsets.ISO_8859_1, false), ConvertUtil.toBase64Encode("12345667890q", StandardCharsets.ISO_8859_1, false));
+        assertEquals(ConvertUtil.toBase64Encode("!\"#$%&'()=", StandardCharsets.ISO_8859_1, false), ConvertUtil.toBase64Encode("!\"#$%&'()=", StandardCharsets.ISO_8859_1, false));
+        assertEquals(ConvertUtil.toBase64Encode("qwertyuiopASDFGHJKL", StandardCharsets.ISO_8859_1, false), ConvertUtil.toBase64Encode("qwertyuiopASDFGHJKL", StandardCharsets.ISO_8859_1, false));
+
+        assertEquals("", ConvertUtil.toBase64Encode("", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zg==", ConvertUtil.toBase64Encode("f", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zm8=", ConvertUtil.toBase64Encode("fo", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zm9v", ConvertUtil.toBase64Encode("foo", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zm9vYg==", ConvertUtil.toBase64Encode("foob", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zm9vYmE=", ConvertUtil.toBase64Encode("fooba", StandardCharsets.ISO_8859_1, true));
+        assertEquals("Zm9vYmFy", ConvertUtil.toBase64Encode("foobar", StandardCharsets.ISO_8859_1, true));
+
+        assertEquals("", ConvertUtil.toBase64Encode("", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zg", ConvertUtil.toBase64Encode("f", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zm8", ConvertUtil.toBase64Encode("fo", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zm9v", ConvertUtil.toBase64Encode("foo", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zm9vYg", ConvertUtil.toBase64Encode("foob", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zm9vYmE", ConvertUtil.toBase64Encode("fooba", StandardCharsets.ISO_8859_1, false));
+        assertEquals("Zm9vYmFy", ConvertUtil.toBase64Encode("foobar", StandardCharsets.ISO_8859_1, false));
+
+    }
+
     /**
      * Test of toBASE64Encoder method, of class ConvertUtil.
      */
@@ -180,7 +210,7 @@ public class ConvertUtilTest {
             assertEquals("ZnVnYWY=", ConvertUtil.toBase64Encode("fugaf", "8859_1", true));
             assertEquals("aG9nZWhv", ConvertUtil.toBase64Encode("hogeho", "8859_1", true));
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }
@@ -197,17 +227,17 @@ public class ConvertUtilTest {
             assertEquals("fugaf", ConvertUtil.toBase64Decode("ZnVnYWY=", "8859_1"));
             assertEquals("test", ConvertUtil.toBase64Decode("dGVzdA==", "8859_1"));
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
         try {
             System.out.println("toBASE64Decoder");
             System.out.println(ConvertUtil.toBase64Decode("absdadbd", "8859_1"));
         } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
        }
         try {
@@ -217,13 +247,9 @@ public class ConvertUtilTest {
         } catch (IllegalArgumentException ex) {
             assertTrue(true);
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(ConvertUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
        }
     }
-
-
-
-
 
 }

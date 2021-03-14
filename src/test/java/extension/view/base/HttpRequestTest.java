@@ -1,6 +1,8 @@
 package extension.view.base;
 
 import extension.helpers.HttpRequest;
+import extension.helpers.StringUtil;
+import extension.helpers.UtilTest;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.logging.Level;
@@ -19,6 +21,7 @@ import static org.junit.Assert.*;
  * @author raise.isayan
  */
 public class HttpRequestTest {
+    private final static Logger logger = Logger.getLogger(HttpRequestTest.class.getName());
 
     public HttpRequestTest() {
     }
@@ -167,7 +170,7 @@ public class HttpRequestTest {
             }
 
         } catch (ParseException ex) {
-            Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }
@@ -188,7 +191,7 @@ public class HttpRequestTest {
                 System.out.println(result.getGuessCharset());
             }
         } catch (ParseException ex) {
-            Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }
@@ -201,13 +204,13 @@ public class HttpRequestTest {
         try {
             System.out.println("makeGetRequest");
             String expResult = "POST";
-            HttpRequest result = HttpRequest.parseHttpRequest(REQ_MESSAGE_MULTIPART.getBytes(StandardCharsets.UTF_8));
+            HttpRequest result = HttpRequest.parseHttpRequest(StringUtil.getBytesUTF8(REQ_MESSAGE_MULTIPART));
             assertEquals(expResult, result.getMethod());
             System.out.println(result.getHeader());
             System.out.println(result.getBody());
             assertEquals("UTF-8", result.getGuessCharset());
         } catch (ParseException ex) {
-            Logger.getLogger(HttpRequestTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }

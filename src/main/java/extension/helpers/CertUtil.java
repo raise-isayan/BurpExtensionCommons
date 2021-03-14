@@ -154,7 +154,7 @@ public class CertUtil {
             return readPkcs8PrivateKey(Base64.getMimeDecoder().decode(pemEncode));
         }
         // We assume it's a PKCS#8 DER encoded binary file
-        return readPkcs8PrivateKey(pemData.getBytes(StandardCharsets.ISO_8859_1));
+        return readPkcs8PrivateKey(StringUtil.getBytesRaw(pemData));
     }
 
     public static PublicKey loadPublicKey(String pemData) throws GeneralSecurityException, IOException {
@@ -186,7 +186,7 @@ public class CertUtil {
         throw new UnsupportedEncodingException("PEM format was not found");
     }
 
-    
+
     private static PrivateKey readPkcs8PrivateKey(byte[] pkcs8Bytes) throws GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SunRsaSign");
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
@@ -210,7 +210,7 @@ public class CertUtil {
         byte[] pkcs8bytes = ConvertUtil.appandByte(pkcs8Header, pkcs1Bytes);
         return readPkcs8PrivateKey(pkcs8bytes);
     }
-    
+
     public static String getFirstAlias(KeyStore ks) throws KeyStoreException {
         String alias = null;
         // 最初にみつかったalias
@@ -223,5 +223,5 @@ public class CertUtil {
         }
         return alias;
     }
-    
+
 }

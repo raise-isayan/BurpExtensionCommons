@@ -26,7 +26,7 @@ public final class HashUtil {
      */
     public static String toMessageDigest(String algorithm, String str, Charset charset, boolean upperCase)
             throws NoSuchAlgorithmException {
-        return toMessageDigest(algorithm, str.getBytes(charset), upperCase);
+        return toMessageDigest(algorithm, StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -39,9 +39,9 @@ public final class HashUtil {
      * @throws UnsupportedEncodingException
      * @throws java.security.NoSuchAlgorithmException
      */
-    public static String toMessageDigest(String algorithm, String str, String enc, boolean upperCase)
+    public static String toMessageDigest(String algorithm, String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        return toMessageDigest(algorithm, str.getBytes(enc), upperCase);
+        return toMessageDigest(algorithm, StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     public static String toMessageDigest(String algorithm, byte body[], boolean upperCase)
@@ -339,8 +339,8 @@ public final class HashUtil {
         return crc.getValue();
     }
 
-    public static long toAdler32Sum(String str, String enc) throws UnsupportedEncodingException {
-        return toAdler32Sum(str.getBytes(enc));
+    public static long toAdler32Sum(String str, String charset) throws UnsupportedEncodingException {
+        return toAdler32Sum(StringUtil.getBytesCharset(str, charset));
     }
 
     public static long toAdler32Sum(byte[] body) {

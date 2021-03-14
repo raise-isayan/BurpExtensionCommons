@@ -1,5 +1,6 @@
 package extension.helpers.charset;
 
+import extension.helpers.StringUtil;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
@@ -15,22 +16,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class UTF7CharsetTest {
-    
+
     public UTF7CharsetTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -45,10 +46,10 @@ public class UTF7CharsetTest {
 
     public static String toUTF7Decode(String str) {
         UTF7Charset utf7cs = new UTF7Charset("UTF-7", new String[]{}, false);
-        CharBuffer cb = utf7cs.decode(ByteBuffer.wrap(str.getBytes(StandardCharsets.US_ASCII)));
+        CharBuffer cb = utf7cs.decode(ByteBuffer.wrap(StringUtil.getBytesCharset(str, StandardCharsets.US_ASCII)));
         return cb.toString();
     }
-    
+
     /**
      * Test of UTF7Decode method, of class TransUtil.
      */
@@ -72,5 +73,5 @@ public class UTF7CharsetTest {
         assertEquals("+-", toUTF7Encode("+"));
         assertEquals("+WQlj21JNMG5lh1tXUhc-", toUTF7Encode("変換前の文字列"));
     }
-    
+
 }

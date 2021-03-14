@@ -207,9 +207,9 @@ public final class HttpUtil {
             HttpsURLConnection.setDefaultSSLSocketFactory(ignoreSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier());
         } catch (NoSuchAlgorithmException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (KeyManagementException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -218,13 +218,13 @@ public final class HttpUtil {
         try {
             ignoreValidateCertification(sslcontext, null, null);
         } catch (FileNotFoundException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (IOException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (CertificateException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (UnrecoverableKeyException ex) {
-            logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -241,17 +241,17 @@ public final class HttpUtil {
                 kmf.init(ks, passphrase);
                 sslcontext.init(kmf.getKeyManagers(), trustAllCerts(), new SecureRandom());
             } catch (NoSuchAlgorithmException ex) {
-                logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             } catch (KeyManagementException ex) {
-                logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             } catch (KeyStoreException ex) {
-                logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         } else {
             try {
                 sslcontext.init(km, trustAllCerts(), new SecureRandom());
             } catch (KeyManagementException ex) {
-                logger.getLogger(HttpUtil.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }

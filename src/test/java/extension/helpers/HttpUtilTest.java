@@ -29,6 +29,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HttpUtilTest {
+    private final static Logger logger = Logger.getLogger(HttpUtilTest.class.getName());
 
     public HttpUtilTest() {
     }
@@ -127,7 +128,7 @@ public class HttpUtilTest {
             assertEquals("dir", HttpUtil.getBaseName(new URL("http://example.com/dir?1328319481")));
             assertEquals("example.com", HttpUtil.getBaseName(new URL("http://example.com/?1328319481")));
         } catch (MalformedURLException ex) {
-            Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
    }
@@ -149,7 +150,7 @@ public class HttpUtilTest {
             assertEquals("GET /dir/file/?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file/?abc=123"))));
             assertEquals("GET /dir/file?abc=123 HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/dir/file?abc=123"))));
         } catch (MalformedURLException ex) {
-            Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
    }
@@ -262,7 +263,7 @@ public class HttpUtilTest {
                 assertFalse(result.contains("コメント"));
             }
         } catch (IOException ex) {
-            Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
 
@@ -283,7 +284,7 @@ public class HttpUtilTest {
 //                assertEquals("UTF-16", HttpUtil.getUniversalGuessCode("ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこ".getBytes("UTF-16LE"))); // UTF-16LE になるのがベスト
                 assertEquals("UTF-16", HttpUtil.getUniversalGuessCode("ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこ".getBytes("UTF-16")));
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
                 fail(ex.getMessage());
             }
         }
@@ -295,7 +296,7 @@ public class HttpUtilTest {
                 String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("Shift_JIS"), "UTF-8");
                 assertEquals(expResult, guessCharset);
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
                 fail(ex.getMessage());
             }
         }
@@ -307,7 +308,7 @@ public class HttpUtilTest {
                 String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("MS932"), "UTF-8");
                 assertEquals(expResult, guessCharset);
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
                 fail(ex.getMessage());
             }
         }
@@ -319,7 +320,7 @@ public class HttpUtilTest {
                 String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("EUC-JP"), "UTF-8");
                 assertEquals(expResult, guessCharset);
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
                 fail(ex.getMessage());
             }
         }
@@ -331,7 +332,7 @@ public class HttpUtilTest {
                 String guessCharset = HttpUtil.getUniversalGuessCode(expValue.getBytes("ISO-2022-JP"), "UTF-8");
                 assertEquals(expResult, guessCharset);
             } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
                 fail(ex.getMessage());
             }
         }
@@ -437,6 +438,7 @@ public class HttpUtilTest {
             assertEquals(1, proxy.size());
             assertEquals(localProxy, proxy.get(0));
         } catch (URISyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
         try {
@@ -445,6 +447,7 @@ public class HttpUtilTest {
             assertEquals(1, proxy.size());
             assertEquals(localProxy, proxy.get(0));
         } catch (URISyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
         try {
@@ -453,6 +456,7 @@ public class HttpUtilTest {
             assertEquals(1, proxy.size());
             assertEquals(Proxy.NO_PROXY, proxy.get(0));
         } catch (URISyntaxException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }
