@@ -8,10 +8,12 @@ import java.awt.Color;
  */
 public class NamedColor extends Color implements Comparable<NamedColor> {
 
+    private final Color color;
     private final String name;
 
     public NamedColor(Color color, String name) {
         super(color.getRGB());
+        this.color = color;
         if (name == null) {
             new NullPointerException("name is null");
         }
@@ -49,4 +51,8 @@ public class NamedColor extends Color implements Comparable<NamedColor> {
         }
     }
 
+    public Color getColor() {
+        return this.color;
+    }
+    
 }
