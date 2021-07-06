@@ -7,7 +7,6 @@ import java.awt.Color;
  * @author isayan
  */
 public class NamedColor extends Color implements Comparable<NamedColor> {
-
     private final Color color;
     private final String name;
 
@@ -53,6 +52,10 @@ public class NamedColor extends Color implements Comparable<NamedColor> {
 
     public Color getColor() {
         return this.color;
+    }
+
+    public boolean isDefaultColor() {
+        return Color.white.equals(this.color);
     }
     
 }
