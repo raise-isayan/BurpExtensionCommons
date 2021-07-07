@@ -34,6 +34,7 @@ task release(type: Zip, dependsOn: ['build']) {
     include '*'
     include 'gradle/**'
     include 'src/**'
+    include 'release/*.jar'
     exclude 'build'
     exclude '.git'
     exclude '.gradle'
