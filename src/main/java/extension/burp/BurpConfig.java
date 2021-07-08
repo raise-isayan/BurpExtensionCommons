@@ -1,5 +1,6 @@
 package extension.burp;
 
+import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.prefs.Preferences;
+import javax.swing.UIManager;
 
 /**
  *
@@ -73,5 +75,14 @@ public class BurpConfig {
     private static final String BUILT_IN_10_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/10 letter words.pay";
     private static final String BUILT_IN_11_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/11 letter words.pay";
     private static final String BUILT_IN_12_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/12 letter words.pay";    
+
+   public static Color getTabFlashColor() {
+         try {
+            return UIManager.getColor("Burp.tabFlashColour");   
+        } catch (NullPointerException ex) {
+            return new Color(0xff, 0x66, 0x33);   
+        }
+   }
+
     
 }

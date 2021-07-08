@@ -3,6 +3,7 @@ package extension.helpers;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 import burp.ITab;
+import extension.burp.BurpConfig;
 import java.awt.Color;
 import java.awt.Container;
 import java.nio.charset.StandardCharsets;
@@ -88,12 +89,12 @@ public class BurpUtil {
     }
 
     public static void sendToTextHighlight(ITab tab) {
-        final Color burpTextHighlightColor = new Color(255, 102, 52);
+        final Color burpTextHighlightColor = BurpConfig.getTabFlashColor();
         if (tab.getUiComponent() == null) return;
         Container container = tab.getUiComponent().getParent();
         if (container instanceof JTabbedPane) {
-            JTabbedPane tabbet = (JTabbedPane) container;
-            int index = tabbet.indexOfTab(tab.getTabCaption());
+            final JTabbedPane tabbet = (JTabbedPane) container;
+            final int index = tabbet.indexOfTab(tab.getTabCaption());
             if (index > -1) {
                 tabbet.setBackgroundAt(index, burpTextHighlightColor);
                 // 解除
