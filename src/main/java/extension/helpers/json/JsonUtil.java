@@ -43,6 +43,11 @@ public class JsonUtil {
         return JsonParser.parseString(jsonElementString);
     }
 
+    public static JsonObject parseJsonObject(String jsonElementString)  throws JsonSyntaxException {
+        JsonElement json = JsonParser.parseString(jsonElementString);
+        return json.getAsJsonObject();
+    }
+        
     public static String prettyJson(String jsonString) throws IOException {
         return prettyJson(jsonString, true);
     }
@@ -179,7 +184,7 @@ public class JsonUtil {
         String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
         return gson.fromJson(jsonString, classOfT);
     }
-
+    
     public static String jsonToString(Object bean, boolean exludeFields) {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {

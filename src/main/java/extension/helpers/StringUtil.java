@@ -11,8 +11,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedMap;
 
 /**
@@ -241,6 +239,14 @@ public class StringUtil {
         return  new String(ch);
     }
 
+    public static String toCamelCase(String s) {
+        char ch[] = s.toCharArray();
+        if (ch.length > 0) {
+            ch[0] = Character.toLowerCase(ch[0]);
+        }
+        return  new String(ch);
+    }
+    
     public static String getStackTraceMessage(Exception ex) {
         return String.format("%s: %s", ex.getClass().getName(), ex.getMessage());
     }

@@ -64,6 +64,21 @@ public class JsonUtilTest {
     }
 
     /**
+     * Test of parse method, of class JsonUtil.
+     */
+    @Test
+    public void testParseJsonObject() {
+        System.out.println("parseJsonObject");
+        String jsonElementString = "{ \n \"abc\": 123, \n \"def\": \"test\" }";
+        JsonObject result = JsonUtil.parseJsonObject(jsonElementString);
+        assertEquals(true, result.isJsonObject());
+        assertEquals(true, result.has("abc"));
+        assertEquals(true, result.has("abc"));
+        assertEquals(false, result.has("xyz"));
+    }
+    
+    
+    /**
      * Test of prettyJson method, of class JsonUtil.
      */
     @Test

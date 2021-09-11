@@ -182,4 +182,26 @@ public class IpUtil {
         }
     }
 
+    public static String ipv4ToHex(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0x%02x%02x%02x%02x", dec1, dec2, dec3, dec4);        
+    }
+
+    public static String ipv4ToDotHex(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0x%02x.0x%02x.0x%02x.0x%02x", dec1, dec2, dec3, dec4);        
+    }
+
+    public static String ipv4ToOct(int dec1, int dec2, int dec3, int dec4) {
+        String hexIP = String.format("%02x%02x%02x%02x", dec1, dec2, dec3, dec4);        
+        return String.format("0%o", Long.parseLong(hexIP, 16));
+    }
+    
+    public static String ipv4ToDotOct(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0%03o.0%03o.0%03o.0%03o", dec1, dec2, dec3, dec4);        
+    }
+    
+    public static String ipv4ToInt(int dec1, int dec2, int dec3, int dec4) {
+        String hexIP = String.format("%02x%02x%02x%02x", dec1, dec2, dec3, dec4);        
+        return Long.toString(Long.parseLong(hexIP, 16));
+    }
+    
 }

@@ -187,7 +187,7 @@ public class HttpRequestResponse implements IHttpRequestResponse {
                 }
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return charset;
     }
@@ -204,7 +204,7 @@ public class HttpRequestResponse implements IHttpRequestResponse {
                 mimeType = res.getContentMimeType();
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return mimeType;
     }
@@ -221,7 +221,7 @@ public class HttpRequestResponse implements IHttpRequestResponse {
             this.setPort(httpService.getPort());
             this.setProtocol(httpService.getProtocol());
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

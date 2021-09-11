@@ -324,4 +324,31 @@ public class IpUtilTest {
         assertEquals(8080, result);
     }
 
+    /**
+     * Test of testIpv4ToHex method, of class IpUtil.
+     */
+    @Test
+    public void testIpv4ToHex() {
+        System.out.println("ipv4ToHex");
+        // 192,0,2,11
+        assertEquals("0xc000020b", IpUtil.ipv4ToHex(192,0,2,11));
+        assertEquals("0xc0.0x00.0x02.0x0b", IpUtil.ipv4ToDotHex(192,0,2,11));
+        assertEquals("030000001013", IpUtil.ipv4ToOct(192,0,2,11));
+        assertEquals("0300.0000.0002.0013", IpUtil.ipv4ToDotOct(192,0,2,11));
+        assertEquals("3221225995", IpUtil.ipv4ToInt(192,0,2,11));
+        // 127.0.0.1
+        assertEquals("0x7f000001", IpUtil.ipv4ToHex(127,0,0,1));
+        assertEquals("0x7f.0x00.0x00.0x01", IpUtil.ipv4ToDotHex(127,0,0,1));
+        assertEquals("017700000001", IpUtil.ipv4ToOct(127,0,0,1));
+        assertEquals("0177.0000.0000.0001", IpUtil.ipv4ToDotOct(127,0,0,1));
+        assertEquals("2130706433", IpUtil.ipv4ToInt(127,0,0,1));
+        // 127.10.172.192
+        assertEquals("0x7f0aacc0", IpUtil.ipv4ToHex(127,10,172,192));
+        assertEquals("0x7f.0x0a.0xac.0xc0", IpUtil.ipv4ToDotHex(127,10,172,192));
+        assertEquals("017702526300", IpUtil.ipv4ToOct(127,10,172,192));
+        assertEquals("0177.0012.0254.0300", IpUtil.ipv4ToDotOct(127,10,172,192));
+        assertEquals("2131406016", IpUtil.ipv4ToInt(127,10,172,192));
+
+    }
+
 }
