@@ -6,6 +6,7 @@ import burp.IContextMenuFactory;
 import burp.ICookie;
 import burp.IExtensionHelpers;
 import burp.IExtensionStateListener;
+import burp.IHttpHeader;
 import burp.IHttpListener;
 import burp.IHttpRequestResponse;
 import burp.IHttpRequestResponsePersisted;
@@ -593,6 +594,26 @@ public class BurpVersionTest {
         @Override
         @SuppressWarnings("deprecation")
         public void registerMenuItem(String string, IMenuItemHandler imih) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public IHttpRequestResponse makeHttpRequest(IHttpService arg0, byte[] arg1, boolean arg2) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public byte[] makeHttpRequest(String arg0, int arg1, boolean arg2, byte[] arg3, boolean arg4) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public byte[] makeHttp2Request(IHttpService arg0, List<IHttpHeader> arg1, byte[] arg2) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public byte[] makeHttp2Request(IHttpService arg0, List<IHttpHeader> arg1, byte[] arg2, boolean arg3) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 

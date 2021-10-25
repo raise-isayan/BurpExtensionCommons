@@ -1,6 +1,7 @@
 package extension.burp;
 
 import burp.IExtensionHelpers;
+import burp.IHttpHeader;
 import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IParameter;
@@ -175,6 +176,11 @@ public class ExtensionHelpers implements IExtensionHelpers {
     public URL getURL(IHttpService httpService, byte[] request) {
         IRequestInfo reqInfo = this.helpers.analyzeRequest(httpService, request);
         return reqInfo.getUrl();
+    }
+
+    @Override
+    public IHttpHeader buildHeader(String name, String value) {
+        return this.helpers.buildHeader(name, value);
     }
 
 }
