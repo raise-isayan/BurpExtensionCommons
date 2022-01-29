@@ -255,6 +255,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
 
     public int getPort() {
         String value = getHostHeader();
+        if (value == null) return -1;
         Matcher m = HOST_HEADER.matcher(value);
         if (m.matches()) {
             return ConvertUtil.parseIntDefault(m.group(3), HttpUtil.getDefaultPort(isSSL()));

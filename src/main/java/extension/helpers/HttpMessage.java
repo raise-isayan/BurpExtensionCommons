@@ -14,7 +14,8 @@ public class HttpMessage {
  
     public final static String LINE_TERMINATE = "\r\n";
     private final Pattern CONTENT_LENGTH = Pattern.compile("^(Content-Length:\\s*)(\\d+)$", Pattern.MULTILINE);
-    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;]+?)(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE_CHARSET = Pattern.compile("Content-Type:\\s*([^;\\s]+);(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_BOUNDARY = Pattern.compile("boundary=\"?([^\"]+)\"?");
 
     private String header = "";
@@ -126,7 +127,7 @@ public class HttpMessage {
     }
 
     public static HttpMessage parseHttpMessage(String message) {
-        String[] splitMessage = message.split("(\r\n){2}", 2);
+        String[] splitMessage = message.split("(\r\n\r\n|\n\n)", 2);
         HttpMessage httpMsg = new HttpMessage();
         httpMsg.setHeader(splitMessage[0]);
         if (splitMessage.length > 1) {
@@ -213,7 +214,7 @@ public class HttpMessage {
     
     public String getGuessCharset() {
         String charset = null;
-        Matcher m = CONTENT_TYPE.matcher(this.getHeader());
+        Matcher m = CONTENT_TYPE_CHARSET.matcher(this.getHeader());
         if (m.find()) {
             charset = m.group(2);
         }
@@ -237,7 +238,7 @@ public class HttpMessage {
 
     public static byte[][] splitHttpMessage(byte[] messageByte) {
         String message = StringUtil.getBytesRawString(messageByte);
-        String[] splitMessage = message.split("(\r\n){2}", 2);
+        String[] splitMessage = message.split("(\r\n\r\n|\n\n)", 2);
         if (splitMessage.length == 1) {
             return new byte[][]{ StringUtil.getBytesRaw(splitMessage[0]), new byte[]{} };
         } else {

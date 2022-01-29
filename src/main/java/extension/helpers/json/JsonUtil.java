@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.lang.reflect.Type;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -207,6 +208,18 @@ public class JsonUtil {
         }                
         Gson gson = gsonBuilder.create();
         return gson.fromJson(jsonString, classOfT);
+    }
+
+    public static <T> T jsonFromString(String jsonString, Type type, boolean exludeFields) {
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
+        }
+        if (exludeFields) {            
+            gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        }                
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(jsonString, type);
     }
     
 }

@@ -19,7 +19,7 @@ Please import BurpExtensionCommons.jar in the release folder as a Java library a
 * JRE (JDK) 11 (Open JDK is recommended) (https://openjdk.java.net/)
 
 ## Supported Versions
-* Burp suite v2.1
+* Burp suite v2020
 
 ## build
  gradlew release
@@ -36,6 +36,6 @@ Please import BurpExtensionCommons.jar in the release folder as a Java library a
 
 ## development environment
 
-* NetBean 12.4 (https://netbeans.apache.org/)
+* NetBean 12.6 (https://netbeans.apache.org/)
 * Gradle 7.0.2 (https://gradle.org/)
 
