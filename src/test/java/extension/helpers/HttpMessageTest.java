@@ -1,6 +1,5 @@
-package extension.view.base;
+package extension.helpers;
 
-import extension.helpers.HttpMessage;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

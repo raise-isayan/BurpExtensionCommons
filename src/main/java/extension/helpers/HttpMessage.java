@@ -14,8 +14,9 @@ public class HttpMessage {
  
     public final static String LINE_TERMINATE = "\r\n";
     private final Pattern CONTENT_LENGTH = Pattern.compile("^(Content-Length:\\s*)(\\d+)$", Pattern.MULTILINE);
-    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
-    private final Pattern CONTENT_TYPE_CHARSET = Pattern.compile("Content-Type:\\s*([^;\\s]+);(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)$", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE_MIME = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
+    private final Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_BOUNDARY = Pattern.compile("boundary=\"?([^\"]+)\"?");
 
     private String header = "";
@@ -171,16 +172,21 @@ public class HttpMessage {
     }
 
     public String getContentTypeHeader() {
-        String mimeType = null;
+        String conentType = null;
         Matcher m = CONTENT_TYPE.matcher(this.getHeader());
+        if (m.find()) {
+            conentType = m.group(0);
+        }
+        return conentType;
+    }
+
+    public String getContentMimeType() {
+        String mimeType = null;
+        Matcher m = CONTENT_TYPE_MIME.matcher(this.getHeader());
         if (m.find()) {
             mimeType = m.group(1);
         }
         return mimeType;
-    }
-
-    public String getContentMimeType() {
-        return this.getContentTypeHeader();
     }
 
     public boolean isContentMimeType(String mime) {
@@ -193,7 +199,7 @@ public class HttpMessage {
     }
 
     public boolean isContentMimeType(ContentType contentType) {
-        String mimeType = this.getContentTypeHeader();
+        String mimeType = this.getContentMimeType();
         if (mimeType == null) {
             return false;
         }        
@@ -214,9 +220,12 @@ public class HttpMessage {
     
     public String getGuessCharset() {
         String charset = null;
-        Matcher m = CONTENT_TYPE_CHARSET.matcher(this.getHeader());
-        if (m.find()) {
-            charset = m.group(2);
+        String contentType = getContentTypeHeader();
+        if (contentType != null) {
+            Matcher m = CONTENT_CHARSET.matcher(contentType);
+            if (m.find()) {
+                charset = m.group(2);
+            }
         }
         return normalizeCharset(charset);
     }

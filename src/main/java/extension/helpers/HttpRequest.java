@@ -44,12 +44,19 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
         this.requestLine = parseHttpRequestLine(this.getHeader());
     }
 
-    protected void parseParameter() throws ParseException {
-        
-
+    public boolean hasQueryParameter() {
+        return getUri().indexOf('?') >= 0;
     }
-    
-    
+
+    public String getPath() {
+        String path = getUri();
+        int queryIndex = path.indexOf('?');
+        if (queryIndex >= 0) {
+            path = path.substring(0, queryIndex);
+        }
+        return path;
+    }
+       
     @Override
     public String getRequestLine() {
         return this.requestLine.getRequestLine();
@@ -85,6 +92,11 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
         return HttpUtil.normalizeURL(url);
     }
 
+    public String gePath(IHttpService httpService) {
+        String url = String.format("%s://%s:%d%s", new Object[]{httpService.getProtocol(), httpService.getHost(), httpService.getPort(), this.getPath()});
+        return HttpUtil.normalizeURL(url);
+    }
+ 
     public static HttpRequestLine parseHttpRequestLine(byte[] message) throws ParseException {
         String request = StringUtil.getBytesRawString(message);
         return new HttpRequest(parseHttpMessage(request));
@@ -229,7 +241,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
     }
     
     public String getEnctype() {
-        return this.getContentTypeHeader();
+        return this.getContentMimeType();
     }
 
     public boolean isGET() {
@@ -263,14 +275,6 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
             return HttpUtil.getDefaultPort(isSSL());
         }
     }
-
-//    private String [] parseBody() {
-//        
-//        
-//        
-//    }
-    
-    
     
     @Override
     public String getGuessCharset() {

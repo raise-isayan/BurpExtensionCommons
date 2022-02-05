@@ -221,5 +221,29 @@ public class JsonUtil {
         Gson gson = gsonBuilder.create();
         return gson.fromJson(jsonString, type);
     }
-    
+
+    public static void loadFromJson(File fi, Map<String, String> option) throws IOException {
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+        String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
+        JsonElement jsonRoot = JsonUtil.parse(jsonString);
+        if (jsonRoot.isJsonObject()) {
+            JsonObject jsonMap = jsonRoot.getAsJsonObject();    
+            for (String memberName : jsonMap.keySet()) {
+                option.put(memberName, jsonMap.get(memberName).toString());
+            }
+        }
+    }
+
+    public static void saveToJson(File fo, Map<String, String> option) throws IOException {
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+        gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        Gson gson = gsonBuilder.create();
+        JsonObject jsonMap = new JsonObject();    
+        for (String memberName : option.keySet()) {
+            jsonMap.add(memberName, JsonUtil.parse(option.get(memberName)));
+        }        
+        String jsonString = gson.toJson(jsonMap);
+        FileUtil.bytesToFile(StringUtil.getBytesUTF8(jsonString), fo);
+    }
+        
 }

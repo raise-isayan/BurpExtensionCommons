@@ -617,6 +617,11 @@ public class BurpVersionTest {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        @Override
+        public byte[] makeHttp2Request(IHttpService arg0, List<IHttpHeader> arg1, byte[] arg2, boolean arg3, String arg4) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
     }
 
 }

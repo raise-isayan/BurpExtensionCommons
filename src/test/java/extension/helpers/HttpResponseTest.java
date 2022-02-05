@@ -1,8 +1,10 @@
-package extension.view.base;
+package extension.helpers;
 
-import extension.helpers.HttpMessage;
-import extension.helpers.HttpResponse;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -75,43 +77,59 @@ public class HttpResponseTest {
             + "Connection: close\r\n"
             + "\r\n";
         
-    private final static String RES_BODY1 = "<!DOCTYPE html>"
-            + "<html lang=\"ja\">"
-            + "<head>"
-            +"<script>alert(0)</script>"
-            + "<meta charset=\"UTF-8\">"
-            + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"
-            + "<title>title</title>"
-            + "</head>"
-            + "<body>"
-            + "<h2 class=\"header2\">test</h2>"
-            + "</body>"
-            + "</html>";
+        private final static String RES_BODY1 = "<!DOCTYPE html>"
+                + "<html lang=\"ja\">"
+                + "<head>"
+                +"<script>alert(0)</script>"
+                + "<meta charset=\"UTF-8\">"
+                + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"
+                + "<title>title</title>"
+                + "</head>"
+                + "<body>"
+                + "<h2 class=\"header2\">test</h2>"
+                + "</body>"
+                + "</html>";
 
-    
-        private final static String RES_BODY2 = "<!DOCTYPE html>"
-            + "<html lang=\"ja\">"
-            + "<head>"
-            +"<script>alert(0)</script>"
-            + "<meta charset=\"Shift_JIS\">"
-            + "<title>title</title>"
-            + "</head>"
-            + "<body>"
-            + "<h2 class=\"header2\">test</h2>"
-            + "</body>"
-            + "</html>";
 
-        private final static String RES_BODY3 = "<!DOCTYPE html>"
-            + "<html lang=\"ja\">"
-            + "<head>"
-            +"<script>alert(0)</script>"
-            + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=euc-jp\">"
-            + "<title>title</title>"
-            + "</head>"
-            + "<body>"
-            + "<h2 class=\"header2\">test</h2>"
-            + "</body>"
-            + "</html>";
+            private final static String RES_BODY2 = "<!DOCTYPE html>"
+                + "<html lang=\"ja\">"
+                + "<head>"
+                +"<script>alert(0)</script>"
+                + "<meta charset=\"Shift_JIS\">"
+                + "<title>title</title>"
+                + "</head>"
+                + "<body>"
+                + "<h2 class=\"header2\">test</h2>"
+                + "</body>"
+                + "</html>";
+
+            private final static String RES_BODY3 = "<!DOCTYPE html>"
+                + "<html lang=\"ja\">"
+                + "<head>"
+                +"<script>alert(0)</script>"
+                + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=euc-jp\">"
+                + "<title>title</title>"
+                + "</head>"
+                + "<body>"
+                + "<h2 class=\"header2\">test</h2>"
+                + "</body>"
+                + "</html>";
+
+        @Test
+        public void testGeUrl() {
+            try {
+                System.out.println("testGeUrl");
+                String url = "https://user:pass@www.google.com/search?q=example#search";
+                URL u = new URL(url);
+                System.out.println("Path:" + u.getPath()); 
+                System.out.println("Query:" + u.getQuery()); 
+                System.out.println("UserInfo:" + u.getUserInfo()); 
+                System.out.println("ref:" + u.getRef()); 
+            } catch (MalformedURLException ex) {
+                fail(ex.getMessage());
+            }        
+        }    
+
         
     /**
      * Test of getStatusLine method, of class HttpResponse.
@@ -229,7 +247,7 @@ public class HttpResponseTest {
                 String expResult = null;
                 String result = instance.getContentMimeType();
                 assertEquals(expResult, result);
-            }
+            }          
             {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER2);
                 String expResult = "text/html";
@@ -276,6 +294,30 @@ public class HttpResponseTest {
             }            
         } catch (ParseException ex) {
             fail("getGuessCharset");
+        }
+    }
+    
+    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE2 = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)$", Pattern.MULTILINE);
+
+    @Test
+    public void testMathContetType() {
+        System.out.println("mathContetType");
+        {
+            Matcher contetType = CONTENT_TYPE.matcher(RES_HEADER3);
+            boolean find = contetType.find();
+            System.out.println("mathContetType:" + find);
+            if (find) {
+                System.out.println("mathContetType.group:" + contetType.group(0));    
+            }        
+        }
+        {
+            Matcher contetType = CONTENT_TYPE2.matcher(RES_HEADER3);
+            boolean find = contetType.find();
+            System.out.println("mathContetType2:" + find);
+            if (find) {
+                System.out.println("mathContetType2.group:" + contetType.group(0));    
+            }        
         }
     }
     

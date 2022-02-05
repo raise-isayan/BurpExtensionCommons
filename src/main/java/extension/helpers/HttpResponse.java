@@ -48,10 +48,6 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
     private final Pattern RESMETA_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);
     //<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 
-    public String getContentMimeType() {
-        return this.getContentTypeHeader();
-    }
-
     public boolean isContentMimeType(String mime) {
         String mimeType = this.getContentTypeHeader();
         if (mimeType != null) {
