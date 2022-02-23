@@ -3,8 +3,10 @@ package extension.helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -20,6 +22,7 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class ConvertUtilTest {
+
     private final static Logger logger = Logger.getLogger(ConvertUtilTest.class.getName());
 
     public ConvertUtilTest() {
@@ -46,17 +49,17 @@ public class ConvertUtilTest {
     @Test
     public void testAppandByte() {
         System.out.println("appandByte");
-        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10};
+        byte[] base = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         {
-            byte [] add = new byte [] {21,22,23};
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23};
-            byte [] result = ConvertUtil.appandByte(base, add);
+            byte[] add = new byte[]{21, 22, 23};
+            byte[] expResult = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21, 22, 23};
+            byte[] result = ConvertUtil.appandByte(base, add);
             assertArrayEquals(expResult, result);
         }
         {
-            byte [] add = new byte [] {};
-            byte [] result = ConvertUtil.appandByte(base, add);
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10};
+            byte[] add = new byte[]{};
+            byte[] result = ConvertUtil.appandByte(base, add);
+            byte[] expResult = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
             assertArrayEquals(expResult, result);
         }
     }
@@ -78,40 +81,40 @@ public class ConvertUtilTest {
     @Test
     public void testByteReplace_0() {
         System.out.println("byteReplace");
-        byte [] base = new byte [] {1,2,3,4,5,6,7,8,9,10};
-        byte [] replace = new byte [] {21,22,23};
+        byte[] base = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        byte[] replace = new byte[]{21, 22, 23};
         {
-            byte [] expResult = new byte [] {21,22,23,1,2,3,4,5,6,7,8,9,10};
-            byte [] testResult = byteReplace(base, 0, 0, replace);
-            byte [] result = ConvertUtil.replaceByte(base, 0, 0, replace);
+            byte[] expResult = new byte[]{21, 22, 23, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            byte[] testResult = byteReplace(base, 0, 0, replace);
+            byte[] result = ConvertUtil.replaceByte(base, 0, 0, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,21,22,23,4,5,6,7,8,9,10};
-            byte [] result = ConvertUtil.replaceByte(base, 2, 3, replace);
-            byte [] testResult = byteReplace(base, 2, 3, replace);
+            byte[] expResult = new byte[]{1, 2, 21, 22, 23, 4, 5, 6, 7, 8, 9, 10};
+            byte[] result = ConvertUtil.replaceByte(base, 2, 3, replace);
+            byte[] testResult = byteReplace(base, 2, 3, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,21,22,23,4,5,6,7,8,9,10};
-            byte [] result = ConvertUtil.replaceByte(base, 1, 3, replace);
-            byte [] testResult = byteReplace(base, 1, 3, replace);
+            byte[] expResult = new byte[]{1, 21, 22, 23, 4, 5, 6, 7, 8, 9, 10};
+            byte[] result = ConvertUtil.replaceByte(base, 1, 3, replace);
+            byte[] testResult = byteReplace(base, 1, 3, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,21,22,23,10};
-            byte [] result = ConvertUtil.replaceByte(base, 9, 9, replace);
-            byte [] testResult = byteReplace(base, 9, 9, replace);
+            byte[] expResult = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 10};
+            byte[] result = ConvertUtil.replaceByte(base, 9, 9, replace);
+            byte[] testResult = byteReplace(base, 9, 9, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
         {
-            byte [] expResult = new byte [] {1,2,3,4,5,6,7,8,9,10,21,22,23};
-            byte [] result = ConvertUtil.replaceByte(base, 10, 10, replace);
-            byte [] testResult = byteReplace(base, 10, 10, replace);
+            byte[] expResult = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 21, 22, 23};
+            byte[] result = ConvertUtil.replaceByte(base, 10, 10, replace);
+            byte[] testResult = byteReplace(base, 10, 10, replace);
             assertArrayEquals(expResult, result);
             assertArrayEquals(testResult, result);
         }
@@ -239,7 +242,7 @@ public class ConvertUtilTest {
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
-       }
+        }
         try {
             System.out.println("toBASE64Decoder");
             System.out.println(ConvertUtil.toBase64Decode("!\"#$%&'()=~|", "8859_1"));
@@ -249,7 +252,162 @@ public class ConvertUtilTest {
         } catch (UnsupportedEncodingException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
-       }
+        }
     }
 
+    /**
+     */
+    @Test
+    public void testBytesToLong() {
+        System.out.println("bytesToLong");
+        {
+            byte[] bytes = {0, 0, 0, 0, (byte) 7, (byte) 91, (byte) 205, (byte) 21};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(123456789L, result);
+        }
+        {
+            byte[] bytes = {(byte) 7, (byte) 91, (byte) 205, (byte) 21};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(123456789L, result);
+        }
+        {
+            String value = "X8LPTw";
+            byte[] decode = Base64.getDecoder().decode(value);
+            long result = ConvertUtil.bytesToLong(decode, ByteOrder.BIG_ENDIAN);
+            assertEquals(1606602575L, result);
+        }
+        {
+            byte[] bytes = {(byte) 21, (byte) 205, (byte) 91, (byte) 7, 0, 0, 0, 0};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(123456789L, result);
+        }
+        {
+            byte[] bytes = {(byte) 21, (byte) 205, (byte) 91, (byte) 7};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(123456789L, result);
+        }
+        {
+            byte[] bytes = ConvertUtil.longToBytes(987654321L, ByteOrder.LITTLE_ENDIAN);
+            long longValue = ConvertUtil.bytesToLong(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(987654321L, longValue);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(bytes);
+            assertEquals(encode, "sWjeOg");
+            System.out.println("LITTLE_ENDIAN:" + encode);
+        }
+        {
+            byte[] bytes0 = ConvertUtil.longToBytes(987654321L, ByteOrder.BIG_ENDIAN);
+            byte[] bytes = ConvertUtil.longToBytes(987654321L, ByteOrder.BIG_ENDIAN);
+            long longValue = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(987654321L, longValue);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(bytes);
+            assertEquals(encode, "Ot5osQ");
+            System.out.println("BIG_ENDIAN:" + encode);
+        }
+        {
+            byte[] bytes = ConvertUtil.longToBytes(0L, ByteOrder.LITTLE_ENDIAN);
+            long longValue = ConvertUtil.bytesToLong(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(0L, longValue);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(bytes);
+//            assertEquals(encode, "sWjeOg");
+            System.out.println("LITTLE_ENDIAN0:" + encode);
+        }
+        {
+            byte[] bytes = ConvertUtil.longToBytes(0L, ByteOrder.BIG_ENDIAN);
+            long longValue = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(0L, longValue);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(bytes);
+//            assertEquals(encode, "Ot5osQ");
+            System.out.println("BIG_ENDIAN0:" + encode);
+        }
+        {
+            byte[] decode = Base64.getDecoder().decode("AA");
+            long result = ConvertUtil.bytesToLong(decode, ByteOrder.BIG_ENDIAN);
+            assertEquals(0L, result);
+        }
+        {
+            byte[] decode = Base64.getDecoder().decode("AA");
+            long result = ConvertUtil.bytesToLong(decode, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(0L, result);
+        }
+    }
+
+    /**
+     */
+    @Test
+    public void testLongToBytes() {
+        System.out.println("longToBytes");
+        {
+            byte[] bytes = {(byte) 7, (byte) 91, (byte) 205, (byte) 21};
+            byte[] result = ConvertUtil.longToBytes(123456789L, ByteOrder.BIG_ENDIAN);
+            assertArrayEquals(bytes, result);
+        }
+        {
+            byte[] bytes = {(byte) 21, (byte) 205, (byte) 91, (byte) 7};
+            byte[] result = ConvertUtil.longToBytes(123456789L, ByteOrder.LITTLE_ENDIAN);
+            assertArrayEquals(bytes, result);
+        }
+        {
+            byte[] result = ConvertUtil.longToBytes(1606602575L, ByteOrder.BIG_ENDIAN);
+            byte[] decode = Base64.getDecoder().decode("X8LPTw");
+            assertArrayEquals(decode, result);
+        }
+        {
+            byte[] decode = Base64.getDecoder().decode("sWjeOg");
+            long longValue = ConvertUtil.bytesToLong(decode, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(987654321L, longValue);
+            System.out.println("LITTLE_ENDIAN:" + longValue);
+            byte[] result = ConvertUtil.longToBytes(longValue, ByteOrder.LITTLE_ENDIAN);
+            assertArrayEquals(decode, result);
+        }
+        {
+            byte[] decode = Base64.getDecoder().decode("Ot5osQ");
+            long longValue = ConvertUtil.bytesToLong(decode, ByteOrder.BIG_ENDIAN);
+            assertEquals(987654321L, longValue);
+            System.out.println("BIG_ENDIAN:" + longValue);
+            byte[] result = ConvertUtil.longToBytes(longValue, ByteOrder.BIG_ENDIAN);
+            assertArrayEquals(decode, result);
+        }
+        {
+            byte[] result = ConvertUtil.longToBytes(0L, ByteOrder.BIG_ENDIAN);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(result);
+            assertEquals("AA", encode);
+            System.out.println("BIG_ENDIAN:" + encode);
+        }
+        {
+            byte[] result = ConvertUtil.longToBytes(0L, ByteOrder.LITTLE_ENDIAN);
+            String encode = Base64.getEncoder().withoutPadding().encodeToString(result);
+            assertEquals("AA", encode);
+            System.out.println("LITTLE_ENDIAN:" + encode);
+        }
+    }
+
+    /**
+     *
+     * public static long bytesToLong(final byte[] bytes, ByteOrder byteOrder) {
+     * ByteBuffer buf = ByteBuffer.allocate(Long.SIZE/Byte.SIZE);
+     * buf.order(byteOrder); if (byteOrder == ByteOrder.LITTLE_ENDIAN)
+     * buf.put(bytes); for (int i = bytes.length; i < Long.SIZE/Byte.SIZE; i++)
+     * { buf.put((byte)0); } if (byteOrder == ByteOrder.BIG_ENDIAN)
+     * buf.put(bytes); buf.position(0); return buf.getLong(); }
+     *
+     * public static byte []longToBytes(final long value, ByteOrder byteOrder) {
+     * ByteBuffer buf = ByteBuffer.allocate(Long.SIZE/Byte.SIZE);
+     * buf.order(byteOrder); buf.putLong(value); int pos = 0; if (byteOrder ==
+     * ByteOrder.BIG_ENDIAN) { byte [] array = buf.array(); for (int i = 0; i < array.length; i++) {
+     * if (array[i] != 0) {
+     * pos = i;
+     * break;
+     * }
+     * }
+     *
+     * }
+     * buf.position(pos);
+     * int limit = buf.array().length;
+     * if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+     * byte [] array = buf.array();
+     * for (int i = array.length; i > 0; i--) { if (array[i-1] != 0) { limit =
+     * i; break; } } } buf.limit(limit); byte [] b = new byte[buf.remaining()];
+     * buf.get(b); return b; }
+     *
+     */
 }
