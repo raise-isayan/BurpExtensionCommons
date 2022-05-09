@@ -1,7 +1,11 @@
 package extension.helpers;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -157,6 +161,21 @@ public class HttpMessageTest {
             String expResult = "Shift_JIS";
             String result = instance.getGuessCharset();
             assertEquals(expResult, result);        
+        }
+    }
+
+    @Test
+    public void testParseHttpDate() {
+        System.out.println("parseHttpDate");
+        {
+            LocalDateTime tm1 = HttpMessage.parseHttpDate("Sun, 08 May 2022 04:06:13 GMT", ZoneId.of("Asia/Tokyo"));
+            System.out.println("parseHttpDate:" + tm1.toString());
+            Assert.assertEquals(2022, tm1.getYear());
+            Assert.assertEquals(Month.MAY, tm1.getMonth());
+            Assert.assertEquals(8, tm1.getDayOfMonth());
+            Assert.assertEquals(4, tm1.getHour());
+            Assert.assertEquals(6, tm1.getMinute());
+            Assert.assertEquals(13, tm1.getSecond());                    
         }
     }
     

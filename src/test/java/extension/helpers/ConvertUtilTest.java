@@ -258,6 +258,50 @@ public class ConvertUtilTest {
     /**
      */
     @Test
+    public void testBytesToInt() {
+        System.out.println("bytesToInt");
+        {
+            byte[] bytes = {(byte) 7, (byte) 91, (byte) 205, (byte) 21};
+            int result = ConvertUtil.bytesToInt(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(123456789, result);
+        }
+        {
+            byte[] bytes = {(byte) 21, (byte) 205, (byte) 91, (byte) 7};
+            int result = ConvertUtil.bytesToInt(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(123456789, result);
+        }
+        {
+            byte[] bytes = {(byte) 0};
+            int result = ConvertUtil.bytesToInt(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(0, result);
+        }
+        {
+            byte[] bytes = {(byte) 0};
+            int result = ConvertUtil.bytesToInt(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(0, result);
+        }
+    }
+    
+    /**
+     */
+    @Test
+    public void testIntToBytes() {
+        System.out.println("intToBytes");
+        {
+            byte[] bytes = {(byte) 7, (byte) 91, (byte) 205, (byte) 21};
+            byte[] result = ConvertUtil.intToBytes(123456789, ByteOrder.BIG_ENDIAN);
+            assertArrayEquals(bytes, result);
+        }
+        {
+            byte[] bytes = {(byte) 21, (byte) 205, (byte) 91, (byte) 7};
+            byte[] result = ConvertUtil.intToBytes(123456789, ByteOrder.LITTLE_ENDIAN);
+            assertArrayEquals(bytes, result);
+        }
+    }
+
+    /**
+     */
+    @Test
     public void testBytesToLong() {
         System.out.println("bytesToLong");
         {
@@ -269,6 +313,16 @@ public class ConvertUtilTest {
             byte[] bytes = {(byte) 7, (byte) 91, (byte) 205, (byte) 21};
             long result = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
             assertEquals(123456789L, result);
+        }
+        {
+            byte[] bytes = {(byte) 0};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.BIG_ENDIAN);
+            assertEquals(0, result);
+        }
+        {
+            byte[] bytes = {(byte) 0};
+            long result = ConvertUtil.bytesToLong(bytes, ByteOrder.LITTLE_ENDIAN);
+            assertEquals(0, result);
         }
         {
             String value = "X8LPTw";

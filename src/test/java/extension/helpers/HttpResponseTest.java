@@ -3,6 +3,10 @@ package extension.helpers;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.After;
@@ -115,20 +119,20 @@ public class HttpResponseTest {
                 + "</body>"
                 + "</html>";
 
-        @Test
-        public void testGeUrl() {
-            try {
-                System.out.println("testGeUrl");
-                String url = "https://user:pass@www.google.com/search?q=example#search";
-                URL u = new URL(url);
-                System.out.println("Path:" + u.getPath()); 
-                System.out.println("Query:" + u.getQuery()); 
-                System.out.println("UserInfo:" + u.getUserInfo()); 
-                System.out.println("ref:" + u.getRef()); 
-            } catch (MalformedURLException ex) {
-                fail(ex.getMessage());
-            }        
-        }    
+    @Test
+    public void testGeUrl() {
+        try {
+            System.out.println("testGeUrl");
+            String url = "https://user:pass@www.google.com/search?q=example#search";
+            URL u = new URL(url);
+            System.out.println("Path:" + u.getPath()); 
+            System.out.println("Query:" + u.getQuery()); 
+            System.out.println("UserInfo:" + u.getUserInfo()); 
+            System.out.println("ref:" + u.getRef()); 
+        } catch (MalformedURLException ex) {
+            fail(ex.getMessage());
+        }        
+    }    
 
         
     /**
@@ -235,6 +239,22 @@ public class HttpResponseTest {
         }
     }
 
+    @Test
+    public void testDateHeader() {
+        try {
+            HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER1);
+            LocalDateTime dtm = instance.getDateHeader();
+            assertEquals(2018, dtm.getYear());
+            assertEquals(Month.FEBRUARY, dtm.getMonth());
+            assertEquals(3, dtm.getDayOfMonth());
+            assertEquals(2, dtm.getHour());
+            assertEquals(22, dtm.getMinute());
+            assertEquals(53, dtm.getSecond());
+        } catch (ParseException ex) {
+            Logger.getLogger(HttpResponseTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     /**
      * Test of getContentMimeType method, of class HttpResponse.
      */

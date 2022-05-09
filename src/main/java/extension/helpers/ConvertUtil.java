@@ -563,6 +563,43 @@ public class ConvertUtil {
         return value.replaceAll("([\\.\\\\\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-])", "\\\\$1");
     }
 
+    public static int bytesToInt(final byte[] bytes, ByteOrder byteOrder) {
+        int result = 0;
+        if (byteOrder == ByteOrder.BIG_ENDIAN) {
+            for (int i = 0; i < bytes.length; i++) {
+                result <<= Byte.SIZE;
+                result |= (bytes[i] & 0xFF);
+            }
+        }
+        else {
+            for (int i = bytes.length; i > 0; i--) {
+                result <<= Byte.SIZE;
+                result |= (bytes[i-1] & 0xFF);
+            }
+        }
+        return result;
+    }
+
+    public static byte []intToBytes(final int value, ByteOrder byteOrder) {
+        int mag = Integer.SIZE - Integer.numberOfLeadingZeros(value);
+        int bsize = Math.max(((mag + (Byte.SIZE - 1)) / Byte.SIZE), 1);
+        byte [] bytes = new byte [bsize];
+        long val = value;
+        if (byteOrder == ByteOrder.BIG_ENDIAN) {
+            for (int i = bytes.length; i > 0; i--) {
+                bytes[i-1] = (byte)(val & 0xFF);
+                val >>= Byte.SIZE;
+            }
+        }
+        else {
+            for (int i = 0; i < bytes.length; i++) {
+                bytes[i] = (byte)(val & 0xFF);
+                val >>= Byte.SIZE;
+            }
+        }
+        return bytes;
+    }
+        
     public static long bytesToLong(final byte[] bytes, ByteOrder byteOrder) {
         long result = 0;
         if (byteOrder == ByteOrder.BIG_ENDIAN) {

@@ -45,7 +45,7 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
     public String getReasonPhrase() {
         return this.statusLine.getReasonPhrase();
     }
-    private final Pattern RESMETA_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);
+    private final Pattern RES_META_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);
     //<META http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 
     public boolean isContentMimeType(String mime) {
@@ -81,7 +81,7 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
     public String getGuessCharset() {
         String charset = super.getGuessCharset();
         if (charset == null) {
-            Matcher m2 = RESMETA_SET.matcher(this.getBody());
+            Matcher m2 = RES_META_SET.matcher(this.getBody());
             if (m2.find()) {
                 charset = m2.group(1);
             }
@@ -134,5 +134,5 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
     public static HttpResponse parseHttpResponse(String message) throws ParseException {
         return new HttpResponse(parseHttpMessage(message));
     }
-
+    
 }

@@ -2,6 +2,12 @@ package extension.helpers;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +24,7 @@ public class HttpMessage {
     private final Pattern CONTENT_TYPE_MIME = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
     private final Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_BOUNDARY = Pattern.compile("boundary=\"?([^\"]+)\"?");
+    private final Pattern HEADER_DATE = Pattern.compile("^Date:\\s*(.*)$", Pattern.MULTILINE);
 
     private String header = "";
     private String body = "";
@@ -234,6 +241,15 @@ public class HttpMessage {
         return HttpUtil.normalizeCharset(charsetName);
     }
 
+    public LocalDateTime getDateHeader() {
+        LocalDateTime ldtm = null;
+        Matcher m = HEADER_DATE.matcher(this.getHeader());
+        if (m.find()) {
+            ldtm = HttpMessage.parseHttpDate(m.group(1));
+        }
+        return ldtm;
+    }
+    
     public static byte[] buildHttpMessage(byte[] headers, byte[] body) {
         StringBuilder messageBuff = new StringBuilder();
         messageBuff.append(StringUtil.getBytesRawString(headers));
@@ -255,4 +271,14 @@ public class HttpMessage {
         }
     }
 
+    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("eee, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+    
+    public static LocalDateTime parseHttpDate(String dateStr, ZoneId zoneID) {        
+        return parseHttpDate(dateStr).atZone(zoneID).toLocalDateTime();
+    }
+        
+    public static LocalDateTime parseHttpDate(String dateStr) {        
+        return ZonedDateTime.from(GMT_TIME_FORMATTER.parse(dateStr)).toLocalDateTime();
+    }
+    
 }
