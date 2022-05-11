@@ -271,10 +271,10 @@ public class HttpMessage {
         }
     }
 
-    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("eee, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, dd MMM yyyy HH:mm:ss z][eee, dd-MMM-yyyy HH:mm:ss z]", Locale.ENGLISH);
     
     public static LocalDateTime parseHttpDate(String dateStr, ZoneId zoneID) {        
-        return parseHttpDate(dateStr).atZone(zoneID).toLocalDateTime();
+        return parseHttpDate(dateStr).atZone(ZoneOffset.UTC).withZoneSameInstant(zoneID).toLocalDateTime();
     }
         
     public static LocalDateTime parseHttpDate(String dateStr) {        

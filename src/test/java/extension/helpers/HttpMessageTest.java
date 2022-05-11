@@ -173,9 +173,37 @@ public class HttpMessageTest {
             Assert.assertEquals(2022, tm1.getYear());
             Assert.assertEquals(Month.MAY, tm1.getMonth());
             Assert.assertEquals(8, tm1.getDayOfMonth());
+            Assert.assertEquals(4+9, tm1.getHour());
+            Assert.assertEquals(6, tm1.getMinute());
+            Assert.assertEquals(13, tm1.getSecond());
+
+            LocalDateTime tm2 = HttpMessage.parseHttpDate("Fri, 10-Jun-2022 01:55:24 GMT", ZoneId.of("Asia/Tokyo"));
+            System.out.println("parseHttpDate:" + tm2.toString());
+            Assert.assertEquals(2022, tm2.getYear());
+            Assert.assertEquals(Month.JUNE, tm2.getMonth());
+            Assert.assertEquals(10, tm2.getDayOfMonth());
+            Assert.assertEquals(1+9, tm2.getHour());
+            Assert.assertEquals(55, tm2.getMinute());
+            Assert.assertEquals(24, tm2.getSecond());
+        }
+        {
+            LocalDateTime tm1 = HttpMessage.parseHttpDate("Sun, 08 May 2022 04:06:13 GMT");
+            System.out.println("parseHttpDate:" + tm1.toString());
+            Assert.assertEquals(2022, tm1.getYear());
+            Assert.assertEquals(Month.MAY, tm1.getMonth());
+            Assert.assertEquals(8, tm1.getDayOfMonth());
             Assert.assertEquals(4, tm1.getHour());
             Assert.assertEquals(6, tm1.getMinute());
-            Assert.assertEquals(13, tm1.getSecond());                    
+            Assert.assertEquals(13, tm1.getSecond());
+
+            LocalDateTime tm2 = HttpMessage.parseHttpDate("Fri, 10-Jun-2022 01:55:24 GMT");
+            System.out.println("parseHttpDate:" + tm2.toString());
+            Assert.assertEquals(2022, tm2.getYear());
+            Assert.assertEquals(Month.JUNE, tm2.getMonth());
+            Assert.assertEquals(10, tm2.getDayOfMonth());
+            Assert.assertEquals(1, tm2.getHour());
+            Assert.assertEquals(55, tm2.getMinute());
+            Assert.assertEquals(24, tm2.getSecond());
         }
     }
     
