@@ -99,48 +99,51 @@ public class IpUtilTest {
     @Test
     public void testIsIPv4Address() {
         System.out.println("isIPv4Address");
-        try {
-            // class A Private IP
-            assertEquals(true, IpUtil.isIPv4Address("10.168.2.1"));
-            // class B Private IP
-            assertEquals(true, IpUtil.isIPv4Address("172.16.2.1"));
-            // class C Private IP
-            assertEquals(true, IpUtil.isIPv4Address("192.168.2.1"));
+        // class A Private IP
+        assertEquals(true, IpUtil.isIPv4Address("10.168.2.1"));
+        // class B Private IP
+        assertEquals(true, IpUtil.isIPv4Address("172.16.2.1"));
+        // class C Private IP
+        assertEquals(true, IpUtil.isIPv4Address("192.168.2.1"));
+        assertEquals(true, IpUtil.isIPv4Address("8.8.8.8"));
+        assertEquals(true, IpUtil.isIPv4Address("0.0.0.0"));
+        assertEquals(true, IpUtil.isIPv4Address("1.1.1.1"));
+        assertEquals(true, IpUtil.isIPv4Address("255.255.255.1"));
+        assertEquals(true, IpUtil.isIPv4Address("255.255.255.255"));
+        assertEquals(true, IpUtil.isIPv4Address("169.254.0.1"));
+        assertEquals(false, IpUtil.isIPv4Address("256.256.256.256"));
+        assertEquals(false, IpUtil.isIPv4Address(null));
 
-            assertEquals(true, IpUtil.isIPv4Address("8.8.8.8"));
+        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", -1));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 0));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 1));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 65535));
+        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", 65536));
+        assertEquals(false, IpUtil.isIPv4Valid(null, 65535));
 
-            assertEquals(true, IpUtil.isIPv4Address("0.0.0.0"));
-
-            assertEquals(true, IpUtil.isIPv4Address("1.1.1.1"));
-
-            assertEquals(true, IpUtil.isIPv4Address("255.255.255.1"));
-
-            assertEquals(true, IpUtil.isIPv4Address("255.255.255.255"));
-
-            assertEquals(true, IpUtil.isIPv4Address("169.254.0.1"));
-
-            assertEquals(false, IpUtil.isIPv4Address("256.256.256.256"));
-
-        } catch (ParseException ex) {
-            fail(ex.getMessage());
-        }
     }
 
     @Test
     public void testIsIPv6Address() {
-        try {
-            System.out.println("isIPv6Address");
-            assertEquals(true, IpUtil.isIPv6Address("::"));
-            assertEquals(true, IpUtil.isIPv6Address("::1"));
-            assertEquals(true, IpUtil.isIPv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7334"));
-            assertEquals(true, IpUtil.isIPv6Address("2001:db8:85a3:0:0:8a2e:370:7334"));
-            assertEquals(true, IpUtil.isIPv6Address("2001:db8:85a3::8a2e:370:7334"));
-            assertEquals(true, IpUtil.isIPv6Address("2001:db8::1:0:0:1"));
-            assertEquals(true, IpUtil.isIPv6Address("2001:0db8:0000:0000:3456::"));
-            assertEquals(false, IpUtil.isIPv6Address("2001:0db8::3456::"));
-        } catch (ParseException ex) {
-            fail(ex.getMessage());
-        }
+        System.out.println("isIPv6Address");
+        assertEquals(true, IpUtil.isIPv6Address("::"));
+        assertEquals(true, IpUtil.isIPv6Address("::1"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:0db8:85a3:0000:0000:8a2e:0370:7334"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:db8:85a3:0:0:8a2e:370:7334"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:db8:85a3::8a2e:370:7334"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:db8::1:0:0:1"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:0db8:0000:0000:3456::"));
+        assertEquals(true, IpUtil.isIPv6Address("2001:0112:0000:0000:0000:0000:0000:0030"));
+        assertEquals(true, IpUtil.isIPv6Address("[2001:0112:0000:0000:0000:0000:0000:0030]"));
+        assertEquals(false, IpUtil.isIPv6Address("2001:0db8::3456::"));
+        assertEquals(false, IpUtil.isIPv6Address(null));
+
+        assertEquals(false, IpUtil.isIPv6Valid("2001:0db8:85a3:0000:0000:8a2e:0370:7334", -1));
+        assertEquals(true, IpUtil.isIPv6Valid("2001:0db8:85a3:0000:0000:8a2e:0370:7334", 0));
+        assertEquals(true, IpUtil.isIPv6Valid("2001:0db8:85a3:0000:0000:8a2e:0370:7334", 1));
+        assertEquals(true, IpUtil.isIPv6Valid("2001:0db8:85a3:0000:0000:8a2e:0370:7334", 65535));
+        assertEquals(false, IpUtil.isIPv6Valid("2001:0db8:85a3:0000:0000:8a2e:0370:7334", 65536));
+        assertEquals(false, IpUtil.isIPv6Valid(null, 65535));
     }
 
     /**
@@ -149,60 +152,42 @@ public class IpUtilTest {
     @Test
     public void testIsPrivateIP() {
         System.out.println("isPrivateIP");
-        try {
-            // class A Private IP
-            assertEquals(true, IpUtil.isPrivateIP("10.168.2.1"));
-            // class B Private IP
-            assertEquals(true, IpUtil.isPrivateIP("172.16.2.1"));
-            // class C Private IP
-            assertEquals(true, IpUtil.isPrivateIP("192.168.2.1"));
+        // class A Private IP
+        assertEquals(true, IpUtil.isPrivateIP("10.168.2.1"));
+        // class B Private IP
+        assertEquals(true, IpUtil.isPrivateIP("172.16.2.1"));
+        // class C Private IP
+        assertEquals(true, IpUtil.isPrivateIP("192.168.2.1"));
 
-            assertEquals(false, IpUtil.isPrivateIP("127.0.0.1"));
+        assertEquals(false, IpUtil.isPrivateIP("127.0.0.1"));
 
-            assertEquals(false, IpUtil.isPrivateIP("8.8.8.8"));
+        assertEquals(false, IpUtil.isPrivateIP("8.8.8.8"));
 
-            assertEquals(false, IpUtil.isPrivateIP("0.0.0.0"));
+        assertEquals(false, IpUtil.isPrivateIP("0.0.0.0"));
 
-            assertEquals(false, IpUtil.isPrivateIP("1.1.1.1"));
+        assertEquals(false, IpUtil.isPrivateIP("1.1.1.1"));
 
-            assertEquals(false, IpUtil.isPrivateIP("255.255.255.1"));
+        assertEquals(false, IpUtil.isPrivateIP("255.255.255.1"));
 
-            assertEquals(false, IpUtil.isPrivateIP("255.255.255.255"));
+        assertEquals(false, IpUtil.isPrivateIP("255.255.255.255"));
 
-            assertEquals(false, IpUtil.isPrivateIP("169.254.0.1"));
+        assertEquals(false, IpUtil.isPrivateIP("169.254.0.1"));
 
-            // class A Private IP
-            assertEquals(true, IpUtil.isPrivateIP("10.168.2.1:8080"));
-            // class B Private IP
-            assertEquals(true, IpUtil.isPrivateIP("172.16.2.1:8080"));
-            // class C Private IP
-            assertEquals(true, IpUtil.isPrivateIP("192.168.2.1:80"));
+        // class A Private IP
+        assertEquals(true, IpUtil.isPrivateIP("10.168.2.1:8080"));
+        // class B Private IP
+        assertEquals(true, IpUtil.isPrivateIP("172.16.2.1:8080"));
+        // class C Private IP
+        assertEquals(true, IpUtil.isPrivateIP("192.168.2.1:80"));
 
-            assertEquals(false, IpUtil.isPrivateIP("8.8.8.8:2222"));
+        assertEquals(false, IpUtil.isPrivateIP("8.8.8.8:2222"));
 
-            assertEquals(false, IpUtil.isPrivateIP("0.0.0.0:0"));
+        assertEquals(false, IpUtil.isPrivateIP("0.0.0.0:0"));
+            
+        assertFalse(IpUtil.isPrivateIP("localhost:8000"));
+        assertFalse(IpUtil.isPrivateIP("localhost"));
 
-        } catch (ParseException ex) {
-            fail(ex.getMessage());
-        }
-        try {
-            IpUtil.isPrivateIP("localhost:8000");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
-        try {
-            IpUtil.isPrivateIP("localhost");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
-        try {
-            IpUtil.isPrivateIP("256.256.256.256");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
+        assertFalse(IpUtil.isPrivateIP("256.256.256.256"));
     }
 
     /**
@@ -211,58 +196,42 @@ public class IpUtilTest {
     @Test
     public void testIsLinkLocalIP() {
         System.out.println("isLinkLocalIP");
-        try {
-            // class A Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("10.168.2.1"));
-            // class B Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("172.16.2.1"));
-            // class C Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("192.168.2.1"));
+        // class A Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("10.168.2.1"));
+        // class B Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("172.16.2.1"));
+        // class C Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("192.168.2.1"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("127.0.0.1"));
+        assertEquals(false, IpUtil.isLinkLocalIP("127.0.0.1"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("8.8.8.8"));
+        assertEquals(false, IpUtil.isLinkLocalIP("8.8.8.8"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("1.1.1.1"));
+        assertEquals(false, IpUtil.isLinkLocalIP("1.1.1.1"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("255.255.255.1"));
+        assertEquals(false, IpUtil.isLinkLocalIP("255.255.255.1"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("255.255.255.255"));
+        assertEquals(false, IpUtil.isLinkLocalIP("255.255.255.255"));
 
-            assertEquals(true, IpUtil.isLinkLocalIP("169.254.0.1"));
+        assertEquals(true, IpUtil.isLinkLocalIP("169.254.0.1"));
 
-            // class A Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("10.168.2.1:8080"));
-            // class B Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("172.16.2.1:8080"));
-            // class C Private IP
-            assertEquals(false, IpUtil.isLinkLocalIP("192.168.2.1:80"));
+        // class A Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("10.168.2.1:8080"));
+        // class B Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("172.16.2.1:8080"));
+        // class C Private IP
+        assertEquals(false, IpUtil.isLinkLocalIP("192.168.2.1:80"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("8.8.8.8:2222"));
+        assertEquals(false, IpUtil.isLinkLocalIP("8.8.8.8:2222"));
 
-            assertEquals(false, IpUtil.isLinkLocalIP("0.0.0.0:0"));
+        assertEquals(false, IpUtil.isLinkLocalIP("0.0.0.0:0"));
 
-        } catch (ParseException ex) {
-            fail(ex.getMessage());
-        }
-        try {
-            IpUtil.isLinkLocalIP("localhost:8000");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
-        try {
-            IpUtil.isLinkLocalIP("localhost");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
-        try {
-            IpUtil.isLinkLocalIP("256.256.256.256");
-            fail();
-        } catch (ParseException ex) {
-            assertTrue(true);
-        }
+        assertEquals(false, IpUtil.isLinkLocalIP("localhost:8000"));
+
+        assertEquals(false, IpUtil.isLinkLocalIP("localhost"));
+
+        assertEquals(false, IpUtil.isLinkLocalIP("256.256.256.256"));
+
     }
 
     /**

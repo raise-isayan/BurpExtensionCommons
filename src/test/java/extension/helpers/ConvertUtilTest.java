@@ -436,6 +436,17 @@ public class ConvertUtilTest {
     }
 
     /**
+     */
+    @Test
+    public void testCalcStlength() {
+        System.out.println("calcStlength");
+        System.out.println(ConvertUtil.calcStlength(16, 20));
+
+        
+    }
+    
+    
+    /**
      *
      * public static long bytesToLong(final byte[] bytes, ByteOrder byteOrder) {
      * ByteBuffer buf = ByteBuffer.allocate(Long.SIZE/Byte.SIZE);

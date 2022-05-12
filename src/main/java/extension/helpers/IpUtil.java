@@ -11,16 +11,14 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class IpUtil {
-
-    //private final static Pattern IPv4_ADDR = Pattern.compile("([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})\\.([0-9]{1,3})");
-    private final static Pattern IPv4_ADDR = Pattern.compile("(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})");        
-    private final static Pattern IPv6_ADDR = Pattern.compile(
-        "([0-9a-f]{1,4}(:[0-9a-f]{1,4}){7})|::"
+    private final static String IPv6_PATTERN = "([0-9a-f]{1,4}(:[0-9a-f]{1,4}){7})|::"
       + "|:(:[0-9a-f]{1,4}){1,7}|([0-9a-f]{1,4}:){1,7}:"
       + "|([0-9a-f]{1,4}:){1}(:[0-9a-f]{1,4}){1,6}|([0-9a-f]{1,4}:){2}(:[0-9a-f]{1,4}){1,5}"
       + "|([0-9a-f]{1,4}:){3}(:[0-9a-f]{1,4}){1,4}|([0-9a-f]{1,4}:){4}(:[0-9a-f]{1,4}){1,3}"
-      + "|([0-9a-f]{1,4}:){5}(:[0-9a-f]{1,4}){1,2}|([0-9a-f]{1,4}:){6}(:[0-9a-f]{1,4}){1}"
-    );        
+      + "|([0-9a-f]{1,4}:){5}(:[0-9a-f]{1,4}){1,2}|([0-9a-f]{1,4}:){6}(:[0-9a-f]{1,4}){1}";
+
+    private final static Pattern IPv4_ADDR = Pattern.compile("(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9]{1,2})");        
+    private final static Pattern IPv6_ADDR = Pattern.compile("(" + IPv6_PATTERN + ")" + "|" + "\\[(" + IPv6_PATTERN + ")\\]");
 
     private final static Pattern IPv4_HEX = Pattern.compile("([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})");
     private final static Pattern IPv6_HEX = Pattern.compile("([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})");
@@ -33,12 +31,20 @@ public class IpUtil {
     private final static long LINK_LOCAL_MASK = 0xFFFF0000L;
     private final static long LINK_LOCAL_NET = 0x0A9FE0000L; // 169.254.0.0/16
 
-    public static boolean isIPv4Address(String ipAddr) throws ParseException {
-        return IPv4_ADDR.matcher(ipAddr).matches();
+    public static boolean isIPv4Valid(String ip_addr, int port) {
+        return (isIPv4Address(ip_addr) && 0 <= port && port < 65536);
     }
 
-    public static boolean isIPv6Address(String ipAddr) throws ParseException {
-        return IPv6_ADDR.matcher(ipAddr).matches();
+    public static boolean isIPv6Valid(String ip_addr, int port) {
+        return (isIPv6Address(ip_addr) && 0 <= port && port < 65536);
+    }
+        
+    public static boolean isIPv4Address(String ip_addr) {
+        return ip_addr != null && IPv4_ADDR.matcher(ip_addr).matches();
+    }
+
+    public static boolean isIPv6Address(String ip_addr) {
+        return ip_addr != null && IPv6_ADDR.matcher(ip_addr).matches();
     }
     /**
      * IPv4アドレスのパース
@@ -109,20 +115,30 @@ public class IpUtil {
         }
     }
         
-    public static boolean isPrivateIP(String ipAddr) throws ParseException {
-        // portを分離
-        String ip[] = ipAddr.split(":", 2);
-        long ip_decimal = IPv4ToDecimal(ip[0], ByteOrder.BIG_ENDIAN);
-        return ((ip_decimal & CLASS_A_MASK) == CLASS_A_NET)
-                || ((ip_decimal & CLASS_B_MASK) == CLASS_B_NET)
-                || ((ip_decimal & CLASS_C_MASK) == CLASS_C_NET);
+    public static boolean isPrivateIP(String ipAddr) {
+        try {
+            // portを分離
+            String ip[] = ipAddr.split(":", 2);
+            long ip_decimal = IPv4ToDecimal(ip[0], ByteOrder.BIG_ENDIAN);
+            return ((ip_decimal & CLASS_A_MASK) == CLASS_A_NET)
+                    || ((ip_decimal & CLASS_B_MASK) == CLASS_B_NET)
+                    || ((ip_decimal & CLASS_C_MASK) == CLASS_C_NET);        
+        }
+        catch (ParseException ex) {
+            return false;
+        }
     }
 
-    public static boolean isLinkLocalIP(String ipAddr) throws ParseException {
-        // portを分離
-        String ip[] = ipAddr.split(":", 2);
-        long ip_decimal = IPv4ToDecimal(ip[0], ByteOrder.BIG_ENDIAN);
-        return ((ip_decimal & LINK_LOCAL_MASK) == LINK_LOCAL_NET);
+    public static boolean isLinkLocalIP(String ipAddr) {
+        try {
+            // portを分離
+            String ip[] = ipAddr.split(":", 2);
+            long ip_decimal = IPv4ToDecimal(ip[0], ByteOrder.BIG_ENDIAN);
+            return ((ip_decimal & LINK_LOCAL_MASK) == LINK_LOCAL_NET);
+        }
+        catch (ParseException ex) {
+            return false;
+        }
     }
     
     public static long IPv4ToDecimal(String ipAddr, ByteOrder order) throws ParseException {

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -637,4 +638,17 @@ public class ConvertUtil {
         return bytes;
     }
 
+    public static double calcStlength(int base, int exponent) {
+        return Math.log(Math.pow(base, exponent)) / Math.log(2.0);
+    }
+
+    public static int calcCharacterKind(String base) {
+        HashSet<Character> map = new HashSet<>();
+        for (int j = 0; j < base.length(); j++) {
+            char c = base.charAt(j);
+            map.add(c);
+        }
+        return map.toArray().length;
+    }
+    
 }
