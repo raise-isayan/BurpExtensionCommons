@@ -1,6 +1,7 @@
 package extension.burp;
 
 import burp.ICookie;
+import extension.helpers.HttpMessage;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,9 +28,7 @@ public class Cookie implements ICookie {
     private long maxage = -1;
     private boolean secure = false;
     private boolean httpOnly = false;
-
-    // ex. Expires=Wed, 09 Jun 2021 10:18:14 GMT
-    private final static DateTimeFormatter EXPIRES__FORMAT = DateTimeFormatter.ofPattern("EEE, d MMM uuuu HH:mm:ss zzz").withLocale(Locale.ENGLISH).withResolverStyle(ResolverStyle.SMART);
+    private String sameSite;
 
     public Cookie(ICookie cookie) {
         this.name = cookie.getName();
@@ -59,6 +58,10 @@ public class Cookie implements ICookie {
         return (this.expiration == null) ? null : Date.from(this.expiration.toInstant());
     }
 
+    public ZonedDateTime getExpirationAsZonedDateTime() {
+        return this.expiration;
+    }
+
     @Override
     public String getName() {
         return this.name;
@@ -78,7 +81,11 @@ public class Cookie implements ICookie {
     }
 
     public boolean isHttpOnly() {
-        return httpOnly;
+        return this.httpOnly;
+    }
+
+    public String getSameSite() {
+        return this.sameSite;
     }
 
     /**
@@ -114,19 +121,19 @@ public class Cookie implements ICookie {
                 String attributeValue = attributeNameValue[1].trim();
                 if ("Expires".equalsIgnoreCase(attributeName)) {
                     try {
-                        cookie.expiration = ZonedDateTime.from(EXPIRES__FORMAT.parse(attributeValue));
+                        cookie.expiration = HttpMessage.parseHttpDate(attributeValue);
                     } catch (DateTimeParseException e) {
-                        // 
+                        //
                     }
                 } else if ("Max-Age".equalsIgnoreCase(attributeName)) {
                     long maxAge = Long.parseLong(attributeValue);
                     cookie.maxage = maxAge;
-
                 } else if ("Domain".equalsIgnoreCase(attributeName)) {
                     cookie.domain = attributeValue;
-
                 } else if ("Path".equalsIgnoreCase(attributeName)) {
                     cookie.path = attributeValue;
+                } else if ("SameSite".equalsIgnoreCase(attributeName)) {
+                    cookie.sameSite = attributeValue;
                 }
 
             }
@@ -182,7 +189,7 @@ public class Cookie implements ICookie {
         if (this.expiration != null) {
             builder.append(" ");
             builder.append("Expires=");
-            builder.append(EXPIRES__FORMAT.format(this.expiration));
+            builder.append(HttpMessage.valueOfHttpDate(this.expiration));
             builder.append(";");
         }
         if (this.maxage >= 0) {
@@ -201,6 +208,12 @@ public class Cookie implements ICookie {
             builder.append("HttpOnly");
             builder.append(";");
         }
+        if (this.sameSite != null) {
+            builder.append(" ");
+            builder.append("SameSite=");
+            builder.append(this.sameSite);
+        }
+
         return builder.toString();
     }
 

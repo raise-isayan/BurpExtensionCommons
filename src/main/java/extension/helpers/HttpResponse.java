@@ -1,6 +1,7 @@
 package extension.helpers;
 
 import java.text.ParseException;
+import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,8 +10,9 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpResponse extends HttpMessage implements HttpStatusLine {
-
+    private final Pattern DATE_HEADER = Pattern.compile("^Date:\\s*(.*)$", Pattern.MULTILINE);
     private final static Pattern RES_STATUS = Pattern.compile("^(.*?)\\s+(\\d+)\\s+(.*?)$", Pattern.MULTILINE);
+
     private HttpStatusLine statusLine;
 
     protected HttpResponse() {
@@ -61,7 +63,7 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
 //        String mimeType = this.getContentTypeHeader();
 //        if (mimeType == null) {
 //            return false;
-//        }        
+//        }
 //        boolean result = false;
 //        switch (contentType) {
 //            case JAVA_SCRIPT:
@@ -76,7 +78,7 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
 //        }
 //        return result;
 //    }
-        
+
     @Override
     public String getGuessCharset() {
         String charset = super.getGuessCharset();
@@ -127,6 +129,15 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
         };
     }
 
+    public ZonedDateTime getDateHeader() {
+        ZonedDateTime zdtm = null;
+        Matcher m = DATE_HEADER.matcher(this.getHeader());
+        if (m.find()) {
+            zdtm = HttpMessage.parseHttpDate(m.group(1));
+        }
+        return zdtm;
+    }
+
     public static HttpResponse parseHttpResponse(byte[] message) throws ParseException {
         return new HttpResponse(parseHttpMessage(message));
     }
@@ -134,5 +145,5 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
     public static HttpResponse parseHttpResponse(String message) throws ParseException {
         return new HttpResponse(parseHttpMessage(message));
     }
-    
+
 }

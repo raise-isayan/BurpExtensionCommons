@@ -3,6 +3,7 @@ package extension.helpers;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -16,22 +17,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HttpMessageTest {
-    
+
     public HttpMessageTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -107,7 +108,7 @@ public class HttpMessageTest {
         + "Connection: close\r\n"
         + "Content-Type: text/html; charset=shift_jis\r\n"
         + "\r\n";
-        
+
     /**
      * Test of getGuessCharset method, of class HttpMessage.
      */
@@ -118,49 +119,49 @@ public class HttpMessageTest {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET0_FMT);
             String expResult = null;
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET1_FMT);
             String expResult = "UTF-8";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET2_FMT);
             String expResult = "UTF-8";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET3_FMT);
             String expResult = "UTF-8";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET10_FMT);
             String expResult = "UTF-8";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET21_FMT);
             String expResult = "Shift_JIS";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET12_FMT);
             String expResult = "UTF-8";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             HttpMessage instance = HttpMessage.parseHttpMessage(RES_CHARSET21_FMT);
             String expResult = "Shift_JIS";
             String result = instance.getGuessCharset();
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
     }
 
@@ -168,26 +169,7 @@ public class HttpMessageTest {
     public void testParseHttpDate() {
         System.out.println("parseHttpDate");
         {
-            LocalDateTime tm1 = HttpMessage.parseHttpDate("Sun, 08 May 2022 04:06:13 GMT", ZoneId.of("Asia/Tokyo"));
-            System.out.println("parseHttpDate:" + tm1.toString());
-            Assert.assertEquals(2022, tm1.getYear());
-            Assert.assertEquals(Month.MAY, tm1.getMonth());
-            Assert.assertEquals(8, tm1.getDayOfMonth());
-            Assert.assertEquals(4+9, tm1.getHour());
-            Assert.assertEquals(6, tm1.getMinute());
-            Assert.assertEquals(13, tm1.getSecond());
-
-            LocalDateTime tm2 = HttpMessage.parseHttpDate("Fri, 10-Jun-2022 01:55:24 GMT", ZoneId.of("Asia/Tokyo"));
-            System.out.println("parseHttpDate:" + tm2.toString());
-            Assert.assertEquals(2022, tm2.getYear());
-            Assert.assertEquals(Month.JUNE, tm2.getMonth());
-            Assert.assertEquals(10, tm2.getDayOfMonth());
-            Assert.assertEquals(1+9, tm2.getHour());
-            Assert.assertEquals(55, tm2.getMinute());
-            Assert.assertEquals(24, tm2.getSecond());
-        }
-        {
-            LocalDateTime tm1 = HttpMessage.parseHttpDate("Sun, 08 May 2022 04:06:13 GMT");
+            ZonedDateTime tm1 = HttpMessage.parseHttpDate("Sun, 08 May 2022 04:06:13 GMT");
             System.out.println("parseHttpDate:" + tm1.toString());
             Assert.assertEquals(2022, tm1.getYear());
             Assert.assertEquals(Month.MAY, tm1.getMonth());
@@ -196,7 +178,7 @@ public class HttpMessageTest {
             Assert.assertEquals(6, tm1.getMinute());
             Assert.assertEquals(13, tm1.getSecond());
 
-            LocalDateTime tm2 = HttpMessage.parseHttpDate("Fri, 10-Jun-2022 01:55:24 GMT");
+            ZonedDateTime tm2 = HttpMessage.parseHttpDate("Fri, 10-Jun-2022 01:55:24 GMT");
             System.out.println("parseHttpDate:" + tm2.toString());
             Assert.assertEquals(2022, tm2.getYear());
             Assert.assertEquals(Month.JUNE, tm2.getMonth());
@@ -204,7 +186,42 @@ public class HttpMessageTest {
             Assert.assertEquals(1, tm2.getHour());
             Assert.assertEquals(55, tm2.getMinute());
             Assert.assertEquals(24, tm2.getSecond());
+
+            ZonedDateTime tm3 = HttpMessage.parseHttpDate("Mon, 10-Jun-2999 00:55:10 GMT");
+            System.out.println("parseHttpDate:" + tm3.toString());
+            Assert.assertEquals(2999, tm3.getYear());
+            Assert.assertEquals(Month.JUNE, tm3.getMonth());
+            Assert.assertEquals(10, tm3.getDayOfMonth());
+            Assert.assertEquals(0, tm3.getHour());
+            Assert.assertEquals(55, tm3.getMinute());
+            Assert.assertEquals(10, tm3.getSecond());
+
+        }
+
+    }
+
+    @Test
+    public void testParseHttpDateAsLocalTime() {
+        System.out.println("parseHttpDateAsLocalTime");
+        {
+            LocalDateTime tm1 = HttpMessage.parseHttpDateAsLocal("Sun, 08 May 2022 04:06:13 GMT", ZoneId.of("Asia/Tokyo"));
+            System.out.println("parseHttpDate:" + tm1.toString());
+            Assert.assertEquals(2022, tm1.getYear());
+            Assert.assertEquals(Month.MAY, tm1.getMonth());
+            Assert.assertEquals(8, tm1.getDayOfMonth());
+            Assert.assertEquals(4+9, tm1.getHour());
+            Assert.assertEquals(6, tm1.getMinute());
+            Assert.assertEquals(13, tm1.getSecond());
+
+            LocalDateTime tm2 = HttpMessage.parseHttpDateAsLocal("Fri, 10-Jun-2022 01:55:24 GMT", ZoneId.of("Asia/Tokyo"));
+            System.out.println("parseHttpDate:" + tm2.toString());
+            Assert.assertEquals(2022, tm2.getYear());
+            Assert.assertEquals(Month.JUNE, tm2.getMonth());
+            Assert.assertEquals(10, tm2.getDayOfMonth());
+            Assert.assertEquals(1+9, tm2.getHour());
+            Assert.assertEquals(55, tm2.getMinute());
+            Assert.assertEquals(24, tm2.getSecond());
         }
     }
-    
+
 }

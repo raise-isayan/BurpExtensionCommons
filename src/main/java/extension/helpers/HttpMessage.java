@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -17,14 +16,13 @@ import java.util.regex.Pattern;
  */
 public class HttpMessage {
    public enum ContentType { JAVA_SCRIPT, JSON, XML };
- 
+
     public final static String LINE_TERMINATE = "\r\n";
     private final Pattern CONTENT_LENGTH = Pattern.compile("^(Content-Length:\\s*)(\\d+)$", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)$", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_MIME = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
     private final Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_BOUNDARY = Pattern.compile("boundary=\"?([^\"]+)\"?");
-    private final Pattern HEADER_DATE = Pattern.compile("^Date:\\s*(.*)$", Pattern.MULTILINE);
 
     private String header = "";
     private String body = "";
@@ -50,14 +48,14 @@ public class HttpMessage {
     public String[] getHeaders() {
         return this.header.split(LINE_TERMINATE);
     }
-        
+
     /**
      * @return the header
      */
     public byte[] getHeaderBytes() {
         return StringUtil.getBytesRaw(this.header);
     }
-       
+
     /**
      * @param header the header to set
      */
@@ -125,7 +123,7 @@ public class HttpMessage {
         len += StringUtil.getBytesRaw(HttpMessage.LINE_TERMINATE).length;
         return len;
     }
-        
+
     public boolean isBody() {
         return (this.body.length() > 0);
     }
@@ -143,7 +141,7 @@ public class HttpMessage {
         }
         return httpMsg;
     }
-        
+
     public int getContentLength() {
         int contentlen = -1;
         Matcher m = CONTENT_LENGTH.matcher(this.getHeader());
@@ -209,7 +207,7 @@ public class HttpMessage {
         String mimeType = this.getContentMimeType();
         if (mimeType == null) {
             return false;
-        }        
+        }
         boolean result = false;
         switch (contentType) {
             case JAVA_SCRIPT:
@@ -224,7 +222,7 @@ public class HttpMessage {
         }
         return result;
     }
-    
+
     public String getGuessCharset() {
         String charset = null;
         String contentType = getContentTypeHeader();
@@ -241,15 +239,6 @@ public class HttpMessage {
         return HttpUtil.normalizeCharset(charsetName);
     }
 
-    public LocalDateTime getDateHeader() {
-        LocalDateTime ldtm = null;
-        Matcher m = HEADER_DATE.matcher(this.getHeader());
-        if (m.find()) {
-            ldtm = HttpMessage.parseHttpDate(m.group(1));
-        }
-        return ldtm;
-    }
-    
     public static byte[] buildHttpMessage(byte[] headers, byte[] body) {
         StringBuilder messageBuff = new StringBuilder();
         messageBuff.append(StringUtil.getBytesRawString(headers));
@@ -272,13 +261,17 @@ public class HttpMessage {
     }
 
     private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, dd MMM yyyy HH:mm:ss z][eee, dd-MMM-yyyy HH:mm:ss z]", Locale.ENGLISH);
-    
-    public static LocalDateTime parseHttpDate(String dateStr, ZoneId zoneID) {        
-        return parseHttpDate(dateStr).atZone(ZoneOffset.UTC).withZoneSameInstant(zoneID).toLocalDateTime();
+
+    public static LocalDateTime parseHttpDateAsLocal(String dateStr, ZoneId zoneID) {
+        return parseHttpDate(dateStr).withZoneSameInstant(zoneID).toLocalDateTime();
     }
-        
-    public static LocalDateTime parseHttpDate(String dateStr) {        
-        return ZonedDateTime.from(GMT_TIME_FORMATTER.parse(dateStr)).toLocalDateTime();
+
+    public static ZonedDateTime parseHttpDate(String dateStr) {
+        return ZonedDateTime.from(GMT_TIME_FORMATTER.parse(dateStr));
     }
-    
+
+    public static String valueOfHttpDate(ZonedDateTime zdtm) {
+        return GMT_TIME_FORMATTER.format(zdtm);
+    }
+
 }

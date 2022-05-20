@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -21,22 +22,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HttpResponseTest {
-    
+
     public HttpResponseTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -70,7 +71,7 @@ public class HttpResponseTest {
             + "Content-Length: 116\r\n"
             + "Connection: close\r\n"
             + "\r\n";
-        
+
 
         private final static String RES_HEADER4 = "HTTP/1.1 200 OK\r\n"
             + "Date: Sat, 19 Jan 2019 02:49:15 GMT\r\n"
@@ -80,7 +81,7 @@ public class HttpResponseTest {
             + "Content-Length: 116\r\n"
             + "Connection: close\r\n"
             + "\r\n";
-        
+
         private final static String RES_BODY1 = "<!DOCTYPE html>"
                 + "<html lang=\"ja\">"
                 + "<head>"
@@ -125,16 +126,16 @@ public class HttpResponseTest {
             System.out.println("testGeUrl");
             String url = "https://user:pass@www.google.com/search?q=example#search";
             URL u = new URL(url);
-            System.out.println("Path:" + u.getPath()); 
-            System.out.println("Query:" + u.getQuery()); 
-            System.out.println("UserInfo:" + u.getUserInfo()); 
-            System.out.println("ref:" + u.getRef()); 
+            System.out.println("Path:" + u.getPath());
+            System.out.println("Query:" + u.getQuery());
+            System.out.println("UserInfo:" + u.getUserInfo());
+            System.out.println("ref:" + u.getRef());
         } catch (MalformedURLException ex) {
             fail(ex.getMessage());
-        }        
-    }    
+        }
+    }
 
-        
+
     /**
      * Test of getStatusLine method, of class HttpResponse.
      */
@@ -243,18 +244,18 @@ public class HttpResponseTest {
     public void testDateHeader() {
         try {
             HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER1);
-            LocalDateTime dtm = instance.getDateHeader();
-            assertEquals(2018, dtm.getYear());
-            assertEquals(Month.FEBRUARY, dtm.getMonth());
-            assertEquals(3, dtm.getDayOfMonth());
-            assertEquals(2, dtm.getHour());
-            assertEquals(22, dtm.getMinute());
-            assertEquals(53, dtm.getSecond());
+            ZonedDateTime zdtm = instance.getDateHeader();
+            assertEquals(2018, zdtm.getYear());
+            assertEquals(Month.FEBRUARY, zdtm.getMonth());
+            assertEquals(3, zdtm.getDayOfMonth());
+            assertEquals(2, zdtm.getHour());
+            assertEquals(22, zdtm.getMinute());
+            assertEquals(53, zdtm.getSecond());
         } catch (ParseException ex) {
             Logger.getLogger(HttpResponseTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Test of getContentMimeType method, of class HttpResponse.
      */
@@ -267,20 +268,20 @@ public class HttpResponseTest {
                 String expResult = null;
                 String result = instance.getContentMimeType();
                 assertEquals(expResult, result);
-            }          
+            }
             {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER2);
                 String expResult = "text/html";
                 String result = instance.getContentMimeType();
                 assertEquals(expResult, result);
-            }            
+            }
             {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER3);
                 String expResult = "text/javascript";
                 String result = instance.getContentMimeType();
                 assertEquals(expResult, result);
                 assertTrue(instance.isContentMimeType(HttpMessage.ContentType.JAVA_SCRIPT));
-            }            
+            }
             {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER4);
                 String expResult = "application/javascript";
@@ -304,19 +305,19 @@ public class HttpResponseTest {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER1);
                 int expResult = -1;
                 int result = instance.getContentLength();
-                assertEquals(expResult, result);            
+                assertEquals(expResult, result);
             }
             {
                 HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER2);
                 int expResult = 116;
                 int result = instance.getContentLength();
-                assertEquals(expResult, result);            
-            }            
+                assertEquals(expResult, result);
+            }
         } catch (ParseException ex) {
             fail("getGuessCharset");
         }
     }
-    
+
     private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE2 = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)$", Pattern.MULTILINE);
 
@@ -328,17 +329,17 @@ public class HttpResponseTest {
             boolean find = contetType.find();
             System.out.println("mathContetType:" + find);
             if (find) {
-                System.out.println("mathContetType.group:" + contetType.group(0));    
-            }        
+                System.out.println("mathContetType.group:" + contetType.group(0));
+            }
         }
         {
             Matcher contetType = CONTENT_TYPE2.matcher(RES_HEADER3);
             boolean find = contetType.find();
             System.out.println("mathContetType2:" + find);
             if (find) {
-                System.out.println("mathContetType2.group:" + contetType.group(0));    
-            }        
+                System.out.println("mathContetType2.group:" + contetType.group(0));
+            }
         }
     }
-    
+
 }
