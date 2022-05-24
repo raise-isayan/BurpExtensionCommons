@@ -3,7 +3,12 @@ package extension.helpers.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import extension.helpers.json.JsonUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -76,8 +81,8 @@ public class JsonUtilTest {
         assertEquals(true, result.has("abc"));
         assertEquals(false, result.has("xyz"));
     }
-    
-    
+
+
     /**
      * Test of prettyJson method, of class JsonUtil.
      */
@@ -194,5 +199,21 @@ public class JsonUtilTest {
         }
 
     }
+
+    @Test
+    public void testConfigJson() {
+        try {
+            System.out.println("configJson");
+            File file = File.createTempFile("json", ".tmp");
+            Map<String, String> config = new HashMap();
+            config.put("abc", "test");
+            config.put("def", "{\"abc\":123,\"def\":\"test\"}");
+            JsonUtil.saveToJson(file, config);
+            System.out.println(file.getAbsoluteFile());
+        } catch (IOException ex) {
+            Logger.getLogger(JsonUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 
 }

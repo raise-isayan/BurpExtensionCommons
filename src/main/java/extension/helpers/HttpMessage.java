@@ -260,7 +260,7 @@ public class HttpMessage {
         }
     }
 
-    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, dd MMM yyyy HH:mm:ss z][eee, dd-MMM-yyyy HH:mm:ss z]", Locale.ENGLISH);
+    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, dd MMM yyyy HH:mm:ss z][eee, dd-MMM-yyyy HH:mm:ss z][eee, dd MMM yyyy HH:mm:ss Z][eee, dd-MMM-yyyy HH:mm:ss Z]", Locale.ENGLISH);
 
     public static LocalDateTime parseHttpDateAsLocal(String dateStr, ZoneId zoneID) {
         return parseHttpDate(dateStr).withZoneSameInstant(zoneID).toLocalDateTime();
