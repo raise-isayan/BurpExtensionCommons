@@ -260,7 +260,7 @@ public class HttpMessage {
         }
     }
 
-    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, dd MMM yyyy HH:mm:ss z][eee, dd-MMM-yyyy HH:mm:ss z][eee, dd MMM yyyy HH:mm:ss Z][eee, dd-MMM-yyyy HH:mm:ss Z]", Locale.ENGLISH);
+    private final static DateTimeFormatter GMT_TIME_FORMATTER = DateTimeFormatter.ofPattern("[eee, d MMM yyyy H:m:s z][eee, d-MMM-yyyy H:m:s z][eee, d MMM yyyy H:m:s Z][eee, d-MMM-yyyy H:m:s Z]", Locale.ENGLISH);
 
     public static LocalDateTime parseHttpDateAsLocal(String dateStr, ZoneId zoneID) {
         return parseHttpDate(dateStr).withZoneSameInstant(zoneID).toLocalDateTime();
@@ -271,7 +271,7 @@ public class HttpMessage {
     }
 
     public static String valueOfHttpDate(ZonedDateTime zdtm) {
-        return GMT_TIME_FORMATTER.format(zdtm);
+        return DateTimeFormatter.RFC_1123_DATE_TIME.format(zdtm);
     }
 
 }

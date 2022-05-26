@@ -3,6 +3,7 @@ package extension.helpers.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import extension.helpers.json.JsonUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -81,8 +82,8 @@ public class JsonUtilTest {
         assertEquals(true, result.has("abc"));
         assertEquals(false, result.has("xyz"));
     }
-
-
+    
+    
     /**
      * Test of prettyJson method, of class JsonUtil.
      */
@@ -214,6 +215,6 @@ public class JsonUtilTest {
             Logger.getLogger(JsonUtilTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-
+    
+    
 }
