@@ -267,7 +267,7 @@ public class HttpMessage {
     }
 
     public static ZonedDateTime parseHttpDate(String dateStr) {
-        return ZonedDateTime.from(GMT_TIME_FORMATTER.parse(dateStr));
+        return ZonedDateTime.from(GMT_TIME_FORMATTER.parse(dateStr.trim()));
     }
 
     public static String valueOfHttpDate(ZonedDateTime zdtm) {

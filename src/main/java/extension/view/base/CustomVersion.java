@@ -13,6 +13,8 @@ public class CustomVersion {
     private static int REVISION_VERSION = 0;
     private static int RELEASE_NUMBER = 0;
 
+    private static String RELEASE_EXTENSION = null;
+
     protected static void parseVersion(String version) {
         String[] splitversion = version.split("\\.");
         if (splitversion.length > 0) {
@@ -26,6 +28,9 @@ public class CustomVersion {
         }
         if (splitversion.length > 3) {
             RELEASE_NUMBER = ConvertUtil.parseIntDefault(splitversion[3], -1);
+        }
+        if (splitversion.length > 4) {
+            RELEASE_EXTENSION = splitversion[4];
         }
     }
 
@@ -66,12 +71,26 @@ public class CustomVersion {
     }
 
     /**
+     * リリース拡張識別子
+     *
+     * @return リリース番号
+     */
+    public String getReleaseExtension() {
+        return RELEASE_EXTENSION;
+    }
+
+    /**
      * バージョン番号
      *
      * @return バージョン番号
      */
     public String getVersion() {
-        return String.format("%d.%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, REVISION_VERSION, RELEASE_NUMBER);
+        if (RELEASE_EXTENSION == null) {
+            return String.format("%d.%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, REVISION_VERSION, RELEASE_NUMBER);
+        }
+        else {
+            return String.format("%d.%d.%d.%d%s", MAJOR_VERSION, MINOR_VERSION, REVISION_VERSION, RELEASE_NUMBER, RELEASE_EXTENSION);
+        }
     }
 
 }

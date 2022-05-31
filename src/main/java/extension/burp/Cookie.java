@@ -140,7 +140,7 @@ public class Cookie implements ICookie {
 
         }
         if (cookie == null) {
-            throw new ParseException("missing Cookie", 0);
+            throw new ParseException("missing Cookie:" + cookieString, 0);
         }
         return cookie;
     }

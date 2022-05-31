@@ -205,6 +205,14 @@ public class HttpMessageTest {
             Assert.assertEquals(6, tm4.getMinute());
             Assert.assertEquals(3, tm4.getSecond());
             
+            ZonedDateTime tm5 = HttpMessage.parseHttpDate(" Sun, 08 May 2022 04:06:13 GMT ");
+            System.out.println("parseHttpDate:" + tm1.toString());
+            Assert.assertEquals(2022, tm1.getYear());
+            Assert.assertEquals(Month.MAY, tm1.getMonth());
+            Assert.assertEquals(8, tm1.getDayOfMonth());
+            Assert.assertEquals(4, tm1.getHour());
+            Assert.assertEquals(6, tm1.getMinute());
+            Assert.assertEquals(13, tm1.getSecond());
             
         }
 
