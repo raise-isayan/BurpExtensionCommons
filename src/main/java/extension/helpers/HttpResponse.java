@@ -133,7 +133,7 @@ public class HttpResponse extends HttpMessage implements HttpStatusLine {
         ZonedDateTime zdtm = null;
         Matcher m = DATE_HEADER.matcher(this.getHeader());
         if (m.find()) {
-            zdtm = HttpMessage.parseHttpDate(m.group(1));
+            zdtm = DateUtil.parseHttpDate(m.group(1));
         }
         return zdtm;
     }

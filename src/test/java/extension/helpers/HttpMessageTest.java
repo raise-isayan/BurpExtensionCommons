@@ -204,18 +204,33 @@ public class HttpMessageTest {
             Assert.assertEquals(4, tm4.getHour());
             Assert.assertEquals(6, tm4.getMinute());
             Assert.assertEquals(3, tm4.getSecond());
-            
+
             ZonedDateTime tm5 = HttpMessage.parseHttpDate(" Sun, 08 May 2022 04:06:13 GMT ");
-            System.out.println("parseHttpDate:" + tm1.toString());
-            Assert.assertEquals(2022, tm1.getYear());
-            Assert.assertEquals(Month.MAY, tm1.getMonth());
-            Assert.assertEquals(8, tm1.getDayOfMonth());
-            Assert.assertEquals(4, tm1.getHour());
-            Assert.assertEquals(6, tm1.getMinute());
-            Assert.assertEquals(13, tm1.getSecond());
-            
+            System.out.println("parseHttpDate:" + tm5.toString());
+            Assert.assertEquals(2022, tm5.getYear());
+            Assert.assertEquals(Month.MAY, tm5.getMonth());
+            Assert.assertEquals(8, tm5.getDayOfMonth());
+            Assert.assertEquals(4, tm5.getHour());
+            Assert.assertEquals(6, tm5.getMinute());
+            Assert.assertEquals(13, tm5.getSecond());
+
         }
 
+    }
+
+    @Test
+    public void testParseHttpDateOffset() {
+        System.out.println("parseHttpDateOffset");
+        {
+            ZonedDateTime tm1 = HttpMessage.parseHttpDate("Sat, 4 Jun 2022 11:20:00 +0900");
+            System.out.println("parseHttpDate:" + tm1.toString());
+            Assert.assertEquals(2022, tm1.getYear());
+            Assert.assertEquals(Month.JUNE, tm1.getMonth());
+            Assert.assertEquals(4, tm1.getDayOfMonth());
+            Assert.assertEquals(11, tm1.getHour());
+            Assert.assertEquals(20, tm1.getMinute());
+            Assert.assertEquals(0, tm1.getSecond());
+        }
     }
 
     @Test

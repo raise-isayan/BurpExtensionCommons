@@ -1,16 +1,14 @@
 package extension.burp;
 
 import burp.ICookie;
+import extension.helpers.DateUtil;
 import extension.helpers.HttpMessage;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -121,7 +119,7 @@ public class Cookie implements ICookie {
                 String attributeValue = attributeNameValue[1].trim();
                 if ("Expires".equalsIgnoreCase(attributeName)) {
                     try {
-                        cookie.expiration = HttpMessage.parseHttpDate(attributeValue);
+                        cookie.expiration = DateUtil.parseHttpDate(attributeValue);
                     } catch (DateTimeParseException e) {
                         //
                     }
@@ -189,7 +187,7 @@ public class Cookie implements ICookie {
         if (this.expiration != null) {
             builder.append(" ");
             builder.append("Expires=");
-            builder.append(HttpMessage.valueOfHttpDate(this.expiration));
+            builder.append(DateUtil.valueOfHttpDate(this.expiration));
             builder.append(";");
         }
         if (this.maxage >= 0) {
