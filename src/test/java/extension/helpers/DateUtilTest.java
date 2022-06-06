@@ -1,6 +1,5 @@
 package extension.helpers;
 
-import extension.helpers.DateUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -288,6 +287,18 @@ public class DateUtilTest {
         {
             ZonedDateTime expResult = ZonedDateTime.of(2022, 6, 4, 0, 0, 0, 0, ZoneOffset.UTC);
             ZonedDateTime result = DateUtil.parseSmartDate("Sat, 4 Jun 2022", DateUtil.SMART_RFC_1123_FMT);
+            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
+        }
+        {
+            String dateStr = "Sun,08 May 2022 04:06:13 GMT";
+            ZonedDateTime expResult = ZonedDateTime.of(2022, 5, 8, 4, 6, 13, 0, ZoneOffset.UTC);
+            ZonedDateTime result = DateUtil.parseSmartDate(dateStr, DateUtil.SMART_RFC_1123_FMT);
+            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
+        }
+        {
+            String dateStr = "Sun,8 May 2022 4:6:3 GMT";
+            ZonedDateTime expResult = ZonedDateTime.of(2022, 5, 8, 4, 6, 3, 0, ZoneOffset.UTC);
+            ZonedDateTime result = DateUtil.parseSmartDate(dateStr, DateUtil.SMART_RFC_1123_FMT);
             assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
         }
     }

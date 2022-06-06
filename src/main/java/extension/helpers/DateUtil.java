@@ -1,6 +1,5 @@
 package extension.helpers;
 
-import extension.helpers.HttpMessage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -65,7 +64,7 @@ public class DateUtil {
 
     final static Pattern REGEX_RFC_1123 = Pattern.compile("((Mon|Tue|Wed|Thu|Fri|Sat|Sun),\\s+)?\\d{1,}[ -](Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[ -]\\d{1,}( \\d{1,2}(:\\d{1,2}(:\\d{1,2})?)?)?");
 
-    final static DateTimeFormatter SMART_RFC_1123_FMT = DateTimeFormatter.ofPattern("[[eee, ]d MMM uuuu[ H[:m[:s]]] zz][[eee, ]d-MMM-uuuu[ H[:m[:s]]] zz][[eee, ]d MMM uuuu[ H[:m[:s]]][ ZZ]][[eee, ]d-MMM-uuuu[ H[:m[:s]]][ ZZ]]", Locale.ENGLISH);
+    final static DateTimeFormatter SMART_RFC_1123_FMT = DateTimeFormatter.ofPattern("[[eee,[ ]]d MMM uuuu[ H[:m[:s]]] zz][[eee, ]d-MMM-uuuu[ H[:m[:s]]] zz][[eee, ]d MMM uuuu[ H[:m[:s]]][ ZZ]][[eee, ]d-MMM-uuuu[ H[:m[:s]]][ ZZ]]", Locale.ENGLISH);
 
     final static Pattern REGEX_ISO_8601 = Pattern.compile("\\d{1,}-\\d{1,2}-\\d{1,2}((?<ISO>T)\\d{1,2}(:\\d{1,2}(:\\d{1,2})?)?)?(?<ZONE>Z|[+-]\\d{2}:\\d{2})?");
 
