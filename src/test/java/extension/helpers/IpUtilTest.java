@@ -97,6 +97,24 @@ public class IpUtilTest {
     }
 
     @Test
+    public void testIPv4Valid() {
+        System.out.println("isIPv4Valid");
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1"));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1:0"));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1:1"));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1:65535"));
+        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1:65536"));
+        assertEquals(false, IpUtil.isIPv4Valid(":65535"));
+
+        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", -1));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 0));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 1));
+        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 65535));
+        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", 65536));
+        assertEquals(false, IpUtil.isIPv4Valid(null, 65535));
+    }
+
+    @Test
     public void testIsIPv4Address() {
         System.out.println("isIPv4Address");
         // class A Private IP
@@ -113,14 +131,6 @@ public class IpUtilTest {
         assertEquals(true, IpUtil.isIPv4Address("169.254.0.1"));
         assertEquals(false, IpUtil.isIPv4Address("256.256.256.256"));
         assertEquals(false, IpUtil.isIPv4Address(null));
-
-        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", -1));
-        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 0));
-        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 1));
-        assertEquals(true, IpUtil.isIPv4Valid("10.168.2.1", 65535));
-        assertEquals(false, IpUtil.isIPv4Valid("10.168.2.1", 65536));
-        assertEquals(false, IpUtil.isIPv4Valid(null, 65535));
-
     }
 
     @Test
@@ -183,7 +193,7 @@ public class IpUtilTest {
         assertEquals(false, IpUtil.isPrivateIP("8.8.8.8:2222"));
 
         assertEquals(false, IpUtil.isPrivateIP("0.0.0.0:0"));
-            
+
         assertFalse(IpUtil.isPrivateIP("localhost:8000"));
         assertFalse(IpUtil.isPrivateIP("localhost"));
 
