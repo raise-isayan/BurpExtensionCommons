@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,8 +17,8 @@ public class HttpMessage {
 
     public final static String LINE_TERMINATE = "\r\n";
     private final Pattern CONTENT_LENGTH = Pattern.compile("^(Content-Length:\\s*)(\\d+)$", Pattern.MULTILINE);
-    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?(.*)$", Pattern.MULTILINE);
-    private final Pattern CONTENT_TYPE_MIME = Pattern.compile("^Content-Type:\\s*([^;\\s]+);?", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s?(.*)$", Pattern.MULTILINE);
+    private final Pattern CONTENT_TYPE_MIME = Pattern.compile("^Content-Type:\\s*([^\\s;]+);?", Pattern.MULTILINE);
     private final Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);
     private final Pattern CONTENT_TYPE_BOUNDARY = Pattern.compile("boundary=\"?([^\"]+)\"?");
 

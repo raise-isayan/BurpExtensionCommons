@@ -61,7 +61,6 @@ public class JsonpElementTest {
                 assertTrue(true);
             }
         }
-
         {
             String json = "callback({ \"abc\": 123, \"def\": \"test\" });";
             try {
@@ -88,6 +87,18 @@ public class JsonpElementTest {
 
         {
             String json = " callback ({ \"abc\": 123, \"def\": \"test\" });";
+            try {
+                JsonpElement jsonp = JsonpElement.parseJsonp(json);
+                assertEquals("callback", jsonp.getCallbackName());
+                assertEquals(json, jsonp.getRaw());
+            }
+            catch (JsonSyntaxException ex) {
+                fail(ex.getMessage());
+            }
+        }
+
+                {
+            String json = "  callback  ({ \"abc\": 123, \"def\": \"test\" });";
             try {
                 JsonpElement jsonp = JsonpElement.parseJsonp(json);
                 assertEquals("callback", jsonp.getCallbackName());

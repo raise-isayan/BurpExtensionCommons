@@ -12,20 +12,20 @@ import java.util.regex.Pattern;
  */
 public class JsonpElement {
 
-    private JsonpElement() {    
+    private JsonpElement() {
     }
-    
+
     private final static Pattern JSONP_TYPE = Pattern.compile("\\s*([\\w\\$\\.]+)\\s*\\(\\s*(\\{.*?\\}|\\[.*?\\])\\s*\\)([;]*)", Pattern.DOTALL);
-    
+
     public static JsonpElement parseJsonp(String jsonpString) throws JsonSyntaxException {
         Matcher m = JSONP_TYPE.matcher(jsonpString);
         if (m.lookingAt()) {
-            JsonpElement jsonp = new JsonpElement();    
+            JsonpElement jsonp = new JsonpElement();
             jsonp.raw = m.group(0);
             jsonp.callbackName = m.group(1);
             jsonp.jsonElement = JsonUtil.parse(m.group(2));
             return jsonp;
-        }        
+        }
         throw new JsonSyntaxException("jsonp invalid format");
     }
 
@@ -36,13 +36,13 @@ public class JsonpElement {
     }
 
     private String callbackName;
-    
+
     public String getCallbackName() {
         return callbackName;
     }
 
     private JsonElement jsonElement;
-    
+
     public JsonElement getJsonElement() {
         return jsonElement;
     }
@@ -55,5 +55,5 @@ public class JsonpElement {
         buff.append("\n)");
         return buff.toString();
     }
-    
+
 }

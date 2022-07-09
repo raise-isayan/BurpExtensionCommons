@@ -35,7 +35,7 @@ public class JsonUtil {
             return false;
         }
     }
-    
+
     public static String stringify(JsonElement jsonElement) {
         return prettyJson(jsonElement, false);
     }
@@ -48,11 +48,11 @@ public class JsonUtil {
         JsonElement json = JsonParser.parseString(jsonElementString);
         return json.getAsJsonObject();
     }
-        
+
     public static String prettyJson(String jsonString) throws IOException {
         return prettyJson(jsonString, true);
     }
-    
+
     public static String prettyJson(String jsonElementString, boolean pretty)  throws JsonSyntaxException {
         return prettyJson(parse(jsonElementString), pretty);
     }
@@ -83,7 +83,7 @@ public class JsonUtil {
         toJsonTreeNode(jsonElement, rootJson);
         return model;
     }
-    
+
     public static DefaultTreeModel toJsonTreeModel(JsonpElement jsonpElement) {
         DefaultMutableTreeNode rootJson = new DefaultMutableTreeNode("JSONP");
         DefaultTreeModel model = new DefaultTreeModel(rootJson);
@@ -91,7 +91,7 @@ public class JsonUtil {
         toJsonTreeNode(jsonpElement.getJsonElement(), rootJson);
         return model;
     }
-    
+
     private static void toJsonTreeNode(JsonElement jsonElement, DefaultMutableTreeNode parentNode) {
         if (jsonElement.isJsonObject()) {
 //            DefaultMutableTreeNode node = new DefaultMutableTreeNode("{}");
@@ -129,29 +129,29 @@ public class JsonUtil {
 
     }
 
-    private final static Pattern JSON_TYPE = Pattern.compile("[\\s\r\n]*((\\[(.*)\\])|(\\{(.*)\\}))[\\s\r\n]*", Pattern.DOTALL);
-    
+    private final static Pattern JSON_TYPE = Pattern.compile("[\\s\r\n]?((\\[(.*)\\])|(\\{(.*)\\}))[\\s\r\n]?", Pattern.DOTALL);
+
     public static boolean isJson(String jsonString) {
         Matcher m = JSON_TYPE.matcher(jsonString);
         if (m.lookingAt()) {
             return JsonUtil.validJson(jsonString);
         } else {
             return false;
-        }        
+        }
     }
 
     public static boolean isJsonp(String jsonpString) {
         try {
-            JsonpElement.parseJsonp(jsonpString);    
-            return true;    
+            JsonpElement.parseJsonp(jsonpString);
+            return true;
         }
         catch (JsonSyntaxException ex) {
-            return false;    
+            return false;
         }
     }
-    
+
     private static final Map<Class<?>, Object> typeAdapterMap = new HashMap<>();
-    
+
     public static void registerTypeHierarchyAdapter(Class<?> baseType, Object typeAdapter) {
         typeAdapterMap.put(baseType, typeAdapter);
     }
@@ -159,15 +159,15 @@ public class JsonUtil {
     public static void removeTypeHierarchyAdapter(Class<?> baseType) {
         typeAdapterMap.remove(baseType);
     }
-    
+
     public static void saveToJson(File fo, Object bean, boolean exludeFields) throws IOException {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
             gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
-        if (exludeFields) {            
+        if (exludeFields) {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        }        
+        }
         Gson gson = gsonBuilder.create();
         String jsonString = gson.toJson(bean);
         FileUtil.bytesToFile(StringUtil.getBytesUTF8(jsonString), fo);
@@ -178,34 +178,34 @@ public class JsonUtil {
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
             gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
-        if (exludeFields) {            
+        if (exludeFields) {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        }                
+        }
         Gson gson = gsonBuilder.create();
         String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
         return gson.fromJson(jsonString, classOfT);
     }
-    
+
     public static String jsonToString(Object bean, boolean exludeFields) {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
             gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
-        if (exludeFields) {            
+        if (exludeFields) {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        }        
+        }
         Gson gson = gsonBuilder.create();
         return gson.toJson(bean);
     }
-    
+
     public static <T> T jsonFromString(String jsonString, Class<T> classOfT, boolean exludeFields) {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
             gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
-        if (exludeFields) {            
+        if (exludeFields) {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        }                
+        }
         Gson gson = gsonBuilder.create();
         return gson.fromJson(jsonString, classOfT);
     }
@@ -215,9 +215,9 @@ public class JsonUtil {
         for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
             gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
         }
-        if (exludeFields) {            
+        if (exludeFields) {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
-        }                
+        }
         Gson gson = gsonBuilder.create();
         return gson.fromJson(jsonString, type);
     }
@@ -227,7 +227,7 @@ public class JsonUtil {
         String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
         JsonElement jsonRoot = JsonUtil.parse(jsonString);
         if (jsonRoot.isJsonObject()) {
-            JsonObject jsonMap = jsonRoot.getAsJsonObject();    
+            JsonObject jsonMap = jsonRoot.getAsJsonObject();
             for (String memberName : jsonMap.keySet()) {
                 option.put(memberName, jsonMap.get(memberName).toString());
             }
@@ -238,12 +238,12 @@ public class JsonUtil {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = gsonBuilder.create();
-        JsonObject jsonMap = new JsonObject();    
+        JsonObject jsonMap = new JsonObject();
         for (String memberName : option.keySet()) {
             jsonMap.add(memberName, JsonUtil.parse(option.get(memberName)));
-        }        
+        }
         String jsonString = gson.toJson(jsonMap);
         FileUtil.bytesToFile(StringUtil.getBytesUTF8(jsonString), fo);
     }
-        
+
 }

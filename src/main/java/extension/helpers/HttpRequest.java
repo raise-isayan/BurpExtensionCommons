@@ -22,7 +22,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
     private final static String CONTENT_TYPE_AMF_IDENT = "application/x-amf";
 
     private Boolean useSSL = null;
-    private final static Pattern REQ_URL = Pattern.compile("^([a-zA-Z]+?)\\s+(.*?)\\s+(.*?)$", Pattern.MULTILINE);
+    private final static Pattern REQ_URL = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
     private final static Pattern HOST_HEADER = Pattern.compile("(.*?)(:(\\d+))?", Pattern.MULTILINE);
     private HttpRequestLine requestLine;
 
@@ -56,7 +56,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
         }
         return path;
     }
-       
+
     @Override
     public String getRequestLine() {
         return this.requestLine.getRequestLine();
@@ -96,7 +96,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
         String url = String.format("%s://%s:%d%s", new Object[]{httpService.getProtocol(), httpService.getHost(), httpService.getPort(), this.getPath()});
         return HttpUtil.normalizeURL(url);
     }
- 
+
     public static HttpRequestLine parseHttpRequestLine(byte[] message) throws ParseException {
         String request = StringUtil.getBytesRawString(message);
         return new HttpRequest(parseHttpMessage(request));
@@ -104,7 +104,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
 
     public static HttpRequestLine parseHttpRequestLine(String message) throws ParseException {
         final Matcher requestLine = REQ_URL.matcher(message);
-        if (!requestLine.find()) {
+        if (!requestLine.lookingAt()) {
             throw new ParseException("Illegal HttpRequest Format:" + message, 1);
         }
         return new HttpRequestLine() {
@@ -226,20 +226,20 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
             contentType = IRequestInfo.CONTENT_TYPE_URL_ENCODED;
         }
         else if (CONTENT_TYPE_MULTIPART_IDENT.equals(encType)){
-            contentType = IRequestInfo.CONTENT_TYPE_MULTIPART;        
+            contentType = IRequestInfo.CONTENT_TYPE_MULTIPART;
         }
         else if (CONTENT_TYPE_JSON_IDENT.equals(encType) || CONTENT_TYPE_TEXT_JSON_IDENT.equals(encType)){
-            contentType = IRequestInfo.CONTENT_TYPE_JSON;        
+            contentType = IRequestInfo.CONTENT_TYPE_JSON;
         }
         else if (CONTENT_TYPE_XML_IDENT.equals(encType) || CONTENT_TYPE_TEXT_XML_IDENT.equals(encType)){
-            contentType = IRequestInfo.CONTENT_TYPE_XML;        
+            contentType = IRequestInfo.CONTENT_TYPE_XML;
         }
         else if (CONTENT_TYPE_AMF_IDENT.equals(encType)){
-            contentType = IRequestInfo.CONTENT_TYPE_AMF;        
+            contentType = IRequestInfo.CONTENT_TYPE_AMF;
         }
         return contentType;
     }
-    
+
     public String getEnctype() {
         return this.getContentMimeType();
     }
@@ -275,7 +275,7 @@ public class HttpRequest extends HttpMessage implements HttpRequestLine {
             return HttpUtil.getDefaultPort(isSSL());
         }
     }
-    
+
     @Override
     public String getGuessCharset() {
         String charset = super.getGuessCharset();

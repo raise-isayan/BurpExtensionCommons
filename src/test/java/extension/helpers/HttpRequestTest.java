@@ -23,14 +23,14 @@ public class HttpRequestTest {
     final String GET_PROTOCOL_1_0 = "GET /jvuln/XSSVuln?mode=simple&name=name&age=20&tel=xxx HTTP/1.0\r\n" +
     "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36\r\n" +
     "Cookie: JSESSIONID=F072094178BFD73F1415FE165A3C5F3D; PHPSESSID=5eda0a0eed13fe75fa1343deb234f322\r\n" +
-    "Connection: close\r\n";    
-        
+    "Connection: close\r\n";
+
     final String GET_URLENCODE = "GET /jvuln/XSSVuln?mode=simple&name=name&age=20&tel=xxx HTTP/1.1\r\n" +
     "Host:  192.0.2.11:10000\r\n" +
     "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36\r\n" +
     "Cookie: JSESSIONID=F072094178BFD73F1415FE165A3C5F3D; PHPSESSID=5eda0a0eed13fe75fa1343deb234f322\r\n" +
-    "Connection: close\r\n";    
-    
+    "Connection: close\r\n";
+
     final String POST_URLENCODE = "POST /vuln/registerJSON.php?mode=register HTTP/1.1\r\n" +
     "Host: 192.0.2.11\r\n" +
     "Content-Length: 47\r\n" +
@@ -56,7 +56,7 @@ public class HttpRequestTest {
     "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36\r\n" +
     "\r\n" +
     "nickname=xx&email=aa%40example.com&address=test";
-    
+
     final String MULTI_PART1 = "POST /cgi-bin/sendto.cgi?mode=sendto HTTP/1.1\r\n" +
     "Host: 192.0.2.11:1234\r\n" +
     "Content-Length: 1715\r\n" +
@@ -105,7 +105,7 @@ public class HttpRequestTest {
     "\r\n" +
     "UTF-8\r\n" +
     "------WebKitFormBoundaryNXJdwcqdorc9eqtE--";
-    
+
     private final static String POST_MESSAGE_URLENCODE =
         "POST /cgi-bin/multienc.cgi?charset=Shift_JIS&mode=disp HTTP/1.1\r\n" +
         "Host: 192.168.0.1\r\n" +
@@ -198,25 +198,49 @@ public class HttpRequestTest {
         "UTF-8\r\n" +
         "------WebKitFormBoundaryOw7BuAmQWEc7jVWH--\r\n" +
         "\r\n";
-    
+
     public HttpRequestTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
+
+    @Test
+    public void testParseHttpRequestLine() throws Exception {
+        System.out.println("testParseHttpRequestLine");
+        {
+            HttpRequestLine instance = HttpRequest.parseHttpRequestLine(GET_PROTOCOL_1_0);
+            String method = instance.getMethod();
+            assertEquals("GET", method);
+            String protover = instance.getProtocolVersion();
+            assertEquals("HTTP/1.0", protover);
+            String uri = instance.getUri();
+            assertEquals("/jvuln/XSSVuln?mode=simple&name=name&age=20&tel=xxx", uri);
+        }
+        {
+            HttpRequestLine instance = HttpRequest.parseHttpRequestLine(POST_URLENCODE);
+            String method = instance.getMethod();
+            assertEquals("POST", method);
+            String protover = instance.getProtocolVersion();
+            assertEquals("HTTP/1.1", protover);
+            String uri = instance.getUri();
+            assertEquals("/vuln/registerJSON.php?mode=register", uri);
+        }
+    }
+
 
     @Test
     public void testParseGettProtocol_1_0() throws Exception {
@@ -239,7 +263,7 @@ public class HttpRequestTest {
         String body = instance.getBody();
         assertEquals("", body);
     }
-    
+
     @Test
     public void testParseGettUrlencode() throws Exception {
         System.out.println("testParseGettUrlencode");
@@ -263,7 +287,7 @@ public class HttpRequestTest {
         String body = instance.getBody();
         assertEquals("", body);
     }
-    
+
     @Test
     public void testParsePostUrlencode() throws Exception {
         System.out.println("testParsePostUrlencode");
@@ -278,7 +302,7 @@ public class HttpRequestTest {
         String hostHeader = instance.getHostHeader();
         assertEquals("192.0.2.11", hostHeader);
         int port = instance.getPort();
-        assertEquals(80, port);        
+        assertEquals(80, port);
         assertEquals("application/x-www-form-urlencoded", contentType);
         String charSet = instance.getGuessCharset();
         assertEquals(null, charSet);
@@ -295,7 +319,7 @@ public class HttpRequestTest {
         String hostHeader = instance.getHostHeader();
         assertEquals("192.0.2.11:80", hostHeader);
         int port = instance.getPort();
-        assertEquals(80, port);        
+        assertEquals(80, port);
         assertEquals("application/x-www-form-urlencoded", contentType);
         String charSet = instance.getGuessCharset();
         assertEquals("UTF-8", charSet);
@@ -312,14 +336,14 @@ public class HttpRequestTest {
         String hostHeader = instance.getHostHeader();
         assertEquals("192.0.2.11:80", hostHeader);
         int port = instance.getPort();
-        assertEquals(80, port);        
+        assertEquals(80, port);
         assertEquals("application/x-www-form-urlencoded", contentType);
         String charSet = instance.getGuessCharset();
         assertEquals("UTF-8", charSet);
         String body = instance.getBody();
         assertEquals("nickname=xx&email=aa%40example.com&address=test", body);
     }
-    
+
     @Test
     public void testParseMultipart() throws Exception {
         System.out.println("testParseMultipart");
@@ -332,7 +356,79 @@ public class HttpRequestTest {
         System.out.println(header);
     }
 
-        
+    @Test
+    public void testGetContentTypeHeader() throws Exception {
+        System.out.println("testGetContentTypeHeader");
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(GET_URLENCODE);
+            String contetHeader = instance.getContentTypeHeader();
+            assertNull(contetHeader);
+            System.out.println(contetHeader);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_URLENCODE);
+            String contetHeader = instance.getContentTypeHeader();
+            assertEquals("Content-Type: application/x-www-form-urlencoded", contetHeader);
+            System.out.println(contetHeader);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_URLENCODE_CHARSET2);
+            String contetHeader = instance.getContentTypeHeader();
+            assertEquals("Content-Type: application/x-www-form-urlencoded; charset='UTF-8';", contetHeader);
+            System.out.println(contetHeader);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(MULTI_PART1);
+            String contetHeader = instance.getContentTypeHeader();
+            assertEquals("Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNXJdwcqdorc9eqtE", contetHeader);
+            System.out.println(contetHeader);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_MESSAGE_JSON);
+            String contetHeader = instance.getContentTypeHeader();
+            assertEquals("Content-Type: application/json; charset=UTF-8", contetHeader);
+            System.out.println(contetHeader);
+        }
+    }
+
+    /**
+     * Test of getContentMimeType method, of class HttpResponse.
+     */
+    @Test
+    public void testGetContentMimeType() throws Exception {
+        System.out.println("getContentMimeType");
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(GET_URLENCODE);
+            String contetMime = instance.getContentMimeType();
+            assertNull(contetMime);
+            System.out.println(contetMime);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_URLENCODE);
+            String contetMime = instance.getContentMimeType();
+            assertEquals("application/x-www-form-urlencoded", contetMime);
+            System.out.println(contetMime);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_URLENCODE_CHARSET2);
+            String contetMime = instance.getContentMimeType();
+            assertEquals("application/x-www-form-urlencoded", contetMime);
+            System.out.println(contetMime);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(MULTI_PART1);
+            String contetMime = instance.getContentMimeType();
+            assertEquals("multipart/form-data", contetMime);
+            System.out.println(contetMime);
+        }
+        {
+            HttpRequest instance = HttpRequest.parseHttpRequest(POST_MESSAGE_JSON);
+            String contetMime = instance.getContentMimeType();
+            assertEquals("application/json", contetMime);
+            System.out.println(contetMime);
+        }
+    }
+
     /**
      * Test of getContentMimeType method, of class HttpResponse.
      */
@@ -410,5 +506,5 @@ public class HttpRequestTest {
         }
     }
 
-    
+
 }

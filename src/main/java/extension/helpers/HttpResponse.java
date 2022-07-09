@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpResponse extends HttpMessage implements HttpStatusLine {
-    private final Pattern DATE_HEADER = Pattern.compile("^Date:\\s*(.*)$", Pattern.MULTILINE);
-    private final static Pattern RES_STATUS = Pattern.compile("^(.*?)\\s+(\\d+)\\s+(.*?)$", Pattern.MULTILINE);
+    private final Pattern DATE_HEADER = Pattern.compile("^Date:\\s?(.*)$", Pattern.MULTILINE);
+    private final static Pattern RES_STATUS = Pattern.compile("^(\\S+)\\s+(\\d+)\\s+(\\S+)$", Pattern.MULTILINE);
 
     private HttpStatusLine statusLine;
 

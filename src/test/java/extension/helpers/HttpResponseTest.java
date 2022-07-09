@@ -1,10 +1,13 @@
 package extension.helpers;
 
+import static com.sun.source.util.DocTrees.instance;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,6 +85,13 @@ public class HttpResponseTest {
             + "Connection: close\r\n"
             + "\r\n";
 
+
+        private final static String RES_HEADER5 = "HTTP/1.1 302 OK\r\n"
+            + "Date:  Sat, 19 Jan 2019 02:49:15 GMT\r\n"
+            + "Location: http://www.example.com\r\n"
+            + "\r\n";
+
+
         private final static String RES_BODY1 = "<!DOCTYPE html>"
                 + "<html lang=\"ja\">"
                 + "<head>"
@@ -121,6 +131,20 @@ public class HttpResponseTest {
                 + "</html>";
 
     @Test
+    public void testParseHttpStatusLine() {
+        System.out.println("parseHttpStatusLine");
+        try {
+            HttpStatusLine instance = HttpResponse.parseHttpStatusLine(RES_HEADER1);
+            assertEquals("HTTP/1.1 200 OK", instance.getStatusLine());
+            assertEquals("HTTP/1.1", instance.getProtocolVersion());
+            assertEquals(200, instance.getStatusCode());
+            assertEquals("OK", instance.getReasonPhrase());
+        } catch (ParseException ex) {
+            fail("getStatusLine");
+        }
+    }
+
+    @Test
     public void testGeUrl() {
         try {
             System.out.println("testGeUrl");
@@ -149,6 +173,30 @@ public class HttpResponseTest {
             assertEquals(expResult, result);
         } catch (ParseException ex) {
             fail("getStatusLine");
+        }
+    }
+
+    /**
+     * Test of getStatusLine method, of class HttpResponse.
+     */
+    @Test
+    public void testGetDateHeader() {
+        System.out.println("getDateHeader");
+        try {
+            HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER1);
+            ZonedDateTime expResult = ZonedDateTime.of(2018, 02, 03, 02, 22, 53, 0, ZoneId.of("GMT"));
+            ZonedDateTime result = instance.getDateHeader();
+            assertEquals(expResult, result);
+        } catch (ParseException ex) {
+            fail("getDateHeader");
+        }
+        try {
+            HttpResponse instance = HttpResponse.parseHttpResponse(RES_HEADER5);
+            ZonedDateTime expResult = ZonedDateTime.of(2019, 01, 19, 02, 49, 15, 0, ZoneId.of("GMT"));
+            ZonedDateTime result = instance.getDateHeader();
+            assertEquals(expResult, result);
+        } catch (ParseException ex) {
+            fail("getDateHeader");
         }
     }
 

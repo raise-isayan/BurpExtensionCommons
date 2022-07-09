@@ -82,8 +82,8 @@ public class JsonUtilTest {
         assertEquals(true, result.has("abc"));
         assertEquals(false, result.has("xyz"));
     }
-    
-    
+
+
     /**
      * Test of prettyJson method, of class JsonUtil.
      */
@@ -133,7 +133,12 @@ public class JsonUtilTest {
             assertEquals(true, result);
         }
         {
-            String json = "{ \n \"abc\": 123, \n \"def\": \"test\" }";
+            String json = "{ \n \"abc\": 123, \n \"def\": \"test\" \n }";
+            boolean result = JsonUtil.isJson(json);
+            assertEquals(true, result);
+        }
+        {
+            String json = "\n{\"abc\": 123, \"def\": \"test\"}\n";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
@@ -144,6 +149,11 @@ public class JsonUtilTest {
         }
         {
             String json = "[\n \"abc\",\"def\",\"ghi\" \n]";
+            boolean result = JsonUtil.isJson(json);
+            assertEquals(true, result);
+        }
+        {
+            String json = "\n[\"abc\",\"def\",\"ghi\"]\n";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
@@ -215,6 +225,6 @@ public class JsonUtilTest {
             Logger.getLogger(JsonUtilTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
+
 }
