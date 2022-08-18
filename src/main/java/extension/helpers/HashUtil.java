@@ -34,7 +34,7 @@ public final class HashUtil {
      *
      * @param algorithm
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      * @throws java.security.NoSuchAlgorithmException
@@ -62,6 +62,7 @@ public final class HashUtil {
      * MD2値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toMd2Sum(byte[] body, boolean upperCase) {
@@ -76,6 +77,7 @@ public final class HashUtil {
      * MD2値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toMd2Sum(String str, boolean upperCase) {
@@ -90,14 +92,15 @@ public final class HashUtil {
      * MD2値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toMd2Sum(String str, String enc, boolean upperCase)
+    public static String toMd2Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("MD2", str, enc, upperCase);
+            return toMessageDigest("MD2", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -107,6 +110,7 @@ public final class HashUtil {
      * MD5値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toMd5Sum(byte[] body, boolean upperCase) {
@@ -121,6 +125,7 @@ public final class HashUtil {
      * MD5値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toMd5Sum(String str, boolean upperCase) {
@@ -135,14 +140,15 @@ public final class HashUtil {
      * MD5値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toMd5Sum(String str, String enc, boolean upperCase)
+    public static String toMd5Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("MD5", str, enc, upperCase);
+            return toMessageDigest("MD5", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -152,6 +158,7 @@ public final class HashUtil {
      * SHA-1値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA1Sum(byte[] body, boolean upperCase) {
@@ -166,6 +173,7 @@ public final class HashUtil {
      * SHA-1値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA1Sum(String str, boolean upperCase) {
@@ -180,14 +188,15 @@ public final class HashUtil {
      * SHA-1値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toSHA1Sum(String str, String enc, boolean upperCase)
+    public static String toSHA1Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("SHA-1", str, enc, upperCase);
+            return toMessageDigest("SHA-1", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -197,6 +206,7 @@ public final class HashUtil {
      * SHA-256値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA256Sum(byte[] body, boolean upperCase) {
@@ -211,6 +221,7 @@ public final class HashUtil {
      * SHA-256値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA256Sum(String str, boolean upperCase) {
@@ -225,14 +236,15 @@ public final class HashUtil {
      * SHA-256値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toSHA256Sum(String str, String enc, boolean upperCase)
+    public static String toSHA256Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("SHA-256", str, enc, upperCase);
+            return toMessageDigest("SHA-256", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -242,6 +254,7 @@ public final class HashUtil {
      * SHA-384値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA384Sum(byte[] body, boolean upperCase) {
@@ -256,6 +269,7 @@ public final class HashUtil {
      * SHA-384値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA384Sum(String str, boolean upperCase) {
@@ -270,14 +284,15 @@ public final class HashUtil {
      * SHA-384値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toSHA384Sum(String str, String enc, boolean upperCase)
+    public static String toSHA384Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("SHA-384", str, enc, upperCase);
+            return toMessageDigest("SHA-384", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -287,6 +302,7 @@ public final class HashUtil {
      * SHA-512値の取得
      *
      * @param body 対象バイト
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA512Sum(byte[] body, boolean upperCase) {
@@ -301,6 +317,7 @@ public final class HashUtil {
      * SHA-512値の取得
      *
      * @param str 対象文字列
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
     public static String toSHA512Sum(String str, boolean upperCase) {
@@ -315,23 +332,38 @@ public final class HashUtil {
      * SHA-512値の取得
      *
      * @param str 対象文字列
-     * @param enc エンコーディング
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toSHA512Sum(String str, String enc, boolean upperCase)
+    public static String toSHA512Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         try {
-            return toMessageDigest("SHA-512", str, enc, upperCase);
+            return toMessageDigest("SHA-512", str, charset, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
     }
 
-    public static long toCRC32Sum(String str, String enc) throws UnsupportedEncodingException {
-        return toCRC32Sum(str.getBytes(enc));
+    /**
+     * CRC-32値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @return CRC値
+     * @throws UnsupportedEncodingException
+     */
+    public static long toCRC32Sum(String str, String charset) throws UnsupportedEncodingException {
+        return toCRC32Sum(str.getBytes(charset));
     }
 
+    /**
+     * CRC-32値の取得
+     *
+     * @param body 対象バイト
+     * @return ハッシュ値
+     */
     public static long toCRC32Sum(byte[] body) {
         CRC32 crc = new CRC32();
         crc.reset();
@@ -339,10 +371,24 @@ public final class HashUtil {
         return crc.getValue();
     }
 
+    /**
+     * Adler32値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @return Adler値
+     * @throws UnsupportedEncodingException
+     */
     public static long toAdler32Sum(String str, String charset) throws UnsupportedEncodingException {
         return toAdler32Sum(StringUtil.getBytesCharset(str, charset));
     }
 
+    /**
+     * Adler32値の取得
+     *
+     * @param body 対象バイト
+     * @return ハッシュ値
+     */
     public static long toAdler32Sum(byte[] body) {
         Adler32 crc = new Adler32();
         crc.reset();
