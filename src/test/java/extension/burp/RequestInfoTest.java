@@ -2,7 +2,6 @@ package extension.burp;
 
 import burp.IParameter;
 import burp.IRequestInfo;
-import extension.helpers.SwingUtil;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;

@@ -126,36 +126,106 @@ public class JsonUtilTest {
 
     @Test
     public void testisJson() {
-        System.out.println("isJson");
+        System.out.println("isJson0");
         {
             String json = "{\"abc\":123,\"def\":\"test\"}";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
+        System.out.println("isJson1");
         {
             String json = "{ \n \"abc\": 123, \n \"def\": \"test\" \n }";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
+        System.out.println("isJson2");
         {
             String json = "\n{\"abc\": 123, \"def\": \"test\"}\n";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
+        System.out.println("isJson3");
         {
             String json = "[\"abc\",\"def\",\"ghi\"]";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
+        System.out.println("isJson4");
         {
             String json = "[\n \"abc\",\"def\",\"ghi\" \n]";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
         }
+        System.out.println("isJson5");
         {
             String json = "\n[\"abc\",\"def\",\"ghi\"]\n";
             boolean result = JsonUtil.isJson(json);
             assertEquals(true, result);
+        }
+        System.out.println("isJson6");
+        {
+            String plainJson = "[1,true,\"word\"]";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson7");
+        {
+            String plainJson = "{\"key\":\"value\"}";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson8");
+        {
+            String plainJson = "\r\n\t[1,true,\"word\"]\r\n\t";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson9");
+        {
+            String plainJson = "\r\n\t[1,true,\r\n\"word\"]\r\n\t";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson10");
+        {
+            String plainJson = "\r\n\t{\"key\":\"value\"}\t\r\n";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson11");
+        {
+            String plainJson = "\r\n\t{\"key\":\r\n\"value\"}\t\r\n";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson12");
+        {
+            String plainJson = "[\n    1,\n    true,\n    \"word\"\n]";
+            boolean expResult = true;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+        System.out.println("isJson13");
+        {
+            // 本来はJSONとして有効だが falseを返す仕様
+            String plainJson = "\"key\"";
+            boolean expResult = false;
+            boolean result = JsonUtil.isJson(plainJson);
+            assertEquals(expResult, result);
+        }
+
+        System.out.println("isJson14");
+        {
+            String plainJson = "\"key\"";
+            boolean expResult = true;
+            boolean result = JsonUtil.validJson(plainJson);
+            assertEquals(expResult, result);
         }
     }
 

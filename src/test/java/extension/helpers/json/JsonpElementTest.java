@@ -1,7 +1,6 @@
 package extension.helpers.json;
 
 import com.google.gson.JsonSyntaxException;
-import extension.helpers.json.JsonpElement;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

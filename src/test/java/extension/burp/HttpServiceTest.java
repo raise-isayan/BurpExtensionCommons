@@ -4,8 +4,6 @@ import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,22 +16,22 @@ import static org.junit.Assert.*;
  * @author isayan
  */
 public class HttpServiceTest {
-    
+
     public HttpServiceTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -68,25 +66,25 @@ public class HttpServiceTest {
             IHttpService httpService = HttpService.getHttpService("www.example.jp", 80, "http");
             String expResult = "http://www.example.jp/";
             String result = HttpService.getURLString(httpService);
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
         {
             IHttpService httpService = HttpService.getHttpService("www.example.jp", 8080, "http");
             String expResult = "http://www.example.jp:8080/";
             String result = HttpService.getURLString(httpService);
-            assertEquals(expResult, result);                
+            assertEquals(expResult, result);
         }
         {
             IHttpService httpService = HttpService.getHttpService("www.example.jp", 443, "https");
             String expResult = "https://www.example.jp/";
             String result = HttpService.getURLString(httpService);
-            assertEquals(expResult, result);                
+            assertEquals(expResult, result);
         }
         {
             IHttpService httpService = HttpService.getHttpService("www.example.jp", 8443, "https");
             String expResult = "https://www.example.jp:8443/";
             String result = HttpService.getURLString(httpService);
-            assertEquals(expResult, result);                
+            assertEquals(expResult, result);
         }
     }
 
@@ -104,7 +102,7 @@ public class HttpServiceTest {
         assertEquals(host, result.getHost());
         assertEquals(443, result.getPort());
         assertEquals(protocol, result.getProtocol());
-        
+
         HttpService httpService = new HttpService(result);
         assertEquals(host, httpService.getHost());
         assertEquals(443, httpService.getPort());
@@ -145,5 +143,5 @@ public class HttpServiceTest {
         assertFalse(httpService.isHttps());
 
     }
-    
+
 }

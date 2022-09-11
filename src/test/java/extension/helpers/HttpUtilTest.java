@@ -12,9 +12,6 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -463,5 +460,5 @@ public class HttpUtilTest {
             fail(ex.getMessage());
         }
     }
-    
+
 }

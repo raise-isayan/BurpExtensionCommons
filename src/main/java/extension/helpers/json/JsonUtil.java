@@ -10,7 +10,6 @@ import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -129,9 +128,10 @@ public class JsonUtil {
 
     }
 
-    private final static Pattern JSON_TYPE = Pattern.compile("[\\s\r\n]?((\\[(.*)\\])|(\\{(.*)\\}))[\\s\r\n]?", Pattern.DOTALL);
+    private final static Pattern JSON_TYPE = Pattern.compile("((\\[(.*)\\])|(\\{(.*)\\}))", Pattern.DOTALL);
 
     public static boolean isJson(String jsonString) {
+        jsonString = jsonString.trim();
         Matcher m = JSON_TYPE.matcher(jsonString);
         if (m.lookingAt()) {
             return JsonUtil.validJson(jsonString);
