@@ -1,35 +1,35 @@
 package extension.burp;
 
 import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
 public class NotifyTypeTest {
-    
+
     public NotifyTypeTest() {
     }
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpClass() {
     }
-    
-    @AfterClass
+
+    @AfterAll
     public static void tearDownClass() {
     }
-    
-    @Before
+
+    @BeforeEach
     public void setUp() {
     }
-    
-    @After
+
+    @AfterEach
     public void tearDown() {
     }
 
@@ -68,12 +68,12 @@ public class NotifyTypeTest {
             System.out.println("name:" + e.name());
             assertEquals(e, NotifyType.parseEnum(e.name()));
         }
-        
+
         for (NotifyType e : NotifyType.values()) {
-            System.out.println("value:" + e.toString());            
+            System.out.println("value:" + e.toString());
             assertEquals(e, NotifyType.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }
-    
+
 }

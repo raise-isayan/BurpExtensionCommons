@@ -1,35 +1,34 @@
 package extension.burp;
 
 import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
 public class SeverityTest {
-    
+
     public SeverityTest() {
     }
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpClass() {
     }
-    
-    @AfterClass
+
+    @BeforeAll
     public static void tearDownClass() {
     }
-    
-    @Before
+
+    @BeforeEach
     public void setUp() {
     }
-    
-    @After
+
+    @AfterEach
     public void tearDown() {
     }
 
@@ -55,7 +54,7 @@ public class SeverityTest {
             String s = "[\"HIGH\",\"MEDIUM\",\"LOW\"]";
             EnumSet<Severity> expResult = EnumSet.of(Severity.HIGH, Severity.MEDIUM, Severity.LOW);
             EnumSet<Severity> result = Severity.parseEnumSet(s);
-            assertEquals(expResult, result);        
+            assertEquals(expResult, result);
         }
     }
 
@@ -71,10 +70,10 @@ public class SeverityTest {
             assertEquals(e, Severity.parseEnum(e.name()));
         }
         for (Severity e : Severity.values()) {
-            System.out.println("value:" + e.toString());            
+            System.out.println("value:" + e.toString());
             assertEquals(e, Severity.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }
-    
+
 }

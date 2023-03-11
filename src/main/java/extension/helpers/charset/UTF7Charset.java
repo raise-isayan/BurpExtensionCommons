@@ -10,6 +10,7 @@ import java.util.List;
  * base code https://sourceforge.net/projects/jutf7/
  */
 public class UTF7Charset extends Charset {
+
     private static final String SET_D = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'(),-./:?";
     private static final String SET_O = "!\"#$%&*;<=>@[]^_`{|}";
     private static final String RULE_3 = " \t\r\n";
@@ -17,12 +18,12 @@ public class UTF7Charset extends Charset {
 
     private static final List CONTAINED = Arrays.asList(new String[]{"US-ASCII", "ISO-8859-1",
         "UTF-8", "UTF-16", "UTF-16LE", "UTF-16BE"});
-    final boolean strict;
+    private final boolean strict;
 
     public UTF7Charset(String name, String[] aliases) {
         this(name, aliases, false);
     }
-    
+
     public UTF7Charset(String name, String[] aliases, boolean includeOptional) {
         super(name, aliases);
         this.strict = false;

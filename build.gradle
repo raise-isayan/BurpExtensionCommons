@@ -1,10 +1,12 @@
 
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'application'
+}
 
-sourceCompatibility = '11' // -source
-targetCompatibility = '11' // -target
+sourceCompatibility = '17' // -source
+targetCompatibility = '17' // -target
 
 mainClassName = 'BurpExtensionCommons.Main'
 
@@ -42,13 +44,30 @@ task release(type: Zip, dependsOn: ['build']) {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api
-    implementation 'net.portswigger.burp.extender:burp-extender-api:2.3'
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.10.1'
-    // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
-    implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+
+    // https://mvnrepository.com/artifact/net.portswigger.burp.extensions/montoya-api
+    implementation 'net.portswigger.burp.extensions:montoya-api:2023.2'
+        // https://mvnrepository.com/artifact/com.google.code.gson/gson
+        implementation 'com.google.code.gson:gson:2.10.1'
+        // https://mvnrepository.com/artifact/com.googlecode.juniversalchardet/juniversalchardet
+        implementation 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+
     // Unit Test
-    // https://mvnrepository.com/artifact/junit/junit
-    testImplementation     'junit:junit:4.13.2'
+
+    // Use JUnit Jupiter for testing.
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+    // https://mvnrepository.com/artifact/net.portswigger.burp.extensions/montoya-api
+    testImplementation 'net.portswigger.burp.extensions:montoya-api:2023.2'
+
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testImplementation 'org.mockito:mockito-core:5.1.1'
+
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
 }

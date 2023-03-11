@@ -1,12 +1,12 @@
 package extension.burp;
 
 import java.util.EnumSet;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
@@ -17,19 +17,19 @@ public class HighlightColorTest {
     public HighlightColorTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -41,14 +41,14 @@ public class HighlightColorTest {
         System.out.println("parseEnum");
         {
             String s = null;
-            HighlightColor expResult = HighlightColor.WHITE;
-            HighlightColor result = HighlightColor.parseEnum(s);
+            MessageHighlightColor expResult = MessageHighlightColor.WHITE;
+            MessageHighlightColor result = MessageHighlightColor.parseEnum(s);
             assertEquals(expResult, result);
         }
         {
             String s = "RED";
-            HighlightColor expResult = HighlightColor.RED;
-            HighlightColor result = HighlightColor.parseEnum(s);
+            MessageHighlightColor expResult = MessageHighlightColor.RED;
+            MessageHighlightColor result = MessageHighlightColor.parseEnum(s);
             assertEquals(expResult, result);
         }
     }
@@ -60,8 +60,8 @@ public class HighlightColorTest {
     public void testParseEnumSet() {
         System.out.println("parseEnumSet");
         String s = "[\"WHITE\",\"BLUE\",\"YELLOW\"]";
-        EnumSet<HighlightColor> expResult = EnumSet.of(HighlightColor.WHITE, HighlightColor.BLUE, HighlightColor.YELLOW);
-        EnumSet<HighlightColor> result = HighlightColor.parseEnumSet(s);
+        EnumSet<MessageHighlightColor> expResult = EnumSet.of(MessageHighlightColor.WHITE, MessageHighlightColor.BLUE, MessageHighlightColor.YELLOW);
+        EnumSet<MessageHighlightColor> result = MessageHighlightColor.parseEnumSet(s);
         assertEquals(expResult, result);
     }
 
@@ -71,15 +71,15 @@ public class HighlightColorTest {
     @Test
     public void testToString() {
         System.out.println("toString");
-        EnumSet<HighlightColor> instance = EnumSet.allOf(HighlightColor.class);
-        for (HighlightColor e : instance) {
+        EnumSet<MessageHighlightColor> instance = EnumSet.allOf(MessageHighlightColor.class);
+        for (MessageHighlightColor e : instance) {
             System.out.println("name:" + e.name());
-            assertEquals(e, HighlightColor.parseEnum(e.name()));
+            assertEquals(e, MessageHighlightColor.parseEnum(e.name()));
         }
 
-        for (HighlightColor e : HighlightColor.values()) {
+        for (MessageHighlightColor e : MessageHighlightColor.values()) {
             System.out.println("value:" + e.toString());
-            assertEquals(e, HighlightColor.parseEnum(e.toString()));
+            assertEquals(e, MessageHighlightColor.parseEnum(e.toString()));
         }
         System.out.println(instance.toString());
     }

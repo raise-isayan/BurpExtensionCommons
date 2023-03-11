@@ -1,5 +1,6 @@
 package extension.view.base;
 
+import com.google.gson.annotations.Expose;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -8,7 +9,11 @@ import java.util.regex.PatternSyntaxException;
  * @author isayan
  */
 public class RegexItem {
+
+    @Expose
     private String match = "";
+
+    @Expose
     private Pattern regex;
 
     /**
@@ -26,7 +31,10 @@ public class RegexItem {
         this.regex = compileRegex(!this.regexp);
     }
 
-    private boolean regexp = true;
+    @Expose
+    private boolean regexp = false;
+
+    @Expose
     private boolean ignoreCase = false;
 
     /**
@@ -64,7 +72,7 @@ public class RegexItem {
     public Pattern compileRegex(boolean quote) {
         int flags = Pattern.MULTILINE;
         Pattern newregex = null;
-        try  {
+        try {
             if (this.ignoreCase) {
                 flags |= Pattern.CASE_INSENSITIVE;
             }
@@ -79,11 +87,11 @@ public class RegexItem {
     }
 
     public void recompileRegex() {
-       this.regex = compileRegex(!isRegexp());
+        this.regex = compileRegex(!isRegexp());
     }
 
     public void recompileRegex(boolean quote) {
-       this.regex = compileRegex(quote);
+        this.regex = compileRegex(quote);
     }
 
     /**
@@ -93,9 +101,9 @@ public class RegexItem {
         return this.regex;
     }
 
-   public static Pattern compileRegex(String text, int flags, boolean quote) {
+    public static Pattern compileRegex(String text, int flags, boolean quote) {
         Pattern newregex = null;
-        try  {
+        try {
             if (quote) {
                 newregex = Pattern.compile(Pattern.quote(text), flags);
             } else {

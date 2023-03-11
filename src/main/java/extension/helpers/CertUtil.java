@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -50,6 +51,10 @@ public class CertUtil {
     private final static String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n";
     private final static String END_CERTIFICATE = "-----END CERTIFICATE-----\n";
 
+    public static enum StoreType {
+        PKCS12, JKS
+    };
+
     public static PrivateKey pemToPrivateKey(String pemData) throws UnsupportedEncodingException {
         pemData = pemData.replaceAll("\r\n", "\n");
         Matcher m = PEM_PKCS8_PRIVATE.matcher(pemData);
@@ -60,9 +65,7 @@ public class CertUtil {
                 KeyFactory keyFactory = KeyFactory.getInstance("RSA");
                 PrivateKey privateKey = keyFactory.generatePrivate(pkcs8Key);
                 return privateKey;
-            } catch (NoSuchAlgorithmException ex) {
-                throw new UnsupportedEncodingException(ex.getMessage());
-            } catch (InvalidKeySpecException ex) {
+            } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
                 throw new UnsupportedEncodingException(ex.getMessage());
             }
         }
@@ -98,18 +101,16 @@ public class CertUtil {
         return pemCert.toString();
     }
 
-    public static byte [] exportToDer(Key privateKey) throws CertificateEncodingException {
+    public static byte[] exportToDer(Key privateKey) throws CertificateEncodingException {
         return privateKey.getEncoded();
     }
 
-    public static byte [] exportToDer(X509Certificate x509cert) throws CertificateEncodingException {
+    public static byte[] exportToDer(X509Certificate x509cert) throws CertificateEncodingException {
         return x509cert.getEncoded();
     }
 
-    protected static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(File storeFile, String keyPassword, String storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(KeyStore ks, String keyPassword) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         HashMap<String, Map.Entry<Key, X509Certificate>> certMap = new HashMap<>();
-        KeyStore ks = KeyStore.getInstance(storeType);
-        ks.load(new FileInputStream(storeFile), keyPassword.toCharArray());
         Enumeration e = ks.aliases();
         while (e.hasMoreElements()) {
             String alias = (String) e.nextElement();
@@ -120,22 +121,66 @@ public class CertUtil {
         return certMap;
     }
 
-    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromPKCS12(File storeFile, String password) throws CertificateEncodingException, IOException, UnrecoverableKeyException {
+    public static boolean validKeyStore(File storeFile, String keyPassword, StoreType storeType) {
         try {
-            return loadFromKeyStore(storeFile, password, "pkcs12");
-        } catch (KeyStoreException ex) {
-        } catch (CertificateException ex) {
-        } catch (NoSuchAlgorithmException ex) {
+            KeyStore ks = KeyStore.getInstance(storeType.name());
+            ks.load(new FileInputStream(storeFile), keyPassword.toCharArray());
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException ex) {
+            return false;
+        }
+        return true;
+    }
+
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(byte [] storeData, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        return loadFromKeyStore(new ByteArrayInputStream(storeData), keyPassword, storeType);
+    }
+
+    protected static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(File storeFile, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        return loadFromKeyStore(new FileInputStream(storeFile), keyPassword, storeType);
+    }
+
+    protected static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(InputStream storeStream, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        HashMap<String, Map.Entry<Key, X509Certificate>> certMap = new HashMap<>();
+        KeyStore ks = KeyStore.getInstance(storeType.name());
+        ks.load(storeStream, keyPassword.toCharArray());
+        Enumeration e = ks.aliases();
+        while (e.hasMoreElements()) {
+            String alias = (String) e.nextElement();
+            Key key = ks.getKey(alias, keyPassword.toCharArray());
+            X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
+            certMap.put(alias, new AbstractMap.SimpleEntry<>(key, cert));
+        }
+        return certMap;
+    }
+
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromPKCS12(byte [] storeData, String password) {
+        try {
+            return loadFromKeyStore(storeData, password, CertUtil.StoreType.PKCS12);
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {
         }
         return null;
     }
 
-    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromJKS(File storeFile, String password) throws CertificateEncodingException, IOException, UnrecoverableKeyException {
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromJKS(byte [] storeDate, String password) {
         try {
-            return loadFromKeyStore(storeFile, password, "jks");
-        } catch (KeyStoreException ex) {
-        } catch (CertificateException ex) {
-        } catch (NoSuchAlgorithmException ex) {
+            return loadFromKeyStore(storeDate, password, CertUtil.StoreType.JKS);
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {
+        }
+        return null;
+    }
+
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromPKCS12(File storeFile, String password) {
+        try {
+            return loadFromKeyStore(storeFile, password, CertUtil.StoreType.PKCS12);
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {
+        }
+        return null;
+    }
+
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromJKS(File storeFile, String password) {
+        try {
+            return loadFromKeyStore(storeFile, password, CertUtil.StoreType.JKS);
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {
         }
         return null;
     }
@@ -185,7 +230,6 @@ public class CertUtil {
         }
         throw new UnsupportedEncodingException("PEM format was not found");
     }
-
 
     private static PrivateKey readPkcs8PrivateKey(byte[] pkcs8Bytes) throws GeneralSecurityException {
         KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SunRsaSign");

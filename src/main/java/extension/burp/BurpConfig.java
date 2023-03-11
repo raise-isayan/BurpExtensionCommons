@@ -1,21 +1,29 @@
 package extension.burp;
 
+import burp.BurpPreferences;
+import burp.api.montoya.MontoyaApi;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.Expose;
+import com.google.gson.reflect.TypeToken;
+import extension.helpers.json.JsonUtil;
 import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Scanner;
-import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 import javax.swing.UIManager;
 
 /**
@@ -23,25 +31,25 @@ import javax.swing.UIManager;
  * @author isayan
  */
 public class BurpConfig {
+
     private static final String CA_PASSWORD = "/burp/media/ps.p12";
-    
+
+    public static String getCAPassword() {
+        return CA_PASSWORD;
+    }
+
     public static KeyStore loadCACeart() throws KeyStoreException {
         try {
             final KeyStore ks;
             ks = KeyStore.getInstance("PKCS12");
-            Preferences prefs = Preferences.userNodeForPackage(burp.IBurpExtender.class);
-            byte[] caCartByte = Base64.getDecoder().decode(prefs.get("caCert", ""));
+            byte[] caCartByte = BurpPreferences.getCaCert();
             ks.load(new ByteArrayInputStream(caCartByte), CA_PASSWORD.toCharArray());
             return ks;
-        } catch (IOException ex) {
-            throw new KeyStoreException(ex);
-        } catch (NoSuchAlgorithmException ex) {
-            throw new KeyStoreException(ex);
-        } catch (CertificateException ex) {
+        } catch (IOException | NoSuchAlgorithmException | CertificateException ex) {
             throw new KeyStoreException(ex);
         }
     }
-    
+
     public static String getUserHomePath() {
         return System.getProperties().getProperty("user.home");
     }
@@ -50,7 +58,7 @@ public class BurpConfig {
         final File homePath = new File(getUserHomePath());
         return homePath;
     }
-    
+
     public static String getUserDirPath() {
         return System.getProperties().getProperty("user.dir");
     }
@@ -59,15 +67,13 @@ public class BurpConfig {
         final File userDir = new File(getUserDirPath());
         return userDir;
     }
-    
-    
+
     public static File getUserConfig() {
         final File userDir = new File(getUserDirPath());
         return userDir;
     }
-        
-    /* Burp built in PayloadStrings */ 
-    
+
+    /* Burp built in PayloadStrings */
     private static final String BUILT_IN_PASSWORDS_SIGNATURE = "/resources/PayloadStrings/Passwords.pay";
     private static final String BUILT_IN_USERNAMES_SIGNATURE = "/resources/PayloadStrings/Usernames.pay";
     private static final String BUILT_IN_SHORT_WORDS_SIGNATURE = "/resources/PayloadStrings/Short words.pay";
@@ -80,11 +86,11 @@ public class BurpConfig {
     private static final String BUILT_IN_9_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/9 letter words.pay";
     private static final String BUILT_IN_10_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/10 letter words.pay";
     private static final String BUILT_IN_11_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/11 letter words.pay";
-    private static final String BUILT_IN_12_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/12 letter words.pay";    
+    private static final String BUILT_IN_12_LETTER_WORDS_SIGNATURE = "/resources/PayloadStrings/12 letter words.pay";
 
     private static final String BUILT_IN_0_9_SIGNATURE = "/resources/PayloadStrings/0-9.pay";
-    private static final String BUILT_IN_A_Z_UPPERCASE_SIGNATURE  = "/resources/PayloadStrings/A-Z .pay";
-    private static final String BUILT_IN_A_Z_LOWERCASE_SIGNATURE  = "/resources/PayloadStrings/a-z.pay";
+    private static final String BUILT_IN_A_Z_UPPERCASE_SIGNATURE = "/resources/PayloadStrings/A-Z .pay";
+    private static final String BUILT_IN_A_Z_LOWERCASE_SIGNATURE = "/resources/PayloadStrings/a-z.pay";
     private static final String BUILT_IN_CGI_SCRIPTS_SIGNATURE = "/resources/PayloadStrings/CGI scripts.pay";
     private static final String BUILT_IN_DIRECTORIES_LONG_SIGNATURE = "/resources/PayloadStrings/Directories - long.pay";
     private static final String BUILT_IN_DIRECTORIES_SHORT_SIGNATURE = "/resources/PayloadStrings/Directories - short.pay";
@@ -116,10 +122,10 @@ public class BurpConfig {
     private static final String BUILT_IN_SSRF_TARGETS_SIGNATURE = "/resources/PayloadStrings/SSRF targets.pay";
     private static final String BUILT_IN_USER_AGENTS_LONG_SIGNATURE = "/resources/PayloadStrings/User agents - long.pay";
     private static final String BUILT_IN_USER_AGENTS_SHORT_SIGNATURE = "/resources/PayloadStrings/User agents - short.pay";
-        
+
     public enum PayloadType {
-        BUILT_IN_PASSWORDS, BUILT_IN_USERNAMES, BUILT_IN_SHORT_WORDS, 
-        BUILT_IN_LETTER_3_WORDS, BUILT_IN_LETTER_4_WORDS, 
+        BUILT_IN_PASSWORDS, BUILT_IN_USERNAMES, BUILT_IN_SHORT_WORDS,
+        BUILT_IN_LETTER_3_WORDS, BUILT_IN_LETTER_4_WORDS,
         BUILT_IN_LETTER_5_WORDS, BUILT_IN_LETTER_6_WORDS,
         BUILT_IN_LETTER_7_WORDS, BUILT_IN_LETTER_8_WORDS,
         BUILT_IN_LETTER_9_WORDS, BUILT_IN_LETTER_10_WORDS,
@@ -157,13 +163,13 @@ public class BurpConfig {
         BUILT_IN_SERVER_SIDE_VARIABLE_NAMES,
         BUILT_IN_SSRF_TARGETS,
         BUILT_IN_USER_AGENTS_LONG,
-        BUILT_IN_USER_AGENTS_SHORT,        
+        BUILT_IN_USER_AGENTS_SHORT,
     };
 
     protected static List<String> loadFromFile(File file) throws IOException {
         return loadFromStream(new FileInputStream(file));
     }
-    
+
     protected static List<String> loadFromResource(String name) throws IOException {
         return loadFromStream(BurpConfig.class.getResourceAsStream(name));
     }
@@ -181,11 +187,11 @@ public class BurpConfig {
         }
         return signatures;
     }
-    
+
     public static List<String> loadFromSignatureTypes(PayloadType payloadType) throws IOException {
         List<String> signatures = new ArrayList<>();
         switch (payloadType) {
-            case BUILT_IN_PASSWORDS: 
+            case BUILT_IN_PASSWORDS:
                 signatures.addAll(loadFromResource(BUILT_IN_PASSWORDS_SIGNATURE));
                 break;
             case BUILT_IN_USERNAMES:
@@ -206,7 +212,7 @@ public class BurpConfig {
             case BUILT_IN_LETTER_6_WORDS:
                 signatures.addAll(loadFromResource(BUILT_IN_6_LETTER_WORDS_SIGNATURE));
                 break;
-            case BUILT_IN_LETTER_7_WORDS: 
+            case BUILT_IN_LETTER_7_WORDS:
                 signatures.addAll(loadFromResource(BUILT_IN_7_LETTER_WORDS_SIGNATURE));
                 break;
             case BUILT_IN_LETTER_8_WORDS:
@@ -311,7 +317,7 @@ public class BurpConfig {
             case BUILT_IN_LOCAL_FILES_LINUX:
                 signatures.addAll(loadFromResource(BUILT_IN_LOCAL_FILES_LINUX_SIGNATURE));
                 break;
-           case BUILT_IN_LOCAL_FILES_WINDOWS:
+            case BUILT_IN_LOCAL_FILES_WINDOWS:
                 signatures.addAll(loadFromResource(BUILT_IN_LOCAL_FILES_WINDOWS_SIGNATURE));
                 break;
             case BUILT_IN_SERVER_SIDE_VARIABLE_NAMES:
@@ -323,22 +329,155 @@ public class BurpConfig {
             case BUILT_IN_USER_AGENTS_LONG:
                 signatures.addAll(loadFromResource(BUILT_IN_USER_AGENTS_LONG_SIGNATURE));
                 break;
-            case BUILT_IN_USER_AGENTS_SHORT:        
+            case BUILT_IN_USER_AGENTS_SHORT:
                 signatures.addAll(loadFromResource(BUILT_IN_USER_AGENTS_SHORT_SIGNATURE));
-                break;                
+                break;
             default:
                 break;
         }
         return signatures;
     }
-    
-   public static Color getTabFlashColor() {
-         try {
-            return UIManager.getColor("Burp.tabFlashColour");   
-        } catch (NullPointerException ex) {
-            return new Color(0xff, 0x66, 0x33);   
-        }
-   }
 
-    
+    public static Color getTabFlashColor() {
+        try {
+            return UIManager.getColor("Burp.tabFlashColour");
+        } catch (NullPointerException ex) {
+            return new Color(0xff, 0x66, 0x33);
+        }
+    }
+
+    /**
+     * *
+     * config: { "project_options":{ "connections":{ "hostname_resolution":[ {
+     * "enabled":true, "hostname":"test", "ip_address":"127.0.0.1" }, {
+     * "enabled":true, "hostname":"hoge", "ip_address":"192.168.0.2" } ] } } }
+*
+     */
+    /**
+     *
+     * @param api
+     * @param hosts
+     */
+    public static synchronized void configHostnameResolution(MontoyaApi api, List<HostnameResolution> hosts) {
+        configHostnameResolution(api, hosts, false);
+    }
+
+    /**
+     * *
+     *
+     * @param api
+     * @param hosts
+     * @param remove
+     */
+    public static void configHostnameResolution(MontoyaApi api, List<HostnameResolution> hosts, boolean remove) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("project_options.connections.hostname_resolution");
+        String updateConfig = updateHostnameResolution(config, hosts, remove);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+    }
+
+    /**
+     * *
+     *
+     * @param config
+     * @param hosts
+     * @return
+     */
+    protected static String updateHostnameResolution(String config, List<HostnameResolution> hosts) {
+        return updateHostnameResolution(config, hosts, false);
+    }
+
+    /**
+     * *
+     *
+     * @param config
+     * @param hosts
+     * @param remove
+     * @return
+     */
+    protected static synchronized String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
+        }.getType();
+        JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
+        List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        List<HostnameResolution> resolvHost = new ArrayList<>();
+        if (remove) {
+            for (HostnameResolution h : hosts) {
+                hostnameResolution = hostnameResolution.stream().filter(m -> !m.hostname.equalsIgnoreCase(h.hostname)).collect(Collectors.toList());
+            }
+        } else {
+            for (HostnameResolution h : hosts) {
+                if (hostnameResolution.stream().noneMatch(m -> m.hostname.equalsIgnoreCase(h.hostname))) {
+                    resolvHost.add(h);
+                }
+            }
+            if (!resolvHost.isEmpty()) {
+                hostnameResolution.addAll(resolvHost);
+            }
+        }
+
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hostnameResolution, true);
+        connections.add("hostname_resolution", updateJsonElemet);
+        return JsonUtil.prettyJson(root_json, true);
+    }
+
+    public static class HostnameResolution {
+
+        public HostnameResolution(boolean enabled, String hostname, String ip_address) {
+            this.enabled = enabled;
+            this.hostname = hostname;
+            this.ip_address = ip_address;
+        }
+
+        @Expose
+        private boolean enabled = true;
+        @Expose
+        private String hostname = "";
+        @Expose
+        private String ip_address = "";
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the hostname
+         */
+        public String getHostname() {
+            return hostname;
+        }
+
+        /**
+         * @param hostname the hostname to set
+         */
+        public void setHostname(String hostname) {
+            this.hostname = hostname;
+        }
+
+        /**
+         * @return the ip_address
+         */
+        public String getIPAddress() {
+            return ip_address;
+        }
+
+        /**
+         * @param ip_address the ip_address to set
+         */
+        public void setIPAddress(String ip_address) {
+            this.ip_address = ip_address;
+        }
+    }
+
 }

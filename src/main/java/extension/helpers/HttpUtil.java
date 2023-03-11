@@ -6,12 +6,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.security.KeyManagementException;
@@ -39,6 +42,7 @@ import org.mozilla.universalchardet.UniversalDetector;
  * @author isayan
  */
 public final class HttpUtil {
+
     private final static Logger logger = Logger.getLogger(HttpUtil.class.getName());
 
     public static String LINE_TERMINATE = "\r\n";
@@ -86,10 +90,9 @@ public final class HttpUtil {
 
     public static boolean isValidUrl(String url) {
         try {
-            new URL(url);
+            URL url1 = new URL(url);
             return true;
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             return false;
         }
     }
@@ -109,8 +112,7 @@ public final class HttpUtil {
     public static String buildHost(String host, int port, boolean useHttps) {
         if (HttpUtil.getDefaultPort(useHttps) == port || port == -1) {
             return host;
-        }
-        else {
+        } else {
             return host + ":" + port;
         }
     }
@@ -142,8 +144,7 @@ public final class HttpUtil {
         if (charset == null) {
             out.write(StringUtil.getBytesRaw("Content-Type: text/plain;" + LINE_TERMINATE + LINE_TERMINATE));
             out.write(StringUtil.getBytesRaw(text));
-        }
-        else {
+        } else {
             out.write(StringUtil.getBytesRaw("Content-Type: text/plain; charset=" + charset.displayName() + LINE_TERMINATE + LINE_TERMINATE));
             out.write(StringUtil.getBytesCharset(text, charset));
         }
@@ -168,7 +169,7 @@ public final class HttpUtil {
         };
     }
 
-    protected static TrustManager[] trustAllCerts() {
+    public static TrustManager[] trustAllCerts() {
         TrustManager[] tm = {
             new X509TrustManager() {
                 @Override
@@ -206,9 +207,7 @@ public final class HttpUtil {
         try {
             HttpsURLConnection.setDefaultSSLSocketFactory(ignoreSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier());
-        } catch (NoSuchAlgorithmException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-        } catch (KeyManagementException ex) {
+        } catch (NoSuchAlgorithmException | KeyManagementException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
@@ -219,11 +218,7 @@ public final class HttpUtil {
             ignoreValidateCertification(sslcontext, null, null);
         } catch (FileNotFoundException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-        } catch (CertificateException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
-        } catch (UnrecoverableKeyException ex) {
+        } catch (IOException | CertificateException | UnrecoverableKeyException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
@@ -240,11 +235,7 @@ public final class HttpUtil {
                 ks.load(new FileInputStream(clientCertFile), passphrase);
                 kmf.init(ks, passphrase);
                 sslcontext.init(kmf.getKeyManagers(), trustAllCerts(), new SecureRandom());
-            } catch (NoSuchAlgorithmException ex) {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
-            } catch (KeyManagementException ex) {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
-            } catch (KeyStoreException ex) {
+            } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException ex) {
                 logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         } else {
@@ -277,9 +268,9 @@ public final class HttpUtil {
         }
         if (uniqe) {
             List<String> uniqList = ConvertUtil.toUniqList(list);
-            return uniqList.toArray(new String[uniqList.size()]);
+            return uniqList.toArray(String[]::new);
         } else {
-            return list.toArray(new String[list.size()]);
+            return list.toArray(String[]::new);
         }
     }
 
@@ -411,8 +402,7 @@ public final class HttpUtil {
     }
 
     /**
-     * 文字コードを判別する
-     * 以下の移植 http://dobon.net/vb/dotnet/string/detectcode.html
+     * 文字コードを判別する 以下の移植 http://dobon.net/vb/dotnet/string/detectcode.html
      *
      * @param bytes 文字コードを調べるデータ
      * @return 適当と思われるEncoding、判断できなかった時はnull
@@ -495,6 +485,7 @@ public final class HttpUtil {
     /**
      *
      * @param bytes 文字コードを調べるデータ
+     * @param defaultCharset
      * @return 適当と思われるEncoding、判断できなかった時はnull
      */
     public static String getUniversalGuessCode(byte[] bytes, String defaultCharset) {
@@ -529,7 +520,7 @@ public final class HttpUtil {
 
         private final List<Proxy> list = new ArrayList<>();
 
-        public StaticProxySelector(Proxy proxy){
+        public StaticProxySelector(Proxy proxy) {
             Proxy p;
             if (proxy == null) {
                 p = Proxy.NO_PROXY;
@@ -584,4 +575,18 @@ public final class HttpUtil {
         }
     }
 
+    public static boolean isInetAddressByName(String hostName) {
+        try {
+            InetAddress.getByName(hostName);
+            return true;
+        } catch (UnknownHostException ex) {
+            return false;
+        }
+    }
+
+    public static Authenticator putAuthenticator(Authenticator authenticator) {
+        Authenticator saveAuthenticator = Authenticator.getDefault();
+        Authenticator.setDefault(authenticator);
+        return saveAuthenticator;
+    }
 }

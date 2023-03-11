@@ -10,12 +10,12 @@ import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
@@ -28,19 +28,19 @@ public class ConvertUtilTest {
     public ConvertUtilTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -281,7 +281,7 @@ public class ConvertUtilTest {
             assertEquals(0, result);
         }
     }
-    
+
     /**
      */
     @Test
@@ -442,10 +442,8 @@ public class ConvertUtilTest {
         System.out.println("calcStlength");
         System.out.println(ConvertUtil.calcStlength(16, 20));
 
-        
     }
-    
-    
+
     /**
      *
      * public static long bytesToLong(final byte[] bytes, ByteOrder byteOrder) {

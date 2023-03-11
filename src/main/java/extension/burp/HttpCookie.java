@@ -1,14 +1,14 @@
 package extension.burp;
 
-import burp.ICookie;
+import burp.api.montoya.http.message.Cookie;
 import extension.helpers.DateUtil;
-import extension.helpers.HttpMessage;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -16,11 +16,11 @@ import java.util.Scanner;
  *
  * @author isayan
  */
-public class Cookie implements ICookie {
+public class HttpCookie implements Cookie {
 
     private String domain;
     private String path;
-    private ZonedDateTime expiration;
+    private Optional<ZonedDateTime> expiration = Optional.empty();
     private String name;
     private String value;
     private long maxage = -1;
@@ -28,50 +28,37 @@ public class Cookie implements ICookie {
     private boolean httpOnly = false;
     private String sameSite;
 
-    public Cookie(ICookie cookie) {
-        this.name = cookie.getName();
-        this.value = cookie.getValue();
-        this.domain = cookie.getDomain();
-        this.path = cookie.getPath();
-        this.expiration = ZonedDateTime.from(cookie.getExpiration().toInstant());
+    public HttpCookie(Cookie cookie) {
+        this.name = cookie.name();
+        this.value = cookie.value();
+        this.domain = cookie.domain();
+        this.path = cookie.path();
+        this.expiration = cookie.expiration();
     }
 
-    public Cookie(String name, String value) {
+    public HttpCookie(String name, String value) {
         this.name = name;
         this.value = value;
     }
 
-    @Override
-    public String getDomain() {
-        return this.domain;
-    }
-
-    @Override
-    public String getPath() {
-        return this.path;
-    }
-
-    @Override
-    public Date getExpiration() {
-        return (this.expiration == null) ? null : Date.from(this.expiration.toInstant());
-    }
-
-    public ZonedDateTime getExpirationAsZonedDateTime() {
-        return this.expiration;
-    }
-
-    @Override
     public String getName() {
         return this.name;
     }
 
-    @Override
     public String getValue() {
         return this.value;
     }
 
     public long getMaxage() {
         return this.maxage;
+    }
+
+    public String getDomain() {
+        return this.domain;
+    }
+
+    public String getPath() {
+        return this.path;
     }
 
     public boolean isSecure() {
@@ -86,15 +73,27 @@ public class Cookie implements ICookie {
         return this.sameSite;
     }
 
+    public ZonedDateTime getExpiration() {
+        if (this.expiration.isPresent()) {
+            return this.expiration.get();
+        } else {
+            return null;
+        }
+    }
+
+    public Date getExpirationAsDate() {
+        return (this.expiration.isPresent()) ? Date.from(this.expiration.get().toInstant()) : null;
+    }
+
     /**
-     * Set-Cookie
+     * Set-HttpCookie
      *
      * @param cookieString
      * @return
      * @throws ParseException
      */
-    public static Cookie parseResponse(String cookieString) throws ParseException {
-        Cookie cookie = null;
+    public static HttpCookie parseResponse(String cookieString) throws ParseException {
+        HttpCookie cookie = null;
         Scanner s = new Scanner(cookieString).useDelimiter(";");
         if (s.hasNext()) {
             String target = s.next();
@@ -102,7 +101,7 @@ public class Cookie implements ICookie {
             String cookieName = nameValue[0].trim();
             if (!cookieName.isEmpty() && target.indexOf('=') > 0) {
                 String cookieValue = nameValue.length >= 2 ? nameValue[1].trim() : "";
-                cookie = new Cookie(cookieName, cookieValue);
+                cookie = new HttpCookie(cookieName, cookieValue);
             }
         }
         while (s.hasNext() && cookie != null) {
@@ -119,7 +118,7 @@ public class Cookie implements ICookie {
                 String attributeValue = attributeNameValue[1].trim();
                 if ("Expires".equalsIgnoreCase(attributeName)) {
                     try {
-                        cookie.expiration = DateUtil.parseHttpDate(attributeValue);
+                        cookie.expiration = Optional.of(DateUtil.parseHttpDate(attributeValue));
                     } catch (DateTimeParseException e) {
                         //
                     }
@@ -144,14 +143,14 @@ public class Cookie implements ICookie {
     }
 
     /**
-     * Cookie
+     * HttpCookie
      *
      * @param cookieString
      * @return
      * @throws ParseException
      */
-    public static Cookie[] parseResuest(String cookieString) throws ParseException {
-        List<Cookie> cookieList = new ArrayList<>();
+    public static HttpCookie[] parseResuest(String cookieString) throws ParseException {
+        List<HttpCookie> cookieList = new ArrayList<>();
         Scanner s = new Scanner(cookieString).useDelimiter(";");
         while (s.hasNext()) {
             String target = s.next();
@@ -159,11 +158,11 @@ public class Cookie implements ICookie {
             String cookieName = nameValue[0].trim();
             if (!cookieName.isEmpty() && target.indexOf('=') > 0) {
                 String cookieValue = nameValue.length >= 2 ? nameValue[1].trim() : "";
-                Cookie cookie = new Cookie(cookieName, cookieValue);
+                HttpCookie cookie = new HttpCookie(cookieName, cookieValue);
                 cookieList.add(cookie);
             }
         }
-        return cookieList.toArray(new Cookie[]{});
+        return cookieList.toArray(HttpCookie[]::new);
     }
 
     @Override
@@ -184,10 +183,10 @@ public class Cookie implements ICookie {
             builder.append("Domain=");
             builder.append(this.domain);
         }
-        if (this.expiration != null) {
+        if (this.expiration.isPresent()) {
             builder.append(" ");
             builder.append("Expires=");
-            builder.append(DateUtil.valueOfHttpDate(this.expiration));
+            builder.append(DateUtil.valueOfHttpDate(this.expiration.get()));
             builder.append(";");
         }
         if (this.maxage >= 0) {
@@ -213,6 +212,31 @@ public class Cookie implements ICookie {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
+    @Override
+    public String value() {
+        return this.value;
+    }
+
+    @Override
+    public String domain() {
+        return this.domain;
+    }
+
+    @Override
+    public String path() {
+        return this.path;
+    }
+
+    @Override
+    public Optional<ZonedDateTime> expiration() {
+        return this.expiration;
     }
 
 }

@@ -1,35 +1,34 @@
 package extension.helpers;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
 public class StringUtilTest {
-  
-    
+
     public StringUtilTest() {
     }
-    
-    @BeforeClass
+
+    @BeforeAll
     public static void setUpClass() {
     }
-    
-    @AfterClass
+
+    @AfterAll
     public static void tearDownClass() {
     }
-    
-    @Before
+
+    @BeforeEach
     public void setUp() {
     }
-    
-    @After
+
+    @AfterEach
     public void tearDown() {
     }
 
@@ -40,22 +39,22 @@ public class StringUtilTest {
     public void testIsNullOrEmpty() {
         {
             boolean result = StringUtil.isNullOrEmpty(null);
-            assertEquals(true, result);                
+            assertEquals(true, result);
         }
         {
             boolean result = StringUtil.isNullOrEmpty("");
-            assertEquals(true, result);        
+            assertEquals(true, result);
         }
         {
             boolean result = StringUtil.isNullOrEmpty("a");
-            assertEquals(false, result);        
+            assertEquals(false, result);
         }
         {
             boolean result = StringUtil.isNullOrEmpty("\u0000");
-            assertEquals(false, result);        
+            assertEquals(false, result);
         }
     }
-    
+
     @Test
     public void testString_0() {
         String rep0 = StringUtil.stringReplace("1234567890", 0, 0, "abc");
@@ -63,7 +62,7 @@ public class StringUtilTest {
         String rep1 = StringUtil.stringReplace("1234567890", 1, 3, "abc");
         System.out.println("testString_1_3:" + rep1);
     }
-    
+
     @Test
     public void testGetAvailableEncodingList() {
         System.out.println("getAvailableEncodingList");
@@ -72,5 +71,5 @@ public class StringUtilTest {
             System.out.println(l);
         }
     }
-    
+
 }

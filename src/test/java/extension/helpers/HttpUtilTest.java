@@ -17,36 +17,37 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
 public class HttpUtilTest {
+
     private final static Logger logger = Logger.getLogger(HttpUtilTest.class.getName());
 
     public HttpUtilTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -131,14 +132,14 @@ public class HttpUtilTest {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
-   }
+    }
 
     /**
      * Test of buildGetRequestByte method, of class HttpUtil.
      */
     @Test
-   public void testBuildGetRequestByte() {
-       System.out.println("testBuildGetRequestByte");
+    public void testBuildGetRequestByte() {
+        System.out.println("testBuildGetRequestByte");
         try {
             assertEquals("GET / HTTP/1.1\r\nHost: example.com\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com/"))));
             assertEquals("GET / HTTP/1.1\r\nHost: example.com:443\r\n", (StringUtil.getStringRaw(HttpUtil.buildGetRequestByte("http://example.com:443/"))));
@@ -153,39 +154,39 @@ public class HttpUtilTest {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
-   }
+    }
 
     /**
      * Test of testGetParameter method, of class HttpUtil.
      */
     @Test
     public void testGetParameter() {
-       System.out.println("testGetParameter");
-       {
+        System.out.println("testGetParameter");
+        {
             Map.Entry keyval = HttpUtil.getParameter("abc");
             assertEquals("abc", keyval.getKey());
             assertEquals("", keyval.getValue());
-       }
-       {
+        }
+        {
             Map.Entry keyval = HttpUtil.getParameter("abc=edf");
             assertEquals("abc", keyval.getKey());
             assertEquals("edf", keyval.getValue());
-       }
-       {
+        }
+        {
             Map.Entry keyval = HttpUtil.getParameter("abc=edf=fgh");
             assertEquals("abc", keyval.getKey());
             assertEquals("edf=fgh", keyval.getValue());
-       }
-       {
+        }
+        {
             Map.Entry keyval = HttpUtil.getParameter("=");
             assertEquals("", keyval.getKey());
             assertEquals("", keyval.getValue());
-       }
-       {
+        }
+        {
             Map.Entry keyval = HttpUtil.getParameter("==");
             assertEquals("", keyval.getKey());
             assertEquals("=", keyval.getValue());
-       }
+        }
     }
 
     /**

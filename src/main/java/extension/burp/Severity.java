@@ -1,5 +1,6 @@
 package extension.burp;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 
 /**
@@ -8,6 +9,23 @@ import java.util.EnumSet;
  */
 public enum Severity {
     HIGH, MEDIUM, LOW, INFORMATION, FALSE_POSITIVE;
+
+    private final static EnumMap<Severity, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity> toSeverity = new EnumMap<>(Severity.class);
+    private final static EnumMap<burp.api.montoya.scanner.audit.issues.AuditIssueSeverity, Severity> fromSeverity = new EnumMap<>(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.class);
+
+    static {
+        toSeverity.put(HIGH, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.HIGH);
+        toSeverity.put(MEDIUM, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.MEDIUM);
+        toSeverity.put(LOW, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.LOW);
+        toSeverity.put(INFORMATION, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.INFORMATION);
+        toSeverity.put(FALSE_POSITIVE, burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.FALSE_POSITIVE);
+
+        fromSeverity.put(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.HIGH, HIGH);
+        fromSeverity.put(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.MEDIUM, MEDIUM);
+        fromSeverity.put(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.LOW, LOW);
+        fromSeverity.put(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.INFORMATION, INFORMATION);
+        fromSeverity.put(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity.FALSE_POSITIVE, FALSE_POSITIVE);
+    }
 
     public static Severity parseEnum(String s) {
         String value = s.toUpperCase().replace(' ', '_');
@@ -38,6 +56,14 @@ public enum Severity {
         }
         String value = new String(ch);
         return value.replace('_', ' ');
+    }
+
+    public burp.api.montoya.scanner.audit.issues.AuditIssueSeverity toAuditIssueSeverity() {
+        return toSeverity.get(this);
+    }
+
+    public static Severity valueOf(burp.api.montoya.scanner.audit.issues.AuditIssueSeverity auditIssueSeverity) {
+        return fromSeverity.get(auditIssueSeverity);
     }
 
 }

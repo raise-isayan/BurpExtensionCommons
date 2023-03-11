@@ -1,12 +1,12 @@
 package extension.view.base;
 
 import java.util.regex.Pattern;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
@@ -17,19 +17,19 @@ public class RegexItemTest {
     public RegexItemTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -42,6 +42,7 @@ public class RegexItemTest {
         RegexItem instance = new RegexItem();
         {
             boolean expResult = false;
+            instance.setRegexp(true);
             instance.setMatch("(");
             boolean result = instance.isValidRegex();
             assertEquals(expResult, result);
@@ -109,7 +110,7 @@ public class RegexItemTest {
             assertFalse(result.matcher("AGHJZ").matches());
         }
         {
-            Pattern result = RegexItem.compileRegex("a(.*)z",Pattern.CASE_INSENSITIVE,false);
+            Pattern result = RegexItem.compileRegex("a(.*)z", Pattern.CASE_INSENSITIVE, false);
             assertTrue(result.matcher("aghjz").matches());
             assertTrue(result.matcher("AGHJZ").matches());
         }

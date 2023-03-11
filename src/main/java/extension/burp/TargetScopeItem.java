@@ -12,10 +12,11 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class TargetScopeItem {
+
     private final static Logger logger = Logger.getLogger(TargetScopeItem.class.getName());
 
     private boolean enabled = false;
-    private String protocol = HttpService.PROTOCOL_ANY;
+    private String protocol = HttpTarget.PROTOCOL_HTTP;
     private String host = "";
     private String port = "";
     private String file = "";
@@ -56,10 +57,9 @@ public class TargetScopeItem {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
-        if (HttpService.PROTOCOL_ANY.equals(protocol)) {
+        if (HttpTarget.PROTOCOL_ANY.equals(protocol)) {
             this.regexProtocol = regexAnyProtocol;
-        }
-        else {
+        } else {
             this.regexProtocol = Pattern.compile(this.protocol);
         }
     }
@@ -113,21 +113,16 @@ public class TargetScopeItem {
         Matcher matchProtocol = this.regexProtocol.matcher(url.getProtocol());
         Matcher matchHost = this.regexHost.matcher(url.getHost());
         int urlPort = url.getPort();
-            if (urlPort == -1) {
+        if (urlPort == -1) {
             urlPort = HttpUtil.getDefaultPort(url.getProtocol());
         }
         Matcher matchPort = this.regexPort.matcher(String.valueOf(urlPort));
         Matcher matchFile = this.regexFile.matcher(url.getFile());
 
-        if ((HttpService.PROTOCOL_ANY.equals(this.getProtocol()) || matchProtocol.matches()) &&
-            ("".equals(this.getHost()) || matchHost.matches()) &&
-            ("".equals(this.getPort()) || matchPort.matches()) &&
-            ("".equals(this.getFile()) || matchFile.matches())) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (HttpTarget.PROTOCOL_ANY.equals(this.getProtocol()) || matchProtocol.matches())
+                && ("".equals(this.getHost()) || matchHost.matches())
+                && ("".equals(this.getPort()) || matchPort.matches())
+                && ("".equals(this.getFile()) || matchFile.matches());
     }
 
     public void dump() {
@@ -156,18 +151,17 @@ public class TargetScopeItem {
 
     public static TargetScopeItem parseURL(URL url) {
         TargetScopeItem item = new TargetScopeItem();
-        String protcol = HttpService.PROTOCOL_HTTP.equals(url.getProtocol()) ? HttpService.PROTOCOL_HTTP : HttpService.PROTOCOL_HTTPS;
+        String protcol = HttpTarget.PROTOCOL_HTTP.equals(url.getProtocol()) ? HttpTarget.PROTOCOL_HTTP : HttpTarget.PROTOCOL_HTTPS;
         item.setProtocol(protcol);
         item.setHost(String.format("^%s$", Pattern.quote(url.getHost())));
         int urlPort = url.getPort();
-            if (urlPort == -1) {
+        if (urlPort == -1) {
             urlPort = HttpUtil.getDefaultPort(url.getProtocol());
         }
         item.setPort(String.valueOf(urlPort));
         if ("".equals(url.getFile())) {
             item.setFile("^/.*");
-        }
-        else {
+        } else {
             item.setFile((String.format("^%s.*", Pattern.quote(url.getFile()))));
         }
         return item;

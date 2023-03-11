@@ -1,34 +1,40 @@
 package extension.burp;
 
-import burp.IHttpRequestResponse;
-import burp.IScanIssue;
-import burp.IScannerCheck;
-import burp.IScannerInsertionPoint;
+import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.scanner.AuditResult;
+import burp.api.montoya.scanner.ConsolidationAction;
+import burp.api.montoya.scanner.ScanCheck;
+import burp.api.montoya.scanner.audit.insertionpoint.AuditInsertionPoint;
+import burp.api.montoya.scanner.audit.issues.AuditIssue;
 import java.util.List;
 
 /**
  *
  * @author raise.isayan
  */
-public class ScannerCheckAdapter implements IScannerCheck {
+public class ScannerCheckAdapter implements ScanCheck {
 
     @Override
-    public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
+    public AuditResult activeAudit(HttpRequestResponse baseRequestResponse, AuditInsertionPoint auditInsertionPoint) {
         return null;
     }
 
     @Override
-    public List<IScanIssue> doActiveScan(IHttpRequestResponse baseRequestResponse, IScannerInsertionPoint insertionPoint) {
+    public AuditResult passiveAudit(HttpRequestResponse httpRequestResponse) {
         return null;
     }
 
     @Override
-    public int consolidateDuplicateIssues(IScanIssue existingIssue, IScanIssue newIssue) {
-        if (existingIssue.getIssueName().equals(newIssue.getIssueName())) {
-            // 同一とみなせる場合は報告をスキップ                    
-            return -1;
+    public ConsolidationAction consolidateIssues(AuditIssue newIssue, AuditIssue existingIssue) {
+        if (existingIssue.name().equals(newIssue.name())) {
+            // 同一とみなせる場合は報告をスキップ
+            return ConsolidationAction.KEEP_EXISTING;
         }
-        return 0;
+        return ConsolidationAction.KEEP_BOTH;
+    }
+
+    public static List<AuditIssue> getAuditIssue(List<AuditIssue> issues) {
+        return issues.isEmpty() ? null : issues;
     }
 
 }

@@ -1,38 +1,39 @@
-package extension.burp;
+package extension.burp.montoya;
 
+import extension.burp.HttpCookie;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
-public class CookieTest {
+public class HttpCookieTest {
 
-    public CookieTest() {
+    public HttpCookieTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -51,9 +52,8 @@ public class CookieTest {
 
     private final String COOKIE_REQ = "SID=31d4d96e407aad42; lang=en-US;";
 
-
     /**
-     * Test of parseResponse method, of class Cookie.
+     * Test of parseResponse method, of class HttpCookie.
      */
     @Test
     public void testParseResponse() throws Exception {
@@ -61,7 +61,7 @@ public class CookieTest {
         {
             try {
                 String cookieString = COOKIE_EMPTY;
-                Cookie result = Cookie.parseResponse(cookieString);
+                HttpCookie result = HttpCookie.parseResponse(cookieString);
                 fail();
             } catch (ParseException ex) {
                 assertTrue(true);
@@ -70,7 +70,7 @@ public class CookieTest {
         {
             try {
                 String cookieString = COOKIE0;
-                Cookie result = Cookie.parseResponse(cookieString);
+                HttpCookie result = HttpCookie.parseResponse(cookieString);
                 fail();
             } catch (ParseException ex) {
                 assertTrue(true);
@@ -78,31 +78,33 @@ public class CookieTest {
         }
         {
             String cookieString = COOKIE1;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("SID", result.getName());
             assertEquals("31d4d96e407aad42", result.getValue());
-            assertNull(result.getDomain());
-            assertNull(result.getPath());
+            assertNull(result.domain());
+            assertNull(result.path());
             assertNull(result.getExpiration());
+            assertNull(result.getExpirationAsDate());
             assertEquals(-1, result.getMaxage());
             assertFalse(result.isHttpOnly());
             assertFalse(result.isSecure());
         }
         {
             String cookieString = COOKIE2;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("SID", result.getName());
             assertEquals("", result.getValue());
             assertNull(result.getDomain());
             assertNull(result.getPath());
             assertNull(result.getExpiration());
+            assertNull(result.getExpirationAsDate());
             assertEquals(-1, result.getMaxage());
             assertFalse(result.isHttpOnly());
             assertFalse(result.isSecure());
         }
         {
             String cookieString = COOKIE3;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("SID", result.getName());
             assertEquals("31d4d96e407aad42", result.getValue());
             assertEquals("/", result.getPath());
@@ -114,7 +116,7 @@ public class CookieTest {
         }
         {
             String cookieString = COOKIE4;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("SID", result.getName());
             assertEquals("31d4d96e407aad42", result.getValue());
             assertEquals("/", result.getPath());
@@ -126,7 +128,7 @@ public class CookieTest {
         }
         {
             String cookieString = COOKIE5;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("SID", result.getName());
             assertEquals("31d4d96e407aad42", result.getValue());
             assertEquals("/", result.getPath());
@@ -139,19 +141,19 @@ public class CookieTest {
     }
 
     /**
-     * Test of parseRequest method, of class Cookie.
+     * Test of parseRequest method, of class HttpCookie.
      */
     @Test
     public void testParseRequest() throws Exception {
         System.out.println("parseRequest");
         {
             String cookieString = COOKIE_EMPTY;
-            Cookie [] result = Cookie.parseResuest(cookieString);
+            HttpCookie[] result = HttpCookie.parseResuest(cookieString);
             assertEquals(0, result.length);
         }
         {
             String cookieString = COOKIE1;
-            Cookie [] result = Cookie.parseResuest(cookieString);
+            HttpCookie[] result = HttpCookie.parseResuest(cookieString);
             assertEquals(1, result.length);
             assertEquals("SID", result[0].getName());
             assertEquals("31d4d96e407aad42", result[0].getValue());
@@ -164,7 +166,7 @@ public class CookieTest {
         }
         {
             String cookieString = COOKIE_REQ;
-            Cookie [] result = Cookie.parseResuest(cookieString);
+            HttpCookie[] result = HttpCookie.parseResuest(cookieString);
             assertEquals(2, result.length);
             assertEquals("SID", result[0].getName());
             assertEquals("31d4d96e407aad42", result[0].getValue());
@@ -172,7 +174,6 @@ public class CookieTest {
             assertEquals("en-US", result[1].getValue());
         }
     }
-
 
     /**
      */
@@ -183,12 +184,12 @@ public class CookieTest {
             SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
             Date expirationDate = fmt.parse("Wed, 09 Jun 2021 10:18:14 GMT");
             String cookieString = COOKIE11;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("lang", result.getName());
             assertEquals("en-US", result.getValue());
             assertNull(result.getPath());
             assertNull(result.getDomain());
-            assertEquals(fmt.format(expirationDate), fmt.format(result.getExpiration()));
+            assertEquals(fmt.format(expirationDate), fmt.format(result.getExpirationAsDate()));
             assertEquals(-1, result.getMaxage());
             assertFalse(result.isHttpOnly());
             assertFalse(result.isSecure());
@@ -204,12 +205,12 @@ public class CookieTest {
             SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
             Date expirationDate = fmt.parse("Sun, 06 Nov 1994 08:49:37 GMT");
             String cookieString = COOKIE12;
-            Cookie result = Cookie.parseResponse(cookieString);
+            HttpCookie result = HttpCookie.parseResponse(cookieString);
             assertEquals("lang", result.getName());
             assertEquals("", result.getValue());
             assertNull(result.getPath());
             assertNull(result.getDomain());
-            assertEquals(fmt.format(expirationDate) , fmt.format(result.getExpiration()));
+            assertEquals(fmt.format(expirationDate), fmt.format(result.getExpirationAsDate()));
             assertEquals(-1, result.getMaxage());
             assertFalse(result.isHttpOnly());
             assertFalse(result.isSecure());
@@ -217,7 +218,7 @@ public class CookieTest {
     }
 
     /**
-     * Test of toString method, of class Cookie.
+     * Test of toString method, of class HttpCookie.
      */
     @Test
     public void testCookie() {
@@ -227,14 +228,14 @@ public class CookieTest {
                 SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
                 Date expirationDate = fmt.parse("Wed, 09 Jun 2021 10:18:14 GMT");
                 String cookieString = COOKIE11;
-                Cookie build = Cookie.parseResponse(cookieString);
+                HttpCookie build = HttpCookie.parseResponse(cookieString);
                 System.out.println(build.toString());
-                Cookie result = Cookie.parseResponse(build.toString());
+                HttpCookie result = HttpCookie.parseResponse(build.toString());
                 assertEquals("lang", result.getName());
                 assertEquals("en-US", result.getValue());
                 assertNull(result.getPath());
                 assertNull(result.getDomain());
-                assertEquals(fmt.format(expirationDate), fmt.format(result.getExpiration()));
+                assertEquals(fmt.format(expirationDate), fmt.format(result.getExpirationAsDate()));
                 assertEquals(-1, result.getMaxage());
                 assertFalse(result.isHttpOnly());
                 assertFalse(result.isSecure());
@@ -248,14 +249,14 @@ public class CookieTest {
                 SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
                 Date expirationDate = fmt.parse("Sun, 06 Nov 1994 08:49:37 GMT");
                 String cookieString = COOKIE12;
-                Cookie build = Cookie.parseResponse(cookieString);
+                HttpCookie build = HttpCookie.parseResponse(cookieString);
                 System.out.println(build.toString());
-                Cookie result = Cookie.parseResponse(build.toString());
+                HttpCookie result = HttpCookie.parseResponse(build.toString());
                 assertEquals("lang", result.getName());
                 assertEquals("", result.getValue());
                 assertNull(result.getPath());
                 assertNull(result.getDomain());
-                assertEquals(fmt.format(expirationDate) , fmt.format(result.getExpiration()));
+                assertEquals(fmt.format(expirationDate), fmt.format(result.getExpirationAsDate()));
                 assertEquals(-1, result.getMaxage());
                 assertFalse(result.isHttpOnly());
                 assertFalse(result.isSecure());
@@ -266,9 +267,8 @@ public class CookieTest {
         }
     }
 
-
-   /**
-     * Test of toString method, of class Cookie.
+    /**
+     * Test of toString method, of class HttpCookie.
      */
     @Test
     public void testCookie2() {
@@ -278,18 +278,18 @@ public class CookieTest {
                 SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
                 Date expirationDate = fmt.parse("Wed, 21 Oct 2015 07:28:00 GMT");
                 String cookieString = COOKIE21;
-                Cookie build = Cookie.parseResponse(cookieString);
+                HttpCookie build = HttpCookie.parseResponse(cookieString);
                 System.out.println(build.toString());
-                Cookie result = Cookie.parseResponse(build.toString());
+                HttpCookie result = HttpCookie.parseResponse(build.toString());
                 assertEquals("PHPSESSID", result.getName());
                 assertEquals("4b26fe6442cfdef8bec4120b01c63007", result.getValue());
                 assertNull(result.getPath());
                 assertNull(result.getDomain());
-                assertEquals(fmt.format(expirationDate), fmt.format(result.getExpiration()));
+                assertEquals(fmt.format(expirationDate), fmt.format(result.getExpirationAsDate()));
                 assertEquals(-1, result.getMaxage());
                 assertFalse(result.isHttpOnly());
                 assertFalse(result.isSecure());
-                assertEquals(result.getSameSite(),"None");
+                assertEquals(result.getSameSite(), "None");
             } catch (ParseException ex) {
                 fail();
             }

@@ -47,7 +47,11 @@ public class DateUtil {
     }
 
     public static ZonedDateTime parseSmartHttpDate(String dateStr) {
-        return HttpMessage.parseHttpDate(normalizeHttpDate(dateStr));
+        return parseHttpDate(normalizeHttpDate(dateStr));
+    }
+
+    public static LocalDateTime parseHttpDateAsLocal(String dateStr, ZoneId zoneID) {
+        return parseHttpDate(dateStr).withZoneSameInstant(zoneID).toLocalDateTime();
     }
 
     private static String normalizeHttpDate(String datevalue) {

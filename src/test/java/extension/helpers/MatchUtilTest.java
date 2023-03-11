@@ -4,36 +4,37 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  *
  * @author isayan
  */
 public class MatchUtilTest {
+
     private final static Logger logger = Logger.getLogger(MatchUtilTest.class.getName());
 
     public MatchUtilTest() {
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
@@ -161,7 +162,6 @@ public class MatchUtilTest {
             assertTrue(p.matcher("aXa\\").matches());
         }
 
-
     }
 
     /**
@@ -257,7 +257,7 @@ public class MatchUtilTest {
     @Test
     public void testContainsCreditCard() {
         System.out.println("containsCreditCard");
-        String [] words = new String[] {
+        String[] words = new String[]{
             // Visa
             "4111111111111111",
             "4242424242424242",
@@ -280,7 +280,7 @@ public class MatchUtilTest {
             "30569309025904",
             "38520000023237",
             // Discover Card
-//            "6111111111111116",
+            //            "6111111111111116",
             "6011111111111117",
             "6011000990139424",
             "6011601160116611"
