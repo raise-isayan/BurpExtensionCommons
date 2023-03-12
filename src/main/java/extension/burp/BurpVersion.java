@@ -1,7 +1,6 @@
 package extension.burp;
 
 import burp.api.montoya.MontoyaApi;
-import burp.api.montoya.core.Version;
 import extension.helpers.ConvertUtil;
 import java.io.File;
 import java.util.regex.Matcher;

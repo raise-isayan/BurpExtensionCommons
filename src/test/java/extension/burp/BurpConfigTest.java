@@ -1,5 +1,6 @@
 package extension.burp;
 
+import burp.BurpPreferences;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import java.io.File;
@@ -46,7 +47,7 @@ public class BurpConfigTest {
     @Test
     public void testLoadCACeart() throws Exception {
         System.out.println("loadCACeart");
-        KeyStore result = BurpConfig.loadCACeart();
+        KeyStore result = BurpPreferences.loadCACeart();
         Properties p = System.getProperties();
         Enumeration<String> e = result.aliases();
         while (e.hasMoreElements()) {

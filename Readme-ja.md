@@ -5,6 +5,22 @@ Language/[English](Readme-ja.md)
 
 このライブラリは、PortSwigger社の製品であるBurp SuiteのExtensionを作成するためによく利用するライブラリをまとめたものになります。
 
+## 最新版について
+
+メインのリポジトリ(master)には開発中のコードが含まれている場合があります。
+安定したリリース版は､以下よりダウンロードしてください。
+
+* https://github.com/raise-isayan/BurpExtensionCommons/releases
+
+利用するバージョンは以下のものをご利用ください
+
+* Burp suite v2023.1.2 より前のバージョン
+   * YagraExtender v2.2.14.0 以前
+
+* Burp suite v2023.1.2 より後のバージョン
+   * YagraExtender v3.0.0 以降(ベータ版)
+   * YagraExtension v2.2.14.0 以前(現時点で利用可)
+
 ## 使用方法
 
 release フォルダの BurpExtensionCommons.jar をJavaのライブラリとしてインポートしてご利用ください。
@@ -15,11 +31,15 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 * Item位置を移動可能なListModelおよびTableModel
 * HTTP Request、HTTP Response を扱うのに便利なラッパー
 
-## Java
-* JRE(JDK) 11 以上(Open JDK を推奨)(https://openjdk.java.net/)
+### Java
+* JRE(JDK) 17 (Open JDK を推奨)(https://openjdk.java.net/)
 
-## 対応バージョン
-* Burp suite v2020
+### Burp suite
+* v2023.1.2以上 (http://www.portswigger.net/burp/)
+
+### 開発環境
+* NetBean 16 (https://netbeans.apache.org/)
+* Gradle 7.5 (https://gradle.org/)
 
 ## ビルド
  gradlew release
@@ -33,9 +53,4 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 * juniversalchardet (https://code.google.com/archive/p/juniversalchardet/)
   *  Mozilla Public License 1.1
   * https://www.mozilla.org/en-US/MPL/
-
-## 開発環境
-
-* NetBean 12.6 (https://netbeans.apache.org/)
-* Gradle 7.0.2 (https://gradle.org/)
 

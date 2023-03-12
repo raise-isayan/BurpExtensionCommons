@@ -1,6 +1,5 @@
 package extension.burp;
 
-import burp.BurpPreferences;
 import burp.api.montoya.MontoyaApi;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -9,17 +8,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import extension.helpers.json.JsonUtil;
 import java.awt.Color;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -31,24 +25,6 @@ import javax.swing.UIManager;
  * @author isayan
  */
 public class BurpConfig {
-
-    private static final String CA_PASSWORD = "/burp/media/ps.p12";
-
-    public static String getCAPassword() {
-        return CA_PASSWORD;
-    }
-
-    public static KeyStore loadCACeart() throws KeyStoreException {
-        try {
-            final KeyStore ks;
-            ks = KeyStore.getInstance("PKCS12");
-            byte[] caCartByte = BurpPreferences.getCaCert();
-            ks.load(new ByteArrayInputStream(caCartByte), CA_PASSWORD.toCharArray());
-            return ks;
-        } catch (IOException | NoSuchAlgorithmException | CertificateException ex) {
-            throw new KeyStoreException(ex);
-        }
-    }
 
     public static String getUserHomePath() {
         return System.getProperties().getProperty("user.home");
