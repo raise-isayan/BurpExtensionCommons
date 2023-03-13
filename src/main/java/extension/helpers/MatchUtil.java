@@ -98,18 +98,18 @@ public class MatchUtil {
             buff.append('|');
             buff.append(String.format("([\\\\%%]u)%04x", code)); // unicode hex
             buff.append('|');
-            buff.append(String.format("&#(x%04x|0*%d);", code, code)); // unicode hex,decimal
+            buff.append(String.format("&#(x%04x|0{0,3}%d);", code, code)); // unicode hex,decimal
             if (charset != null) {
                 buff.append('|');
                 String str = value.substring(i, value.offsetByCodePoints(i, 1));
                 byte decode[] = StringUtil.getBytesCharset(str, charset);
                 for (int k = 0; k < decode.length; k++) {
-                    buff.append(String.format("((\\\\x|%%)0*%x)", 0xff & decode[k])); // byte hex
+                    buff.append(String.format("((\\\\x|%%)0{0,3}%x)", 0xff & decode[k])); // byte hex
                 }
             } else {
                 if (ch <= 0xff) {
                     buff.append('|');
-                    buff.append(String.format("((\\\\x0*%x|%%%02x))", 0xff & ch, 0xff & ch)); // byte hex
+                    buff.append(String.format("((\\\\x0{0,3}%x|%%%02x))", 0xff & ch, 0xff & ch)); // byte hex
                 }
             }
             buff.append(')');
