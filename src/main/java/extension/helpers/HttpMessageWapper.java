@@ -1,4 +1,4 @@
-package passive.common;
+package extension.helpers;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Marker;
@@ -6,7 +6,6 @@ import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.HttpMessage;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
-import extension.helpers.StringUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -125,9 +124,11 @@ public class HttpMessageWapper implements HttpMessage {
     public String getContentMimeType() {
         HttpHeader contentType = getContentTypeHeader(this.message);
         String mimeType = null;
-        Matcher m = CONTENT_TYPE_MIME.matcher(contentType.value());
-        if (m.find()) {
-            mimeType = m.group(1);
+        if (contentType != null) {
+            Matcher m = CONTENT_TYPE_MIME.matcher(contentType.value());
+            if (m.find()) {
+                mimeType = m.group(1);
+            }
         }
         return mimeType;
     }

@@ -1,4 +1,4 @@
-package passive.common;
+package extension.helpers;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Marker;
@@ -9,15 +9,10 @@ import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.http.message.responses.analysis.Attribute;
 import burp.api.montoya.http.message.responses.analysis.AttributeType;
 import burp.api.montoya.http.message.responses.analysis.KeywordCount;
-import extension.helpers.DateUtil;
-import extension.helpers.HttpUtil;
-import extension.helpers.StringUtil;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static passive.common.HttpMessageWapper.findHeader;
-import static passive.common.HttpMessageWapper.getContentTypeHeader;
 
 /**
  *
@@ -124,22 +119,22 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
 
     @Override
     public HttpResponse withRemovedHeader(HttpHeader header) {
-       return response.withRemovedHeader(header);
+        return response.withRemovedHeader(header);
     }
 
     @Override
     public HttpResponse withRemovedHeader(String name) {
-       return response.withRemovedHeader(name);
+        return response.withRemovedHeader(name);
     }
 
     @Override
     public HttpResponse withMarkers(List<Marker> markers) {
-       return response.withMarkers(markers);
+        return response.withMarkers(markers);
     }
 
     @Override
     public HttpResponse withMarkers(Marker... markers) {
-       return response.withMarkers(markers);
+        return response.withMarkers(markers);
     }
 
     public ZonedDateTime getDateHeaderAsZoneDate() {
@@ -181,6 +176,5 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
         }
         return zdtm;
     }
-
 
 }

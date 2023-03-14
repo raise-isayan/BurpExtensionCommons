@@ -1,4 +1,4 @@
-package passive.common;
+package extension.helpers;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Marker;
@@ -10,7 +10,6 @@ import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.requests.HttpTransformation;
-import extension.helpers.HttpUtil;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -247,7 +246,5 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         }
         return HttpUtil.normalizeCharset(charset);
     }
-
-
 
 }
