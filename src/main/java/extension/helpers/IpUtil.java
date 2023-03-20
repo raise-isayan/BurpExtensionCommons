@@ -67,9 +67,11 @@ public class IpUtil {
     }
 
     /**
-     * IPv4アドレスのパース
-     * IPv4 address は厳密には以下の形式も解釈するがこの関数では考慮しない 192.168.1
-     * 192.11010049 3232235521
+     * IPv4アドレスのパース IPv4 address は厳密には以下の形式も解釈するがこの関数では考慮しない
+     * 192.168.1
+     * 192.11010049
+     * 3232235521
+     *
      * @param ipv4Addr
      * @return
      * @throws java.text.ParseException
@@ -84,6 +86,7 @@ public class IpUtil {
 
     /**
      * IPv6アドレスのパース
+     *
      * @param ipAddr
      * @return
      * @throws java.text.ParseException

@@ -1,4 +1,4 @@
-package extension.burp;
+package extension.burp.scanner;
 
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.scanner.AuditResult;
