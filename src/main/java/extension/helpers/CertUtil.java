@@ -236,8 +236,8 @@ public class CertUtil {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8Bytes);
         try {
             return keyFactory.generatePrivate(keySpec);
-        } catch (InvalidKeySpecException e) {
-            throw new IllegalArgumentException("Unexpected key format!", e);
+        } catch (InvalidKeySpecException ex) {
+            throw new IllegalArgumentException("Unexpected key format!", ex);
         }
     }
 

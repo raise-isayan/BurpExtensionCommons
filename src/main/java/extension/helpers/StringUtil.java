@@ -155,6 +155,12 @@ public class StringUtil {
         }
     }
 
+    public static char[] toChars(String str) {
+        char[] chars = new char[str.length()];
+        str.getChars(0, chars.length, chars, 0);
+        return chars;
+    }
+
     private final static char[] NUM_CHARS = "1234567890".toCharArray();
     private final static char[] IDENT_CHARS
             = "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
