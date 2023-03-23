@@ -15,11 +15,11 @@ Language/[English](Readme-ja.md)
 利用するバージョンは以下のものをご利用ください
 
 * Burp suite v2023.1.2 より前のバージョン
-   * YagraExtender v2.2.14.0 以前
+   * BurpExtensionCommons v0.5.5.0 以前
 
 * Burp suite v2023.1.2 より後のバージョン
-   * YagraExtender v3.0.0 以降(ベータ版)
-   * YagraExtension v2.2.14.0 以前(現時点で利用可)
+   * BurpExtensionCommons v3.0.0 以降
+   * BurpExtensionCommons v0.5.5.0 以前(現時点で利用可)
 
 ## 使用方法
 

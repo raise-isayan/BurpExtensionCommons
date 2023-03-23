@@ -15,11 +15,11 @@ Please download the stable release version from the following.
 Please use the following versions
 
 * Burp suite v2023.1.2 or less than
-  * YagraExtender v2.2.14.0 or less than
+  * BurpExtensionCommons v0.5.5.0 or less than
 
 * Burp suite v2023.1.2 or above
-  * YagraExtender v3.0.0 or above (beta version)
-  * YagraExtension v2.2.14.0 or less (currently available)
+  * BurpExtensionCommons v3.0.0 or above
+  * BurpExtensionCommons v0.5.5.0 or less (currently available)
 
 ## How to use
 
