@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpResponseWapper extends HttpMessageWapper implements HttpResponse {
+    private final static Pattern FIRSTLINE = Pattern.compile("^(\\S+)\\s+(\\d+)\\s+(\\S+)$", Pattern.MULTILINE);
 
     private final HttpResponse response;
 
@@ -135,6 +136,27 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
     @Override
     public HttpResponse withMarkers(Marker... markers) {
         return response.withMarkers(markers);
+    }
+
+    public String getStatusLine() {
+        StringBuilder firstLine = new StringBuilder();
+        firstLine.append(this.response.httpVersion());
+        firstLine.append(" ");
+        firstLine.append(this.response.statusCode());
+        firstLine.append(" ");
+        firstLine.append(this.response.reasonPhrase());
+        return firstLine.toString();
+    }
+
+    public HttpResponse withStatusLine(String firstLine) {
+        Matcher m = FIRSTLINE.matcher(firstLine);
+        if (m.find()) {
+            return response
+                    .withHttpVersion(m.group(1))
+                    .withStatusCode((short)ConvertUtil.parseIntDefault(m.group(2), this.response.statusCode()))
+                    .withReasonPhrase(m.group(3));
+        }
+        return this.response;
     }
 
     public ZonedDateTime getDateHeaderAsZoneDate() {

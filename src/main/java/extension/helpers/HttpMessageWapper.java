@@ -17,7 +17,11 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpMessageWapper implements HttpMessage {
-   public enum ContentMimeType { JAVA_SCRIPT, JSON, XML, HTML };
+    public final String PROTOCOL_HTTP_1_0 = "HTTP/1.0";
+    public final String PROTOCOL_HTTP_1_1 = "HTTP/1.1";
+    public final String PROTOCOL_HTTP_2 = "HTTP/2";
+
+    public enum ContentMimeType { JAVA_SCRIPT, JSON, XML, HTML };
 
     private final HttpMessage message;
 
@@ -158,7 +162,7 @@ public class HttpMessageWapper implements HttpMessage {
 
     /**
      * httpMessate
-     */
+     **/
 
     public static HttpHeader getContentTypeHeader(HttpMessage httpMessae) {
         return findHeader(httpMessae.headers(), "Content-Type");

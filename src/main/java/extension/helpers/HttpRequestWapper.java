@@ -12,13 +12,15 @@ import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.requests.HttpTransformation;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author isayan
  */
 public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest {
-
+    private final static Pattern FIRSTLINE = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
+    
     private final HttpRequest request;
 
     public HttpRequestWapper(HttpRequest request) {
@@ -171,6 +173,35 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withDefaultHeaders();
     }
 
+    
+    public final String METHOD_GET = "GET";
+    public final String METHOD_POST = "POST";
+    public final String METHOD_HEAD = "HEAD";
+    public final String METHOD_OPTIONS = "OPTIONS";
+    public final String METHOD_PUT = "PUT";
+    public final String METHOD_DELETE = "DELETE";
+    public final String METHOD_TRACE = "TRACE";
+
+    public String getRequestLine() {
+        StringBuilder firstLine = new StringBuilder();
+        firstLine.append(this.request.method());
+        firstLine.append(" ");
+        firstLine.append(this.request.path());
+        firstLine.append(" ");
+        firstLine.append(this.request.httpVersion());
+        return firstLine.toString();
+    }
+
+    public HttpRequest withRequestLine(String firstLine) {
+        Matcher m = FIRSTLINE.matcher(firstLine);
+        if (m.find()) {
+            return request
+                    .withMethod(m.group(1))
+                    .withPath(m.group(2));
+        }
+        return this.request;
+    }
+    
     public String getHost() {
         HttpHeader header = getHostHeader();
         return header.value();
@@ -185,11 +216,11 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     }
 
     public boolean isGET() {
-        return "GET".equals(method());
+        return METHOD_GET.equals(this.request.method());
     }
 
     public boolean isPOST() {
-        return "POST".equals(method());
+        return METHOD_POST.equals(this.request.method());
     }
 
     public String getEnctype() {
@@ -198,7 +229,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     public boolean isSecure() {
         if (this.request.httpService() == null) {
-            if ("HTTTP/2".equals(this.request.httpVersion())) {
+            if (PROTOCOL_HTTP_2.equals(this.request.httpVersion())) {
                 return true;
             }
             else {
