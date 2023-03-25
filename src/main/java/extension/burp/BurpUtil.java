@@ -2,6 +2,7 @@ package extension.burp;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Range;
+import static burp.api.montoya.core.Range.range;
 import burp.api.montoya.http.handler.HttpHandler;
 import burp.api.montoya.http.handler.HttpRequestToBeSent;
 import burp.api.montoya.http.handler.HttpResponseReceived;
@@ -93,21 +94,21 @@ public class BurpUtil {
             return null;
         }
         MessageEditorHttpRequestResponse messageInfo = contextMenu.messageEditorRequestResponse().get();
-        if (messageInfo.selectionOffsets().isEmpty()) {
-            return null;
-        }
-        Range range = messageInfo.selectionOffsets().get();
         byte message[] = new byte[0];
         if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
             message = messageInfo.requestResponse().request().toByteArray().getBytes();
         } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_EDITOR_RESPONSE) {
             message = messageInfo.requestResponse().response().toByteArray().getBytes();
         }
-        if (message != null) {
-            if (selectionTextOnly) {
+        if (message.length > 0) {
+            if (messageInfo.selectionOffsets().isEmpty()) {
+                if (!selectionTextOnly) {
+                    text = StringUtil.getStringCharset(message, StandardCharsets.ISO_8859_1);
+                }
+            }
+            else {
+                Range range = messageInfo.selectionOffsets().get();
                 text = StringUtil.getStringCharset(message, range.startIndexInclusive(), range.endIndexExclusive() - range.startIndexInclusive(), StandardCharsets.ISO_8859_1);
-            } else {
-                text = StringUtil.getStringCharset(message, StandardCharsets.ISO_8859_1);
             }
         }
         return text;
@@ -119,26 +120,25 @@ public class BurpUtil {
             return;
         }
         MessageEditorHttpRequestResponse messageInfo = contextMenu.messageEditorRequestResponse().get();
-        if (messageInfo.selectionOffsets().isEmpty()) {
-            return;
-        }
-        Range range = messageInfo.selectionOffsets().get();
         byte message[] = new byte[0];
         if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
             message = messageInfo.requestResponse().request().toByteArray().getBytes();
         } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_VIEWER_RESPONSE) {
             message = messageInfo.requestResponse().response().toByteArray().getBytes();
         }
-        if (message != null) {
-            if (selectionTextOnly) {
-                String updateMessage = StringUtil.getStringRaw(ConvertUtil.replaceByte(message, range.startIndexInclusive(), range.endIndexExclusive(), StringUtil.getBytesRaw(text)));
-                if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
-                    messageInfo.setRequest(HttpRequest.httpRequest(messageInfo.requestResponse().httpService(), ByteArray.byteArray(updateMessage)));
-                } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_VIEWER_RESPONSE) {
-                    messageInfo.setResponse(HttpResponse.httpResponse(ByteArray.byteArray(updateMessage)));
-                }
-            } else {
-                // nothing
+        if (message.length > 0) {
+            Range range = Range.range(messageInfo.caretPosition(), messageInfo.caretPosition());
+            if (messageInfo.selectionOffsets().isEmpty()) {
+                if (selectionTextOnly) return;
+            }
+            else {
+                range = messageInfo.selectionOffsets().get();
+            }
+            String updateMessage = StringUtil.getStringRaw(ConvertUtil.replaceByte(message, range.startIndexInclusive(), range.endIndexExclusive(), StringUtil.getBytesRaw(text)));
+            if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
+                messageInfo.setRequest(HttpRequest.httpRequest(messageInfo.requestResponse().httpService(), ByteArray.byteArray(updateMessage)));
+            } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_VIEWER_RESPONSE) {
+                messageInfo.setResponse(HttpResponse.httpResponse(ByteArray.byteArray(updateMessage)));
             }
         }
     }
