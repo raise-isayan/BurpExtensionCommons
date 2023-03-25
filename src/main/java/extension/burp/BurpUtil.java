@@ -1,11 +1,14 @@
 package extension.burp;
 
+import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Range;
 import burp.api.montoya.http.handler.HttpHandler;
 import burp.api.montoya.http.handler.HttpRequestToBeSent;
 import burp.api.montoya.http.handler.HttpResponseReceived;
 import burp.api.montoya.http.handler.RequestToBeSentAction;
 import burp.api.montoya.http.handler.ResponseReceivedAction;
+import burp.api.montoya.http.message.requests.HttpRequest;
+import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.proxy.http.InterceptedRequest;
 import burp.api.montoya.proxy.http.InterceptedResponse;
 import burp.api.montoya.proxy.http.ProxyRequestHandler;
@@ -27,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 /**
@@ -87,22 +89,25 @@ public class BurpUtil {
     public static String copySelectionData(ContextMenuEvent contextMenu, boolean selectionTextOnly) {
         String text = null;
         InvocationType context = contextMenu.invocationType();
-        if (contextMenu.messageEditorRequestResponse().isEmpty() && selectionTextOnly) {
+        if (contextMenu.messageEditorRequestResponse().isEmpty()) {
             return null;
         }
         MessageEditorHttpRequestResponse messageInfo = contextMenu.messageEditorRequestResponse().get();
+        if (messageInfo.selectionOffsets().isEmpty()) {
+            return null;
+        }
+        Range range = messageInfo.selectionOffsets().get();
         byte message[] = new byte[0];
         if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
             message = messageInfo.requestResponse().request().toByteArray().getBytes();
         } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_EDITOR_RESPONSE) {
             message = messageInfo.requestResponse().response().toByteArray().getBytes();
         }
-        Range range = messageInfo.selectionOffsets().get();
         if (message != null) {
-            if (range == null) {
-                text = StringUtil.getStringRaw(message);
-            } else {
+            if (selectionTextOnly) {
                 text = StringUtil.getStringCharset(message, range.startIndexInclusive(), range.endIndexExclusive() - range.startIndexInclusive(), StandardCharsets.ISO_8859_1);
+            } else {
+                text = StringUtil.getStringCharset(message, StandardCharsets.ISO_8859_1);
             }
         }
         return text;
@@ -110,23 +115,30 @@ public class BurpUtil {
 
     public static void pasteSelectionData(ContextMenuEvent contextMenu, String text, boolean selectionTextOnly) {
         InvocationType context = contextMenu.invocationType();
-        if (contextMenu.messageEditorRequestResponse().isEmpty() && selectionTextOnly) {
+        if (contextMenu.messageEditorRequestResponse().isEmpty()) {
             return;
         }
         MessageEditorHttpRequestResponse messageInfo = contextMenu.messageEditorRequestResponse().get();
-
+        if (messageInfo.selectionOffsets().isEmpty()) {
+            return;
+        }
+        Range range = messageInfo.selectionOffsets().get();
         byte message[] = new byte[0];
         if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
             message = messageInfo.requestResponse().request().toByteArray().getBytes();
         } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_VIEWER_RESPONSE) {
             message = messageInfo.requestResponse().response().toByteArray().getBytes();
         }
-        Range range = messageInfo.selectionOffsets().get();
         if (message != null) {
-            if (range == null) {
-                // nothing
+            if (selectionTextOnly) {
+                String updateMessage = StringUtil.getStringRaw(ConvertUtil.replaceByte(message, range.startIndexInclusive(), range.endIndexExclusive(), StringUtil.getBytesRaw(text)));
+                if (context == InvocationType.MESSAGE_EDITOR_REQUEST || context == InvocationType.MESSAGE_VIEWER_REQUEST) {
+                    messageInfo.setRequest(HttpRequest.httpRequest(messageInfo.requestResponse().httpService(), ByteArray.byteArray(updateMessage)));
+                } else if (context == InvocationType.MESSAGE_EDITOR_RESPONSE || context == InvocationType.MESSAGE_VIEWER_RESPONSE) {
+                    messageInfo.setResponse(HttpResponse.httpResponse(ByteArray.byteArray(updateMessage)));
+                }
             } else {
-                text = StringUtil.getStringRaw(ConvertUtil.replaceByte(message, range.startIndexInclusive(), range.endIndexExclusive(), StringUtil.getBytesRaw(text)));
+                // nothing
             }
         }
     }
@@ -137,8 +149,8 @@ public class BurpUtil {
             return;
         }
         Container container = tab.getUiComponent().getParent();
-        if (container instanceof JTabbedPane) {
-            final JTabbedPane tabbet = (JTabbedPane) container;
+        if (container instanceof JTabbedPane jTabbedPane) {
+            final JTabbedPane tabbet = jTabbedPane;
             final int index = tabbet.indexOfTab(tab.getTabCaption());
             if (index > -1) {
                 tabbet.setBackgroundAt(index, burpTextHighlightColor);
