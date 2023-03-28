@@ -300,7 +300,7 @@ public class MockMontoya {
         public final ActionResult actionResultApi = Mockito.mock(ActionResult.class);
         public final Menu menuApi = Mockito.mock(Menu.class);
         public final BasicMenuItem basicMenuItemApi = Mockito.mock(BasicMenuItem.class);
-        
+
         private MockMontoyaObjectFactory() {
 
             Mockito.when(this.httpRequestResponseApi.request()).thenReturn(this.httpRequestApi);
@@ -309,7 +309,7 @@ public class MockMontoya {
             Mockito.when(this.httpRequestResponseApi.response().body()).thenReturn(this.byteArrayApi);
 
             MockMontoyaObjectFactory montoyaObjectFactoryApi = Mockito.spy(this);
-            
+
             Mockito.when(montoyaObjectFactoryApi.httpService(Mockito.anyString())).thenReturn(httpServiceApi);
             Mockito.when(montoyaObjectFactoryApi.httpService(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(httpServiceApi);
             Mockito.when(montoyaObjectFactoryApi.httpService(Mockito.anyString(), Mockito.anyInt(), Mockito.anyBoolean())).thenReturn(httpServiceApi);

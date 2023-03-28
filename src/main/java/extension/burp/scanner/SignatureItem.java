@@ -1,11 +1,8 @@
 package extension.burp.scanner;
 
-import extension.burp.scanner.IssueItem;
 import extension.burp.IBurpTab;
 import extension.burp.IPropertyConfig;
 import extension.burp.Severity;
-import extension.burp.scanner.SignatureScanBase;
-import extension.burp.scanner.SignatureSelect;
 
 /**
  *
@@ -25,11 +22,11 @@ public class SignatureItem extends SignatureSelect {
     private final SignatureScanBase<? extends IssueItem> item;
 
     public SignatureScanBase<? extends IssueItem> getSignatureScan() {
-        return item;
+        return this.item;
     }
 
     public IBurpTab getBurpTab() {
-        if (item instanceof IBurpTab iBurpTab) {
+        if (this.item instanceof IBurpTab iBurpTab) {
             return iBurpTab;
         } else {
             return null;

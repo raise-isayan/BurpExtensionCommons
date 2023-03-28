@@ -1,16 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package burp;
 
+import extension.helpers.CertUtil;
+import java.security.Key;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -41,6 +42,13 @@ public class BurpPreferencesTest {
     public void testSysEnv() throws Exception {
         System.out.println("testSysEnv");
         System.out.println("Data:" + System.getenv("APPDATA"));
+    }
+
+    @Test
+    public void testloadBurpCa() throws Exception {
+        KeyStore ks = BurpPreferences.loadCACeart();
+        HashMap<String, Map.Entry<Key, X509Certificate>> mapCert = CertUtil.loadFromKeyStore(ks, BurpPreferences.getCAPassword());
+        assertFalse(mapCert.isEmpty());
     }
 
 }

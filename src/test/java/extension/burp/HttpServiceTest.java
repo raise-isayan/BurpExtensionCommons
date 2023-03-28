@@ -1,4 +1,4 @@
-package extension.burp.montoya;
+package extension.burp;
 
 import extension.burp.HttpTarget;
 import java.net.MalformedURLException;

@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class CertUtil {
+
     private final static Pattern PEM_PKCS1_PRIVATE = Pattern.compile("-{2,}BEGIN RSA PRIVATE KEY-{2,}\n(.*?)-{2,}END RSA PRIVATE KEY-{2,}\n", Pattern.DOTALL);
     private final static Pattern PEM_PKCS8_PRIVATE = Pattern.compile("-{2,}BEGIN PRIVATE KEY-{2,}\n(.*?)-{2,}END PRIVATE KEY-{2,}\n", Pattern.DOTALL);
     private final static Pattern PEM_CERTIFICATE = Pattern.compile("-{2,}BEGIN CERTIFICATE-{2,}\n(.*?)-{2,}END CERTIFICATE-{2,}\n", Pattern.DOTALL);
@@ -131,7 +132,7 @@ public class CertUtil {
         return true;
     }
 
-    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(byte [] storeData, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(byte[] storeData, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
         return loadFromKeyStore(new ByteArrayInputStream(storeData), keyPassword, storeType);
     }
 
@@ -153,7 +154,7 @@ public class CertUtil {
         return certMap;
     }
 
-    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromPKCS12(byte [] storeData, String password) {
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromPKCS12(byte[] storeData, String password) {
         try {
             return loadFromKeyStore(storeData, password, CertUtil.StoreType.PKCS12);
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {
@@ -161,7 +162,7 @@ public class CertUtil {
         return null;
     }
 
-    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromJKS(byte [] storeDate, String password) {
+    public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromJKS(byte[] storeDate, String password) {
         try {
             return loadFromKeyStore(storeDate, password, CertUtil.StoreType.JKS);
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException ex) {

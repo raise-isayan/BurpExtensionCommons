@@ -67,8 +67,8 @@ public final class SwingUtil {
         java.util.List<JFrame> jframes = new ArrayList<>();
         Frame[] frames = Frame.getFrames();
         for (int i = 0; i < frames.length; i++) {
-            if (frames[i] instanceof JFrame) {
-                jframes.add((JFrame) frames[i]);
+            if (frames[i] instanceof JFrame jFrame) {
+                jframes.add(jFrame);
             }
         }
         return jframes.toArray(JFrame[]::new);
@@ -104,8 +104,8 @@ public final class SwingUtil {
     public static void addItem(javax.swing.JTable srcTable, Object[] items) {
         TableModel modelSrc = srcTable.getModel();
         int lastIndex = modelSrc.getRowCount() - 1;
-        if (modelSrc instanceof DefaultTableModel) {
-            ((DefaultTableModel) modelSrc).addRow(items);
+        if (modelSrc instanceof DefaultTableModel defaultTableModel) {
+            defaultTableModel.addRow(items);
         } //        else if (modelSrc instanceof DefaultObjectTableModel) {
         //            ((DefaultObjectTableModel)modelSrc).addRow(items);
         //        }
@@ -136,9 +136,9 @@ public final class SwingUtil {
         int index = viewIndex;
         if (-1 < index && index < srcTable.getRowCount()) {
             int rowIndex = srcTable.convertRowIndexToModel(index);
-            if (modelSrc instanceof DefaultTableModel) {
-                ((DefaultTableModel) modelSrc).removeRow(rowIndex);
-                ((DefaultTableModel) modelSrc).insertRow(rowIndex, items);
+            if (modelSrc instanceof DefaultTableModel defaultTableModel) {
+                defaultTableModel.removeRow(rowIndex);
+                defaultTableModel.insertRow(rowIndex, items);
             } //            else if (modelSrc instanceof DefaultObjectTableModel) {
             //                ((DefaultObjectTableModel)modelSrc).removeRow(rowIndex);
             //                ((DefaultObjectTableModel)modelSrc).insertRow(rowIndex, items);
@@ -159,10 +159,10 @@ public final class SwingUtil {
         int index = srcTable.getSelectedRow();
         if (index > -1) {
             int rowIndex = srcTable.convertRowIndexToModel(index);
-            if (modelSrc instanceof DefaultTableModel) {
-                ((DefaultTableModel) modelSrc).removeRow(rowIndex);
-            } else if (modelSrc instanceof DefaultObjectTableModel) {
-                ((DefaultObjectTableModel) modelSrc).removeRow(rowIndex);
+            if (modelSrc instanceof DefaultTableModel defaultTableModel) {
+                defaultTableModel.removeRow(rowIndex);
+            } else if (modelSrc instanceof DefaultObjectTableModel defaultObjectTableModel) {
+                defaultObjectTableModel.removeRow(rowIndex);
             } else {
                 throw new java.lang.ClassCastException("class cast Excaption:" + modelSrc.getClass().getName());
             }
@@ -191,8 +191,7 @@ public final class SwingUtil {
         Enumeration e = root.preorderEnumeration();
         while (e.hasMoreElements()) {
             Object element = e.nextElement();
-            if (element instanceof TreeNode) {
-                TreeNode node = (TreeNode) element;
+            if (element instanceof TreeNode node) {
                 model.nodeChanged(node);
             }
         }
@@ -227,8 +226,8 @@ public final class SwingUtil {
     public static void setContainerEnable(Container container, boolean enabled) {
         Component[] list = container.getComponents();
         for (Component c : list) {
-            if (c instanceof Container) {
-                setContainerEnable((Container) c, enabled);
+            if (c instanceof Container container1) {
+                setContainerEnable(container1, enabled);
                 c.setEnabled(enabled);
             } else {
                 c.setEnabled(enabled);
@@ -513,8 +512,7 @@ public final class SwingUtil {
         @Override
         public void exportToClipboard(JComponent comp, Clipboard clipboard,
                 int action) throws IllegalStateException {
-            if (comp instanceof JTextComponent) {
-                JTextComponent text = (JTextComponent) comp;
+            if (comp instanceof JTextComponent text) {
                 int p0 = text.getSelectionStart();
                 int p1 = text.getSelectionEnd();
                 if (p0 != p1) {
@@ -536,7 +534,7 @@ public final class SwingUtil {
 
         @Override
         public boolean importData(JComponent comp, Transferable t) {
-            if (comp instanceof JTextComponent) {
+            if (comp instanceof JTextComponent jTextComponent) {
                 DataFlavor flavor = getFlavor(t.getTransferDataFlavors());
                 if (flavor != null) {
                     InputContext ic = comp.getInputContext();
@@ -545,7 +543,7 @@ public final class SwingUtil {
                     }
                     try {
                         String data = (String) t.getTransferData(flavor);
-                        ((JTextComponent) comp).replaceSelection(data);
+                        jTextComponent.replaceSelection(data);
                         return true;
                     } catch (UnsupportedFlavorException ex) {
                         logger.log(Level.WARNING, ex.getMessage(), ex);
@@ -559,8 +557,7 @@ public final class SwingUtil {
 
         @Override
         public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
-            if (comp instanceof JTextComponent) {
-                JTextComponent c = (JTextComponent) comp;
+            if (comp instanceof JTextComponent c) {
                 if (!(c.isEditable() && c.isEnabled())) {
                     return false;
                 }
@@ -576,10 +573,8 @@ public final class SwingUtil {
                     Object data = t.getTransferData(DataFlavor.javaFileListFlavor);
                     java.util.List lists = (java.util.List) data;
                     for (Object item : lists) {
-                        if (item instanceof File) {
-                            File file = (File) item;
-                            byte[] rawData = new byte[0];
-                            rawData = FileUtil.readAllBytes(new FileInputStream(file));
+                        if (item instanceof File file) {
+                            byte[] rawData = FileUtil.readAllBytes(new FileInputStream(file));
                             setData(file, rawData);
                             break;
                         }

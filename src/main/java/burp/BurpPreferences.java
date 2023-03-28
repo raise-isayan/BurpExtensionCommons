@@ -1,8 +1,6 @@
 package burp;
 
-import extension.burp.BurpVersion;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -16,12 +14,6 @@ import java.util.prefs.Preferences;
  * @author isayan
  */
 public class BurpPreferences {
-
-    /*
-     * %APPDATA%/BurpSuite/**
-     */
-    private static final String USER_CONFIG_COMMUNITY = "UserConfigCommunity.json";
-    private static final String USER_CONFIG_PRO = "UserConfigPro.json";
 
     private static final String CA_PASSWORD = "/burp/media/ps.p12";
 
@@ -41,6 +33,5 @@ public class BurpPreferences {
             throw new KeyStoreException(ex);
         }
     }
-
 
 }

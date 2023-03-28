@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
+import java.util.zip.CRC32C;
 
 /**
  *
@@ -44,12 +45,12 @@ public final class HashUtil {
         return toMessageDigest(algorithm, StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
-    public static String toMessageDigest(String algorithm, byte body[], boolean upperCase)
+    public static String toMessageDigest(String algorithm, byte[] binary, boolean upperCase)
             throws NoSuchAlgorithmException {
         String digeststr = "";
         MessageDigest md = MessageDigest.getInstance(algorithm);
         md.reset();
-        md.update(body);
+        md.update(binary);
         digeststr = ConvertUtil.toHexString(md.digest());
         if (upperCase) {
             return digeststr;
@@ -61,13 +62,13 @@ public final class HashUtil {
     /**
      * MD2値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd2Sum(byte[] body, boolean upperCase) {
+    public static String toMd2Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("MD2", body, upperCase);
+            return toMessageDigest("MD2", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -109,13 +110,13 @@ public final class HashUtil {
     /**
      * MD5値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd5Sum(byte[] body, boolean upperCase) {
+    public static String toMd5Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("MD5", body, upperCase);
+            return toMessageDigest("MD5", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -157,13 +158,13 @@ public final class HashUtil {
     /**
      * SHA-1値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHA1Sum(byte[] body, boolean upperCase) {
+    public static String toSHA1Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("SHA-1", body, upperCase);
+            return toMessageDigest("SHA-1", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -205,13 +206,13 @@ public final class HashUtil {
     /**
      * SHA-256値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHA256Sum(byte[] body, boolean upperCase) {
+    public static String toSHA256Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("SHA-256", body, upperCase);
+            return toMessageDigest("SHA-256", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -253,13 +254,13 @@ public final class HashUtil {
     /**
      * SHA-384値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHA384Sum(byte[] body, boolean upperCase) {
+    public static String toSHA384Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("SHA-384", body, upperCase);
+            return toMessageDigest("SHA-384", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -301,13 +302,13 @@ public final class HashUtil {
     /**
      * SHA-512値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHA512Sum(byte[] body, boolean upperCase) {
+    public static String toSHA512Sum(byte[] binary, boolean upperCase) {
         try {
-            return toMessageDigest("SHA-512", body, upperCase);
+            return toMessageDigest("SHA-512", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
@@ -361,13 +362,38 @@ public final class HashUtil {
     /**
      * CRC-32値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @return ハッシュ値
      */
-    public static long toCRC32Sum(byte[] body) {
+    public static long toCRC32Sum(byte[] binary) {
         CRC32 crc = new CRC32();
         crc.reset();
-        crc.update(body);
+        crc.update(binary);
+        return crc.getValue();
+    }
+
+    /**
+     * CRC-32C値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @return CRC値
+     * @throws UnsupportedEncodingException
+     */
+    public static long toCRC32CSum(String str, String charset) throws UnsupportedEncodingException {
+        return toCRC32CSum(str.getBytes(charset));
+    }
+
+    /**
+     * CRC-32C値の取得
+     *
+     * @param binary 対象バイト
+     * @return ハッシュ値
+     */
+    public static long toCRC32CSum(byte[] binary) {
+        CRC32C crc = new CRC32C();
+        crc.reset();
+        crc.update(binary);
         return crc.getValue();
     }
 
@@ -386,13 +412,13 @@ public final class HashUtil {
     /**
      * Adler32値の取得
      *
-     * @param body 対象バイト
+     * @param binary 対象バイト
      * @return ハッシュ値
      */
-    public static long toAdler32Sum(byte[] body) {
+    public static long toAdler32Sum(byte[] binary) {
         Adler32 crc = new Adler32();
         crc.reset();
-        crc.update(body);
+        crc.update(binary);
         return crc.getValue();
     }
 
