@@ -30,6 +30,11 @@ public class HttpMessageWapper implements HttpMessage {
     }
 
     @Override
+    public String httpVersion() {
+        return message.httpVersion();
+    }
+
+    @Override
     public List<HttpHeader> headers() {
         return message.headers();
     }
@@ -162,6 +167,8 @@ public class HttpMessageWapper implements HttpMessage {
 
     /**
      * httpMessate
+     * @param httpMessae
+     * @return
      **/
 
     public static HttpHeader getContentTypeHeader(HttpMessage httpMessae) {
