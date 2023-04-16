@@ -86,6 +86,29 @@ public final class SwingUtil {
         return menuBars.toArray(JMenuBar[]::new);
     }
 
+    public Component findTab(Component parent, String caption) {
+        if (parent instanceof JTabbedPane tabPane) {
+            for (int i = 0; i < tabPane.getTabCount(); i++) {
+                String title = tabPane.getTitleAt(i);
+                if (caption.equals(title)) {
+                    return tabPane.getTabComponentAt(i);
+                }
+            }
+        }
+        if (parent instanceof Container container) {
+            for (int j = 0; j < container.getComponentCount(); j++) {
+                Component component = findTab(container.getComponent(j), caption);
+                if (component != null) return component;
+            }
+        }
+        return null;
+    }
+
+    public Component getCurrentKeyboardComponent() {
+        final KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        return mgr.getPermanentFocusOwner();
+    }
+
     /**
      * 行の追加または更新
      *

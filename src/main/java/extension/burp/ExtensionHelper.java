@@ -1,9 +1,12 @@
 package extension.burp;
 
 import burp.api.montoya.MontoyaApi;
+import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.ToolSource;
 import burp.api.montoya.core.ToolType;
+import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.message.HttpRequestResponse;
+import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.ui.contextmenu.ContextMenuEvent;
 import burp.api.montoya.ui.editor.extension.EditorCreationContext;
 import burp.api.montoya.ui.editor.extension.EditorMode;
@@ -19,6 +22,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
@@ -253,6 +258,20 @@ public class ExtensionHelper {
                 return editorMode;
             }
         };
+    }
+
+    private final static Pattern HTTP2_VERSION_PATTERN = Pattern.compile("(\\S+) +(\\S+) +HTTP/2\r\n");
+
+    // HTTP/1.x HTTP/2 に対応したラッパー
+    public static HttpRequest httpRequest(HttpService httpService,ByteArray request) {
+        HttpRequest warapRequest = HttpRequest.httpRequest(httpService, request);
+        Matcher m = HTTP2_VERSION_PATTERN.matcher(StringUtil.getStringRaw(request.getBytes()));
+        if (m.lookingAt()) {
+            HttpRequest warap2Request = HttpRequest.http2Request(warapRequest.httpService(), warapRequest.headers(), warapRequest.body());
+            warap2Request = warap2Request.withMethod(warapRequest.method()).withPath(warapRequest.path());
+            return warap2Request;
+        }
+        return warapRequest;
     }
 
 }

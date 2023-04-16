@@ -2,7 +2,6 @@ package extension.burp;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Range;
-import static burp.api.montoya.core.Range.range;
 import burp.api.montoya.http.handler.HttpHandler;
 import burp.api.montoya.http.handler.HttpRequestToBeSent;
 import burp.api.montoya.http.handler.HttpResponseReceived;
