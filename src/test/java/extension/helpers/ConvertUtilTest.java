@@ -173,6 +173,23 @@ public class ConvertUtilTest {
         assertEquals(0x8080, ConvertUtil.toInteger(new byte[]{(byte) 0x80, (byte) 0x80}));
     }
 
+    /**
+     * Test of toInteger method, of class ConvertUtil.
+     */
+    @Test
+    public void testToHexString() {
+        System.out.println("toHexString");
+        assertEquals("0F", ConvertUtil.toHexString(0x0f));
+        assertEquals("7F", ConvertUtil.toHexString(0x7f));
+        assertEquals("FF", ConvertUtil.toHexString(0xff));
+        assertEquals("7FFF", ConvertUtil.toHexString(0x7fff));
+        assertEquals("FF7F", ConvertUtil.toHexString(0xff7f));
+        assertEquals("0FF0", ConvertUtil.toHexString(new byte[]{(byte) 0x0f, (byte) 0xf0}));
+        assertEquals("7FFF", ConvertUtil.toHexString(new byte[]{(byte) 0x7f, (byte) 0xff}));
+        assertEquals("FF7F", ConvertUtil.toHexString(new byte[]{(byte) 0xff, (byte) 0x7f}));
+        assertEquals("8080", ConvertUtil.toHexString(new byte[]{(byte) 0x80, (byte) 0x80}));
+    }
+
     @Test
     public void testBase64() {
 
