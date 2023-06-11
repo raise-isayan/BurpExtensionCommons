@@ -1,6 +1,5 @@
 package extension.burp;
 
-import extension.burp.HttpTarget;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.junit.jupiter.api.AfterAll;

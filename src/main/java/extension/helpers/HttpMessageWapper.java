@@ -219,4 +219,13 @@ public class HttpMessageWapper implements HttpMessage {
         return result;
     }
 
+    public String getBodyRaw(boolean smartDecode) {
+        String body = StringUtil.getStringRaw(this.body().getBytes());
+        if (smartDecode) {
+            body = SmartCodec.toUnicodeDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
+            body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
+        }
+        return body;
+    }
+
 }

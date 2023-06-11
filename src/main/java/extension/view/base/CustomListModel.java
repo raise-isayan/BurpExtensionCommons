@@ -7,6 +7,7 @@ import javax.swing.DefaultListModel;
 /**
  *
  * @author isayan
+ * @param <E>
  */
 public class CustomListModel<E> extends DefaultListModel<E> {
 

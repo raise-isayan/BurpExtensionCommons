@@ -49,6 +49,42 @@ public class BurpConfig {
         return userDir;
     }
 
+    private static final String CHARACTER_SETS_MODE_RECOGNIZE = "recognize_automatically";
+    private static final String CHARACTER_SETS_MODE_DEFAULT = "use_the_platform_default";
+    private static final String CHARACTER_SETS_MODE_RAW = "display_as_raw_bytes";
+    private static final String CHARACTER_SETS_MODE_SET = "use_a_specific_character_set";
+
+    public enum CharacterSetMode {
+        RECOGNIZE_AUTO,
+        PLATFORM_DEFAULT,
+        RAW_BYTES,
+        SPECIFIC_CHARACTER_SET;
+
+        public String toIdent() {
+            String result = CHARACTER_SETS_MODE_RAW;
+            switch (this) {
+                case RECOGNIZE_AUTO:
+                    result = CHARACTER_SETS_MODE_RECOGNIZE;
+                    break;
+                case PLATFORM_DEFAULT:
+                    result = CHARACTER_SETS_MODE_DEFAULT;
+                    break;
+                case RAW_BYTES:
+                    result = CHARACTER_SETS_MODE_RAW;
+                    break;
+                case SPECIFIC_CHARACTER_SET:
+                    result = CHARACTER_SETS_MODE_SET;
+                    break;
+            }
+            return result;
+        }
+
+    }
+
+    public static CharacterSets getCharacterSets(CharacterSetMode characterSet, String charCode) {
+        return new CharacterSets(characterSet.toIdent(), charCode);
+    }
+
     /* Burp built in PayloadStrings */
     private static final String BUILT_IN_PASSWORDS_SIGNATURE = "/resources/PayloadStrings/Passwords.pay";
     private static final String BUILT_IN_USERNAMES_SIGNATURE = "/resources/PayloadStrings/Usernames.pay";
@@ -322,12 +358,91 @@ public class BurpConfig {
         }
     }
 
+    public enum SupportApi {
+        BURPSUITE_USEROPTION
+    }
+
+    public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
+        try {
+            switch (type) {
+                case BURPSUITE_USEROPTION:
+                    api.burpSuite().exportUserOptionsAsJson("user_options");
+                    break;
+            }
+            return true;
+        } catch (java.lang.NoSuchMethodError ex) {
+            return false;
+        }
+    }
+
+
+    public static CharacterSets getCharacterSets(MontoyaApi api) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.display.character_sets");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject character_sets = root_json.getAsJsonObject("user_options").getAsJsonObject("display").getAsJsonObject("character_sets");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(character_sets, true), BurpConfig.CharacterSets.class, true);
+    }
+
+    public static void configCharacterSets(MontoyaApi api, CharacterSets charsets) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.display.character_sets");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject display_json = root_json.getAsJsonObject("user_options").getAsJsonObject("display");
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(charsets, true);
+        display_json.add("character_sets", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        api.burpSuite().importUserOptionsFromJson(updateConfig);
+    }
+
+    public static class CharacterSets {
+
+        public CharacterSets(String mode, String specific_character_set) {
+            this.mode = mode;
+            this.specific_character_set = specific_character_set;
+        }
+
+
+        @Expose
+        private String mode;
+
+        @Expose
+        private String specific_character_set;
+
+        /**
+         * @return the mode
+         */
+        public String getMode() {
+            return mode;
+        }
+
+        /**
+         * @param mode the mode to set
+         */
+        public void setMode(String mode) {
+            this.mode = mode;
+        }
+
+        /**
+         * @return the specific_character_set
+         */
+        public String getCharacterSet() {
+            return specific_character_set;
+        }
+
+        /**
+         * @param specific_character_set the specific_character_set to set
+         */
+        public void setCharacterSet(String specific_character_set) {
+            this.specific_character_set = specific_character_set;
+        }
+
+    }
+
     /**
      * *
      * config: { "project_options":{ "connections":{ "hostname_resolution":[ {
      * "enabled":true, "hostname":"test", "ip_address":"127.0.0.1" }, {
      * "enabled":true, "hostname":"hoge", "ip_address":"192.168.0.2" } ] } } }
-*
+     *
      */
     /**
      *
@@ -363,7 +478,6 @@ public class BurpConfig {
     }
 
     /**
-     * *
      *
      * @param config
      * @param hosts

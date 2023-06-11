@@ -1,5 +1,8 @@
 package extension.helpers;
 
+import extension.burp.BurpConfigTest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -331,6 +334,29 @@ public class SmartCodecTest {
             System.out.println("decode:" + decode);
         }
 
+    }
+
+    @Test
+    public void testSmartDecode() {
+        try {
+            System.out.println("testSmartDecode");
+            InputStream streamUTF8 = FileUtilTest.class.getResourceAsStream("/resources/encode.html");
+            String contentRaw = StringUtil.getStringUTF8(FileUtil.readAllBytes(streamUTF8));
+            String content = getBodyRaw(contentRaw, true);
+            System.out.println("Content:" + content);
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+
+
+    public static String getBodyRaw(String content, boolean smartDecode) {
+        if (smartDecode) {
+            content = SmartCodec.toUnicodeDecode(content, SmartCodec.ENCODE_PATTERN_LIGHT);
+            content = SmartCodec.toHtmlDecode(content, SmartCodec.ENCODE_PATTERN_LIGHT);
+        }
+        return content;
     }
 
 }

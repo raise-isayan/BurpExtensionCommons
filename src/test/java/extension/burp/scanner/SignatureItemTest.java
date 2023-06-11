@@ -3,13 +3,6 @@ package extension.burp.scanner;
 import burp.MockMontoya;
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.core.Marker;
-import extension.burp.scanner.SignatureScanBase;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -18,7 +11,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import org.mockito.Mockito;
 
 /**
  *

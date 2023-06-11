@@ -55,10 +55,10 @@ public class CustomDialog extends javax.swing.JDialog {
         long mostRecentEventTime = EventQueue.getMostRecentEventTime();
         int modifiers = 0;
         AWTEvent currentEvent = EventQueue.getCurrentEvent();
-        if (currentEvent instanceof InputEvent) {
-            modifiers = ((InputEvent) currentEvent).getModifiersEx();
-        } else if (currentEvent instanceof ActionEvent) {
-            modifiers = ((ActionEvent) currentEvent).getModifiers();
+        if (currentEvent instanceof InputEvent inputEvent) {
+            modifiers = inputEvent.getModifiersEx();
+        } else if (currentEvent instanceof ActionEvent actionEvent) {
+            modifiers = actionEvent.getModifiers();
         }
         ActionEvent e = null;
         // Process the listeners last to first, notifying

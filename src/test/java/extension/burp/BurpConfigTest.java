@@ -4,7 +4,9 @@ import burp.BurpPreferences;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import java.io.File;
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -45,37 +47,45 @@ public class BurpConfigTest {
      * Test of loadCACeart method, of class BurpConfig.
      */
     @Test
-    public void testLoadCACeart() throws Exception {
-        System.out.println("loadCACeart");
-        KeyStore result = BurpPreferences.loadCACeart();
-        Properties p = System.getProperties();
-        Enumeration<String> e = result.aliases();
-        while (e.hasMoreElements()) {
-            // cacert
-            String alias = e.nextElement();
-            assertEquals("cacert", alias);
+    public void testLoadCACeart() {
+        try {
+            System.out.println("loadCACeart");
+            KeyStore result = BurpPreferences.loadCACeart();
+            Properties p = System.getProperties();
+            Enumeration<String> e = result.aliases();
+            while (e.hasMoreElements()) {
+                // cacert
+                String alias = e.nextElement();
+                assertEquals("cacert", alias);
+            }
+        } catch (KeyStoreException ex) {
+            fail();
         }
     }
 
     @Test
-    public void testSystemProperty() throws Exception {
+    public void testSystemProperty() {
         System.out.println("SystemProperty");
         Properties p = System.getProperties();
         p.list(System.out);
     }
 
     @Test
-    public void testUpdateHostnameResolution() throws Exception {
-        System.out.println("testUpdateHostnameResolution");
-        String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution.json").getPath();
-        String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
-        List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
-        hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
-        System.out.println("loadConfig:" + config);
-        String updateConfig = BurpConfig.updateHostnameResolution(config, hosts);
-        System.out.println("updateConfig:" + updateConfig);
-        String removeConfig = BurpConfig.updateHostnameResolution(updateConfig, hosts, true);
-        System.out.println("removeConfig:" + removeConfig);
+    public void testUpdateHostnameResolution() {
+        try {
+            System.out.println("testUpdateHostnameResolution");
+            String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
+            hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
+            System.out.println("loadConfig:" + config);
+            String updateConfig = BurpConfig.updateHostnameResolution(config, hosts);
+            System.out.println("updateConfig:" + updateConfig);
+            String removeConfig = BurpConfig.updateHostnameResolution(updateConfig, hosts, true);
+            System.out.println("removeConfig:" + removeConfig);
+        } catch (IOException ex) {
+            fail();
+        }
     }
 
     @Test

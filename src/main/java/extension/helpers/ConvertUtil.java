@@ -358,7 +358,7 @@ public class ConvertUtil {
 
     public static String toHexString(int input) {
         byte [] hex = BigInteger.valueOf(input).toByteArray();
-        int i = 0; while (hex[i] == 0) { i++; }
+        int i = 0; while (i < hex.length - 1  && hex[i] == 0) { i++; }
         return toHexString(Arrays.copyOfRange(hex, i, hex.length));
     }
 

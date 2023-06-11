@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest {
     private final static Pattern FIRSTLINE = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
-    
+
     private final HttpRequest request;
 
     public HttpRequestWapper(HttpRequest request) {
@@ -173,7 +173,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withDefaultHeaders();
     }
 
-    
+
     public final String METHOD_GET = "GET";
     public final String METHOD_POST = "POST";
     public final String METHOD_HEAD = "HEAD";
@@ -201,7 +201,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         }
         return this.request;
     }
-    
+
     public String getHost() {
         HttpHeader header = getHostHeader();
         return header.value();
@@ -276,6 +276,21 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
             charset = HttpUtil.getGuessCode(httpRequest.body().getBytes());
         }
         return HttpUtil.normalizeCharset(charset);
+    }
+
+    @Override
+    public HttpRequest withHeader(HttpHeader header) {
+        return request.withHeader(header);
+    }
+
+    @Override
+    public HttpRequest withHeader(String name, String value) {
+        return request.withHeader(name, value);
+    }
+
+    @Override
+    public HttpRequest withParameter(HttpParameter parameter) {
+        return request.withParameter(parameter);
     }
 
 }

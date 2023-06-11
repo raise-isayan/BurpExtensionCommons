@@ -22,6 +22,7 @@ import burp.api.montoya.extension.Extension;
 import burp.api.montoya.http.Http;
 import burp.api.montoya.http.HttpMode;
 import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.RequestOptions;
 import burp.api.montoya.http.handler.RequestToBeSentAction;
 import burp.api.montoya.http.handler.ResponseReceivedAction;
 import burp.api.montoya.http.message.HttpHeader;
@@ -37,6 +38,7 @@ import burp.api.montoya.http.sessions.CookieJar;
 import burp.api.montoya.internal.MontoyaObjectFactory;
 import burp.api.montoya.intruder.GeneratedPayload;
 import burp.api.montoya.intruder.HttpRequestTemplate;
+import burp.api.montoya.intruder.HttpRequestTemplateGenerationOptions;
 import burp.api.montoya.intruder.Intruder;
 import burp.api.montoya.intruder.PayloadProcessingAction;
 import burp.api.montoya.intruder.PayloadProcessingResult;
@@ -300,6 +302,8 @@ public class MockMontoya {
         public final ActionResult actionResultApi = Mockito.mock(ActionResult.class);
         public final Menu menuApi = Mockito.mock(Menu.class);
         public final BasicMenuItem basicMenuItemApi = Mockito.mock(BasicMenuItem.class);
+        public final HttpRequestTemplate httpRequestTemplate = Mockito.mock(HttpRequestTemplate.class);
+        public final RequestOptions requestOptions = Mockito.mock(RequestOptions.class);
 
         private MockMontoyaObjectFactory() {
 
@@ -1072,6 +1076,21 @@ public class MockMontoya {
         @Override
         public BasicMenuItem basicMenuItem(String caption) {
             return this.basicMenuItemApi;
+        }
+
+        @Override
+        public HttpRequestTemplate httpRequestTemplate(ByteArray ba, HttpRequestTemplateGenerationOptions hrtgo) {
+            return this.httpRequestTemplate;
+        }
+
+        @Override
+        public HttpRequestTemplate httpRequestTemplate(HttpRequest hr, HttpRequestTemplateGenerationOptions hrtgo) {
+            return this.httpRequestTemplate;
+        }
+
+        @Override
+        public RequestOptions requestOptions() {
+            return this.requestOptions;
         }
     }
 

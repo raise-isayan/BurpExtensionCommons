@@ -35,6 +35,7 @@ public class JMultilineLabel extends JTextArea {
         final JTextField text = new JTextField(20);
         JButton b = new JButton("popup");
         b.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 label.setText("");
             }

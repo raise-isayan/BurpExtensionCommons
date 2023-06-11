@@ -34,7 +34,7 @@ public class DefaultObjectTableModel<T extends ObjectTableMapping> extends Abstr
 
     public DefaultObjectTableModel(ObjectTableColumn column) {
         this.columns = column;
-        this.data = new ArrayList<T>();
+        this.data = new ArrayList<>();
     }
 
     public T getData(int row) {

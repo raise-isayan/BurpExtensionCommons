@@ -3,6 +3,7 @@ package extension.helpers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -179,6 +180,10 @@ public class ConvertUtilTest {
     @Test
     public void testToHexString() {
         System.out.println("toHexString");
+        byte [] hex = BigInteger.valueOf(0).toByteArray();
+        assertEquals(hex.length, 1);
+
+        assertEquals("00", ConvertUtil.toHexString(0x00));
         assertEquals("0F", ConvertUtil.toHexString(0x0f));
         assertEquals("7F", ConvertUtil.toHexString(0x7f));
         assertEquals("FF", ConvertUtil.toHexString(0xff));

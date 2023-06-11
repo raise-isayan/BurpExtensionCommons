@@ -7,7 +7,6 @@ import java.util.EnumSet;
  * @author isayan
  */
 public enum NotifyType {
-
     ALERTS_TAB, TRAY_MESSAGE, ITEM_HIGHLIGHT, COMMENT, SCANNER_ISSUE;
 
     public static NotifyType parseEnum(String s) {
