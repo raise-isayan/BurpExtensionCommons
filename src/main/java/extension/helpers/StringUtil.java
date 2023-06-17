@@ -76,13 +76,8 @@ public class StringUtil {
         return new String(message, offset, length, charset);
     }
 
-    public static String getStringCharset(byte[] message, int offset, int length, String encoding) {
-        String decodeStr = null;
-        try {
-            decodeStr = new String(message, offset, length, encoding);
-        } catch (UnsupportedEncodingException ex) {
-        }
-        return decodeStr;
+    public static String getStringCharset(byte[] message, int offset, int length, String encoding) throws UnsupportedEncodingException {
+        return new String(message, offset, length, encoding);
     }
 
     /**

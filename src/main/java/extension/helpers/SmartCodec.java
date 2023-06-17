@@ -17,9 +17,9 @@ public class SmartCodec {
     // 条件一致時にEncode
     public final static Pattern ENCODE_PATTERN_ALL = Pattern.compile(".", Pattern.DOTALL);
     public final static Pattern ENCODE_PATTERN_ALPHANUM = Pattern.compile("[^a-zA-Z0-9]");
-    public final static Pattern ENCODE_PATTERN_URLSAFE = Pattern.compile("[^a-zA-Z0-9\\._-]");
     public final static Pattern ENCODE_PATTERN_STANDARD = Pattern.compile("[^A-Za-z0-9!\"$&'()*+,:=@|~]");
     public final static Pattern ENCODE_PATTERN_LIGHT = Pattern.compile("[^A-Za-z0-9!\"'()*,/:<>@\\[\\\\\\]^`{|}~]");
+    public final static Pattern ENCODE_PATTERN_BURP = Pattern.compile("[^A-Za-z0-9!\"$'()*,/:<>@\\[\\\\\\]^`{|},.~-]");
     public final static Pattern ENCODE_PATTERN_JS = Pattern.compile("[^ !#$&=~/,@+*|0-9A-Za-z\\[\\]\\(\\)\\{\\}?-]");
 
     private final static HashMap<String, Character> ENTITY = new HashMap<>();

@@ -426,6 +426,59 @@ public class HttpUtilTest {
         assertEquals(null, HttpUtil.normalizeCharset(null));
     }
 
+    @Test
+    public void testExtractHTMLComments() {
+        String body1 = "<html>\n" +
+                        "<meta charset=\"UTF-8\">\n" +
+                        "<body>\n" +
+                        "<!-- コメント -->\n" +
+                        "<b>テスト</b>\n" +
+                        "<!-- コメント -->\n" +
+                        "</body>\n" +
+                        "</html>";
+        String body2 = "<html>\n" +
+                        "<meta charset=\"UTF-8\">\n" +
+                        "<body>\n" +
+                        "<!-- テスト -->\n" +
+                        "<b>テスト</b>\n" +
+                        "<!-- コメント -->\n" +
+                        "</body>\n" +
+                        "</html>";
+        String body3 = "<html>\n" +
+"<!-- &#12467;&#12513;&#12531;&#12488;&#12434;&#21463;&#12369;&#20184;&#12369;&#12414;&#12375;&#12383;&#12290; -->\n" +
+"</html>";
+
+        {
+            String comments[] = HttpUtil.extractHTMLComments(body1);
+            assertEquals(2, comments.length);
+            assertEquals("<!-- コメント -->", comments[0]);
+            assertEquals("<!-- コメント -->", comments[1]);
+        }
+        {
+            String comments[] = HttpUtil.extractHTMLComments(body1, true);
+            assertEquals(1, comments.length);
+            assertEquals("<!-- コメント -->", comments[0]);
+        }
+        {
+            String comments[] = HttpUtil.extractHTMLComments(body2);
+            assertEquals(2, comments.length);
+            assertEquals("<!-- テスト -->", comments[0]);
+            assertEquals("<!-- コメント -->", comments[1]);
+        }
+        {
+            String comments[] = HttpUtil.extractHTMLComments(body2, true);
+            assertEquals(2, comments.length);
+            assertEquals("<!-- テスト -->", comments[0]);
+            assertEquals("<!-- コメント -->", comments[1]);
+        }
+        {
+            String comments[] = HttpUtil.extractHTMLComments(body3, true);
+            assertEquals(1, comments.length);
+            assertEquals("<!-- &#12467;&#12513;&#12531;&#12488;&#12434;&#21463;&#12369;&#20184;&#12369;&#12414;&#12375;&#12383;&#12290; -->", comments[0]);
+        }
+
+    }
+
     /**
      * Test of StaticProxySelector class, of class HttpUtil.
      */
