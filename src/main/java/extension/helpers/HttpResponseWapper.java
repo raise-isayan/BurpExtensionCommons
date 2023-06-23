@@ -167,6 +167,11 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
         return getGuessCharset(this.response);
     }
 
+    public String getGuessCharset(String defaultCharset) {
+        String guessCharset = getGuessCharset(this.response);
+        return guessCharset == null ? defaultCharset: guessCharset;
+    }
+
     private final static Pattern RESPONSE_META_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);
 
     public static String getGuessCharset(HttpResponse httpResponse) {

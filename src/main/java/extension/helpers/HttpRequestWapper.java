@@ -10,6 +10,7 @@ import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.requests.HttpTransformation;
+import static extension.helpers.HttpResponseWapper.getGuessCharset;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -248,6 +249,11 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     public String getGuessCharset() {
         return getGuessCharset(this.request);
+    }
+
+    public String getGuessCharset(String defaultCharset) {
+        String guessCharset = getGuessCharset(this.request);
+        return guessCharset == null ? defaultCharset: guessCharset;
     }
 
     /**
