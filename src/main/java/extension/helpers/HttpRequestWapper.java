@@ -10,7 +10,6 @@ import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.requests.HttpTransformation;
-import static extension.helpers.HttpResponseWapper.getGuessCharset;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -174,7 +173,6 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withDefaultHeaders();
     }
 
-
     public final String METHOD_GET = "GET";
     public final String METHOD_POST = "POST";
     public final String METHOD_HEAD = "HEAD";
@@ -269,17 +267,35 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return parameters.stream().anyMatch(p -> p.type() == HttpParameterType.URL);
     }
 
+    public static String getQueryParameter(String url) {
+        int queryPos = url.indexOf('?');
+        return queryPos > -1 && url.length()-1 > queryPos ? url.substring(queryPos + 1) : null;
+    }
+
     public static String getGuessCharset(HttpRequest httpRequest) {
         String charset = null;
-        HttpHeader contentType = getContentTypeHeader(httpRequest);
-        if (contentType != null) {
-            Matcher m = CONTENT_CHARSET.matcher(contentType.value());
+        HttpHeader contentTypeHeader = getContentTypeHeader(httpRequest);
+        if (contentTypeHeader != null) {
+            Matcher m = CONTENT_CHARSET.matcher(contentTypeHeader.value());
             if (m.find()) {
                 charset = m.group(2);
             }
         }
         if (charset == null) {
-            charset = HttpUtil.getGuessCode(httpRequest.body().getBytes());
+            ContentType contentType = httpRequest.contentType();
+            if (ContentType.URL_ENCODED.equals(contentType)) {
+                if (hasQueryParameter(httpRequest.parameters())) {
+                    byte [] content = StringUtil.getBytesRaw(httpRequest.url());
+                    charset = HttpUtil.getGuessCode( SmartCodec.toUrlDecode(content));
+                }
+                if (charset == null) {
+                    byte [] content = httpRequest.body().getBytes();
+                    charset = HttpUtil.getGuessCode( SmartCodec.toUrlDecode(content));
+                }
+            }
+            else {
+                charset = HttpUtil.getGuessCode(httpRequest.body().getBytes());
+            }
         }
         return HttpUtil.normalizeCharset(charset);
     }

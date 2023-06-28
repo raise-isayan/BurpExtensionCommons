@@ -422,7 +422,7 @@ public class SmartCodec {
         return StringUtil.getStringCharset(toUrlDecode(StringUtil.getBytesCharset(pString, StandardCharsets.US_ASCII)), charset);
     }
 
-    private static byte[] toUrlDecode(byte[] bytes) {
+    public static byte[] toUrlDecode(byte[] bytes) {
         if (bytes == null) {
             throw new NullPointerException();
         }
