@@ -247,6 +247,17 @@ public final class HttpUtil {
         }
     }
 
+    private final static Pattern HTML_TITLE = Pattern.compile("<title>(.*?)</title>", Pattern.DOTALL);
+
+    public static String extractHTMLTitle(String message) {
+        String title = null;
+        Matcher matcher = HTML_TITLE.matcher(message);
+        if (matcher.find()) {
+           title  = matcher.group(1);
+        }
+        return title.trim();
+    }
+
     public static String[] extractHTMLComments(String message) {
         return extractHTMLComments(message, false);
     }

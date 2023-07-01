@@ -1,6 +1,7 @@
 package extension.helpers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
@@ -428,12 +429,14 @@ public class HttpUtilTest {
 
     @Test
     public void testExtractHTMLComments() {
+        System.out.println("testExtractHTMLComments");
         String body1 = "<html>\n" +
                         "<meta charset=\"UTF-8\">\n" +
                         "<body>\n" +
                         "<!-- コメント -->\n" +
                         "<b>テスト</b>\n" +
                         "<!-- コメント -->\n" +
+                        "<!-- \r\n改行１\r\n改行２ -->\n" +
                         "</body>\n" +
                         "</html>";
         String body2 = "<html>\n" +
@@ -450,14 +453,16 @@ public class HttpUtilTest {
 
         {
             String comments[] = HttpUtil.extractHTMLComments(body1);
-            assertEquals(2, comments.length);
+            assertEquals(3, comments.length);
             assertEquals("<!-- コメント -->", comments[0]);
             assertEquals("<!-- コメント -->", comments[1]);
+            assertEquals("<!-- \r\n改行１\r\n改行２ -->", comments[2]);
         }
         {
             String comments[] = HttpUtil.extractHTMLComments(body1, true);
-            assertEquals(1, comments.length);
+            assertEquals(2, comments.length);
             assertEquals("<!-- コメント -->", comments[0]);
+            assertEquals("<!-- \r\n改行１\r\n改行２ -->", comments[1]);
         }
         {
             String comments[] = HttpUtil.extractHTMLComments(body2);
@@ -476,8 +481,49 @@ public class HttpUtilTest {
             assertEquals(1, comments.length);
             assertEquals("<!-- &#12467;&#12513;&#12531;&#12488;&#12434;&#21463;&#12369;&#20184;&#12369;&#12414;&#12375;&#12383;&#12290; -->", comments[0]);
         }
+        {
+            try {
+                String encodeFilePath = HttpUtilTest.class.getResource("/resources/encode.html").getPath();
+                String encodeFile = StringUtil.getStringCharset(FileUtil.bytesFromFile(new File(encodeFilePath)), StandardCharsets.UTF_8);
+                String comments[] = HttpUtil.extractHTMLComments(encodeFile, true);
+                assertEquals(1, comments.length);
+                assertEquals("<!--  エンコード -->", comments[0]);
+            } catch (IOException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
     }
+
+    @Test
+    public void testExtractHTMLTitle() {
+        System.out.println("testExtractHTMLComments");
+        {
+            String body1 = "<html>\n" +
+                            "<meta charset=\"UTF-8\">\n" +
+                            "<title>\r\n 前後空白タイトル \r\n</title>" +
+                            "<body>\n" +
+                            "<!-- コメント -->\n" +
+                            "<b>テスト</b>\n" +
+                            "<!-- コメント -->\n" +
+                            "<!-- \r\n改行１\r\n改行２ -->\n" +
+                            "</body>\n" +
+                            "</html>";
+            {
+                String title = HttpUtil.extractHTMLTitle(body1);
+                assertEquals("前後空白タイトル", title);
+            }
+            try {
+                String encodeFilePath = HttpUtilTest.class.getResource("/resources/encode.html").getPath();
+                String encodeFile = StringUtil.getStringCharset(FileUtil.bytesFromFile(new File(encodeFilePath)), StandardCharsets.UTF_8);
+                String title = HttpUtil.extractHTMLTitle(encodeFile);
+                assertEquals("タイトル", title);
+            } catch (IOException ex) {
+                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 
     /**
      * Test of StaticProxySelector class, of class HttpUtil.

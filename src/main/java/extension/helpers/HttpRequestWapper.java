@@ -272,7 +272,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return queryPos > -1 && url.length()-1 > queryPos ? url.substring(queryPos + 1) : null;
     }
 
-    public static String getGuessCharset(HttpRequest httpRequest) {
+    private static String getGuessCharset(HttpRequest httpRequest) {
         String charset = null;
         HttpHeader contentTypeHeader = getContentTypeHeader(httpRequest);
         if (contentTypeHeader != null) {
