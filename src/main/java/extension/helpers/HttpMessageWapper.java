@@ -224,7 +224,7 @@ public class HttpMessageWapper implements HttpMessage {
         String body = StringUtil.getStringCharset(this.body().getBytes(), charset);
         if (smartDecode) {
             body = SmartCodec.toUnicodeDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
-            body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
+            body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_ASCII);
         }
         return body;
     }

@@ -1,6 +1,5 @@
 package extension.helpers;
 
-import extension.burp.BurpConfigTest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -312,26 +311,19 @@ public class SmartCodecTest {
     @Test
     public void testHtmlDecode() {
         {
-            String html = """
-                          <html><h4>&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;</h4></html>
-                          """;
+            String html = "<html><h4>&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;</h4></html>";
             String decode = SmartCodec.toHtmlDecode(html);
-            System.out.println("decode:" + decode);
+            assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
         }
         {
-            String html = """
-                          <html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>
-                          """;
+            String html = "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>";
             String decode = SmartCodec.toHtmlDecode(html);
-            System.out.println("decode:" + decode);
+            assertEquals(decode, "<html><h4>!\"#$%&'()!\"#$%&'()1234567890<マルチバイトテストabcdef></h4></html>");
         }
         {
-            String html = """
-                          <html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdefz&gt;</h4></html>
-                          """;
-
-            String decode = SmartCodec.toHtmlDecode(html, SmartCodec.ENCODE_PATTERN_ALL);
-            System.out.println("decode:" + decode);
+            String html = "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>";
+            String decode = SmartCodec.toHtmlDecode(html, SmartCodec.ENCODE_PATTERN_ASCII);
+            assertEquals(decode, "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;マルチバイトテストabcdef&gt;</h4></html>");
         }
 
     }

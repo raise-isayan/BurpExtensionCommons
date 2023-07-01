@@ -20,6 +20,7 @@ public class SmartCodec {
     public final static Pattern ENCODE_PATTERN_STANDARD = Pattern.compile("[^A-Za-z0-9!\"$&'()*+,:=@|~]");
     public final static Pattern ENCODE_PATTERN_LIGHT = Pattern.compile("[^A-Za-z0-9!\"'()*,/:<>@\\[\\\\\\]^`{|}~]");
     public final static Pattern ENCODE_PATTERN_BURP = Pattern.compile("[^A-Za-z0-9!\"$'()*,/:<>@\\[\\\\\\]^`{|},.~-]");
+    public final static Pattern ENCODE_PATTERN_ASCII = Pattern.compile("[^\\x00-\\xff]");
     public final static Pattern ENCODE_PATTERN_JS = Pattern.compile("[^ !#$&=~/,@+*|0-9A-Za-z\\[\\]\\(\\)\\{\\}?-]");
 
     private final static HashMap<String, Character> ENTITY = new HashMap<>();
@@ -329,17 +330,6 @@ public class SmartCodec {
     private final static Pattern PTN_HTML = Pattern.compile("(&#(\\d+);)|(&#[xX]([0-9a-fA-F]+);)+");
     private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[uU]([0-9a-fA-F]{4})");
     private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[uU]([0-9a-fA-F]{4})");
-
-//    public static String toDecode(String target) {
-//        Matcher m = PTN_HTML.matcher(target);
-//        StringBuffer buff = new StringBuffer();
-//        while (m.find()) {
-//            String decode = toHtmlDecode(m.group(0), true);
-//            m.appendReplacement(buff, decode);
-//        }
-//        m.appendTail(buff);
-//        return buff.toString();
-//    }
 
     public static String toHtmlDecode(String input) {
         return toHtmlDecode(input, ENCODE_PATTERN_ALL);
