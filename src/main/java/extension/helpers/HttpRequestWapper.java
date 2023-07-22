@@ -173,13 +173,13 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withDefaultHeaders();
     }
 
-    public final String METHOD_GET = "GET";
-    public final String METHOD_POST = "POST";
-    public final String METHOD_HEAD = "HEAD";
-    public final String METHOD_OPTIONS = "OPTIONS";
-    public final String METHOD_PUT = "PUT";
-    public final String METHOD_DELETE = "DELETE";
-    public final String METHOD_TRACE = "TRACE";
+    public final static String METHOD_GET = "GET";
+    public final static String METHOD_POST = "POST";
+    public final static String METHOD_HEAD = "HEAD";
+    public final static String METHOD_OPTIONS = "OPTIONS";
+    public final static String METHOD_PUT = "PUT";
+    public final static String METHOD_DELETE = "DELETE";
+    public final static String METHOD_TRACE = "TRACE";
 
     public String getRequestLine() {
         StringBuilder firstLine = new StringBuilder();
@@ -257,6 +257,11 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     /**
      * httpRequest static method
      */
+
+    public static String getUrlPath(String url) {
+        int i = url.indexOf('?');
+        return i > 0 ? url.substring(0, i): url ;
+    }
 
     /**
      *

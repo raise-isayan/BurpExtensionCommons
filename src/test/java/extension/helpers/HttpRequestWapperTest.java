@@ -42,6 +42,28 @@ public class HttpRequestWapperTest {
     public void tearDown() {
     }
 
+    @Test
+    public void testGetUrlPath() {
+        System.out.println("getUrlPath");
+        {
+            String url = "https://www.example.com/?aaa=zzz&bbbb=yyy";
+            String expResult = "https://www.example.com/";
+            String result = HttpRequestWapper.getUrlPath(url);
+            assertEquals(expResult, result);
+        }
+        {
+            String url = "https://www.example.com/";
+            String result = HttpRequestWapper.getUrlPath(url);
+            String expResult = "https://www.example.com/";
+            assertEquals(expResult, result);
+        }
+        {
+            String url = "https://www.example.com/?";
+            String expResult = "https://www.example.com/";
+            String result = HttpRequestWapper.getUrlPath(url);
+            assertEquals(expResult, result);
+        }
+    }
 
     /**
      * Test of getQueryParameter method, of class HttpRequestWapper.
