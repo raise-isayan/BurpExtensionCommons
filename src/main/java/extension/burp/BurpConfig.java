@@ -375,7 +375,15 @@ public class BurpConfig {
         }
     }
 
-
+    /**
+     * "display":{ "character_sets":{ "mode":"use_a_specific_character_set",
+     * "specific_character_set":"UTF-8" } }
+     */
+    /**
+     *
+     * @param api
+     * @return
+     */
     public static CharacterSets getCharacterSets(MontoyaApi api) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.display.character_sets");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
@@ -383,6 +391,11 @@ public class BurpConfig {
         return JsonUtil.jsonFromString(JsonUtil.jsonToString(character_sets, true), BurpConfig.CharacterSets.class, true);
     }
 
+    /**
+     *
+     * @param api
+     * @param charsets
+     */
     public static void configCharacterSets(MontoyaApi api, CharacterSets charsets) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.display.character_sets");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
@@ -399,7 +412,6 @@ public class BurpConfig {
             this.mode = mode;
             this.specific_character_set = specific_character_set;
         }
-
 
         @Expose
         private String mode;
@@ -438,11 +450,9 @@ public class BurpConfig {
     }
 
     /**
-     * *
      * config: { "project_options":{ "connections":{ "hostname_resolution":[ {
      * "enabled":true, "hostname":"test", "ip_address":"127.0.0.1" }, {
      * "enabled":true, "hostname":"hoge", "ip_address":"192.168.0.2" } ] } } }
-     *
      */
     /**
      *
@@ -466,50 +476,34 @@ public class BurpConfig {
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
 
-    /**
-     * *
-     *
-     * @param config
-     * @param hosts
-     * @return
-     */
-    protected static String updateHostnameResolution(String config, List<HostnameResolution> hosts) {
+    static String updateHostnameResolution(String config, List<HostnameResolution> hosts) {
         return updateHostnameResolution(config, hosts, false);
     }
 
-    /**
-     *
-     * @param config
-     * @param hosts
-     * @param remove
-     * @return
-     */
-    protected static synchronized String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
+    static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
-        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
-        }.getType();
+        Type listType = new TypeToken<ArrayList<HostnameResolution>>() { }.getType();
         JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         List<HostnameResolution> resolvHost = new ArrayList<>();
-        if (remove) {
-            for (HostnameResolution h : hosts) {
-                hostnameResolution = hostnameResolution.stream().filter(m -> !m.hostname.equalsIgnoreCase(h.hostname)).collect(Collectors.toList());
+        for (HostnameResolution h : hosts) {
+            if (remove) {
+                hostnameResolution.removeAll(hostnameResolution.stream().filter(m -> m.hostname.equalsIgnoreCase(h.hostname)).toList());
             }
-        } else {
-            for (HostnameResolution h : hosts) {
+            else {
                 if (hostnameResolution.stream().noneMatch(m -> m.hostname.equalsIgnoreCase(h.hostname))) {
                     resolvHost.add(h);
                 }
             }
-            if (!resolvHost.isEmpty()) {
-                hostnameResolution.addAll(resolvHost);
-            }
         }
-
+        if (!resolvHost.isEmpty()) {
+            hostnameResolution.addAll(resolvHost);
+        }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hostnameResolution, true);
         connections.add("hostname_resolution", updateJsonElemet);
-        return JsonUtil.prettyJson(root_json, true);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
     }
 
     public static class HostnameResolution {
@@ -568,6 +562,128 @@ public class BurpConfig {
         public void setIPAddress(String ip_address) {
             this.ip_address = ip_address;
         }
+    }
+
+    /**
+     * "proxy":{ "ssl_pass_through":{ "rules":[ { "enabled":true,
+     * "host":"www,example.com", "port":"443", "protocol":"any" }, {
+     * "enabled":true, "host":"test.com", "port":"443", "protocol":"any" } ] } }
+     */
+    /**
+     *
+     * @param api
+     * @param rules
+     * @param remove
+     */
+    public static void configSSLPassThroughRules(MontoyaApi api, List<SSLPassThroughRule> rules, boolean remove) {
+        String config = api.burpSuite().exportUserOptionsAsJson("project_options.ssl_pass_through.rules");
+        String updateConfig = updateSSLPassThroughRules(config, rules, remove);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+    }
+
+    static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules) {
+        return updateSSLPassThroughRules(config, rules, false);
+    }
+
+    static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules, boolean remove) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject ssl_pass_through = root_json.getAsJsonObject("project_options").getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
+        Type listType = new TypeToken<ArrayList<BurpConfig.SSLPassThroughRule>>() { }.getType();
+        JsonArray jsonArray = ssl_pass_through.getAsJsonArray("rules");
+        List<BurpConfig.SSLPassThroughRule> passsThrougRules = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        List<BurpConfig.SSLPassThroughRule> resolvRules = new ArrayList<>();
+        for (SSLPassThroughRule h : rules) {
+            if (remove) {
+                passsThrougRules.removeAll(passsThrougRules.stream().filter(m -> m.host.equalsIgnoreCase(h.host)).toList());
+            }
+            else {
+                if (passsThrougRules.stream().noneMatch(m -> m.host.equalsIgnoreCase(h.host))) {
+                    resolvRules.add(h);
+                }
+            }
+        }
+        if (!resolvRules.isEmpty()) {
+            passsThrougRules.addAll(resolvRules);
+        }
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(passsThrougRules, true);
+        ssl_pass_through.add("rules", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class SSLPassThroughRule {
+
+        public SSLPassThroughRule(boolean enabled, String host, int port) {
+            this.enabled = enabled;
+            this.host = host;
+            this.port = port;
+        }
+
+        @Expose
+        private boolean enabled = true;
+        @Expose
+        private String host = "";
+        @Expose
+        private int port;
+
+        private String protocol = "any";
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the host
+         */
+        public String getHost() {
+            return host;
+        }
+
+        /**
+         * @param host the host to set
+         */
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        /**
+         * @return the port
+         */
+        public int getPort() {
+            return port;
+        }
+
+        /**
+         * @param port the port to set
+         */
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        /**
+         * @return the protocol
+         */
+        public String getProtocol() {
+            return protocol;
+        }
+
+        /**
+         * @param protocol the protocol to set
+         */
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
     }
 
 }

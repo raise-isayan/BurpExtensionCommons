@@ -72,8 +72,8 @@ public class BurpConfigTest {
 
     @Test
     public void testUpdateHostnameResolution() {
+        System.out.println("testUpdateHostnameResolution");
         try {
-            System.out.println("testUpdateHostnameResolution");
             String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution.json").getPath();
             String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
             List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
@@ -89,17 +89,39 @@ public class BurpConfigTest {
     }
 
     @Test
-    public void testUpdateHostnameResolutionEmpty() throws Exception {
+    public void testUpdateHostnameResolutionEmpty() {
         System.out.println("testUpdateHostnameResolutionEmpty");
-        String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution_empty.json").getPath();
-        String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
-        List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
-        hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
-        System.out.println("loadConfig:" + config);
-        String updateConfig = BurpConfig.updateHostnameResolution(config, hosts);
-        System.out.println("updateConfig:" + updateConfig);
-        String removeConfig = BurpConfig.updateHostnameResolution(updateConfig, hosts, true);
-        System.out.println("removeConfig:" + removeConfig);
+        try {
+            String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution_empty.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
+            hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
+            System.out.println("loadConfig:" + config);
+            String updateConfig = BurpConfig.updateHostnameResolution(config, hosts);
+            System.out.println("updateConfig:" + updateConfig);
+            String removeConfig = BurpConfig.updateHostnameResolution(updateConfig, hosts, true);
+            System.out.println("removeConfig:" + removeConfig);
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testUpdateSSLPassThroughRules() {
+        System.out.println("testUpdateSSLPassThroughRules");
+        try {
+            String configFile = BurpConfigTest.class.getResource("/resources/ssl_pass_through_rules.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
+            rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", 443));
+            System.out.println("loadConfig:" + config);
+            String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules);
+            System.out.println("updateConfig:" + updateConfig);
+            String removeConfig = BurpConfig.updateSSLPassThroughRules(updateConfig, rules, true);
+            System.out.println("removeConfig:" + removeConfig);
+        } catch (IOException ex) {
+            fail();
+        }
     }
 
 }
