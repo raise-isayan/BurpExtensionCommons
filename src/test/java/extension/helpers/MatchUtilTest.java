@@ -257,39 +257,95 @@ public class MatchUtilTest {
     @Test
     public void testContainsCreditCard() {
         System.out.println("containsCreditCard");
-        String[] words = new String[]{
-            // Visa
-            "4111111111111111",
-            "4242424242424242",
-            "4012888888881881",
-            "4222222222222",
-            // Master Card
-            "5555555555554444",
-            "5105105105105100",
-            "5431111111111111",
-            "5111111111111118",
-            // JCB
-            "3530111333300000",
-            "3566002020360505",
-            // American Express
-            "378282246310005",
-            "371449635398431",
-            "341111111111111",
-            "378734493671000",
-            // Diners Club
-            "30569309025904",
-            "38520000023237",
-            // Discover Card
-            //            "6111111111111116",
-            "6011111111111117",
-            "6011000990139424",
-            "6011601160116611"
-        };
-        for (String word : words) {
-            System.out.println(word);
-            boolean expResult = true;
-            boolean result = MatchUtil.containsCreditCard(word);
-            assertEquals(expResult, result);
+        {
+            String[] words = new String[]{
+                // Visa
+                "4111111111111111",
+                "4242424242424242",
+                "4012888888881881",
+                "4222222222222",
+                // Master Card
+                "5555555555554444",
+                "5105105105105100",
+                "5431111111111111",
+                "5111111111111118",
+                // JCB
+                "3530111333300000",
+                "3566002020360505",
+                // American Express
+                "378282246310005",
+                "371449635398431",
+                "341111111111111",
+                "378734493671000",
+                // Diners Club
+                "30569309025904",
+                "38520000023237",
+                // Discover Card
+    //            "6111111111111116",
+                "6011111111111117",
+                "6011000990139424",
+                "6011601160116611"
+            };
+            for (String word : words) {
+                boolean expResult = true;
+                boolean result = MatchUtil.containsCreditCard(word);
+                if (!result) {
+                    System.out.println("not match:" + word);
+                }
+                assertEquals(expResult, result);
+            }
+            for (String word : words) {
+                boolean expResult = true;
+                boolean result = MatchUtil.containsCreditCard(word, true);
+                if (!result) {
+                    System.out.println("not match2:" + word);
+                }
+                assertEquals(expResult, result);
+            }
+        }
+    }
+
+    @Test
+    public void testIsLuhnChecksum() {
+        System.out.println("isLuhnChecksum");
+        {
+            String[] words = new String[]{
+                "4417123456789113",
+                // Visa
+                "4111111111111111",
+                "4242424242424242",
+                "4012888888881881",
+                "4222222222222",
+                // Master Card
+                "5555555555554444",
+                "5105105105105100",
+                "5431111111111111",
+                "5111111111111118",
+                // JCB
+                "3530111333300000",
+                "3566002020360505",
+                // American Express
+                "378282246310005",
+                "371449635398431",
+                "341111111111111",
+                "378734493671000",
+                // Diners Club
+                "30569309025904",
+                "38520000023237",
+                // Discover Card
+                "6111111111111116",
+                "6011111111111117",
+                "6011000990139424",
+                "6011601160116611"
+            };
+            for (String word : words) {
+                boolean expResult = true;
+                boolean result = MatchUtil.isLuhnChecksum(word);
+                if (!result) {
+                    System.out.println("isLuhnChecksum:" + word);
+                }
+                assertEquals(expResult, result);
+            }
         }
     }
 

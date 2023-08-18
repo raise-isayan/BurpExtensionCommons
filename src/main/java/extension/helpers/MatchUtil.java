@@ -223,10 +223,57 @@ public class MatchUtil {
         return MAIL_ADDRESS.matcher(word).find();
     }
 
-    public static final Pattern CREDIT_CARD = Pattern.compile("(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|6011[0-9]{12}|3(?:0[0-5]|[68][0-9])[0-9]{11}|3[47][0-9]{13}|(?:2131|1800|35[0-9]{3})[0-9]{11})");
+    /*
+    * https://www.regular-expressions.info/creditcard.html
+    ^(?:4[0-9]{12}(?:[0-9]{3})?         # Visa
+    |   (?:5[1-5][0-9]{2}                # MasterCard
+    |   222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}
+    |   3[47][0-9]{13}                   # American Express
+    |   3(?:0[0-5]|[68][0-9])[0-9]{11}   # Diners Club
+    |   6(?:011|5[0-9]{2})[0-9]{12}      # Discover
+    |   (?:2131|1800|35\d{3})\d{11}      # JCB
+   )$
+     */
+    public static final Pattern CREDIT_CARD = Pattern.compile("(4[0-9]{12}(?:[0-9]{3})?|(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\\d{3})\\d{11})");
 
-    public static boolean containsCreditCard(String word) {
-        return CREDIT_CARD.matcher(word).find();
+    public static boolean containsCreditCard(String value) {
+        return CREDIT_CARD.matcher(value).find();
+    }
+
+    public static boolean containsCreditCard(String value, boolean checkDigit) {
+        Matcher m = CREDIT_CARD.matcher(value);
+        if (m.find()) {
+            String pan = m.group(1);
+            if (checkDigit) {
+                return isLuhnChecksum(pan);
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isLuhnChecksum(String pan) {
+        char[] charArray = pan.toCharArray();
+        int[] number = new int[charArray.length];
+        int sum = 0;
+
+        for (int i = 0; i < charArray.length; i++) {
+            number[i] = Character.getNumericValue(charArray[i]);
+        }
+
+        for (int i = number.length - 2; i > -1; i -= 2) {
+            number[i] *= 2;
+            if (number[i] > 9) {
+                number[i] -= 9;
+            }
+        }
+
+        for (int i = 0; i < number.length; i++) {
+            sum += number[i];
+        }
+
+        return (sum % 10 == 0);
     }
 
 }
