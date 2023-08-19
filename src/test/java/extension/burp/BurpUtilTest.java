@@ -124,6 +124,14 @@ public class BurpUtilTest {
             assertEquals("1.2", suite.getMinor());
             assertNull(suite.getBuild());
         }
+        {
+            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.9 - ");
+            assertEquals("Burp Suite Professional", suite.getProductName());
+            assertEquals("2023", suite.getMajor());
+            assertEquals(2023, suite.getMajorVersion());
+            assertEquals("9", suite.getMinor());
+            assertNull(suite.getBuild());
+        }
 
     }
 
@@ -152,6 +160,10 @@ public class BurpUtilTest {
         {
             BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.3- ");
             assertEquals(1, suite.compareTo(SUPPORT_MIN_VERSION));
+        }
+        {
+            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.9 - ");
+            assertEquals(8, suite.compareTo(SUPPORT_MIN_VERSION));
         }
 
     }
@@ -187,6 +199,10 @@ public class BurpUtilTest {
         {
             BurpVersion suite = new BurpVersion(BurpVersionTest.BURP_2023_1_3_VERSION_PRO);
             assertEquals(1, suite.compareTo(SUPPORT_MIN_VERSION));
+        }
+        {
+            BurpVersion suite = new BurpVersion(BurpVersionTest.BURP_2023_9_VERSION_PRO);
+            assertEquals(8, suite.compareTo(SUPPORT_MIN_VERSION));
         }
     }
 

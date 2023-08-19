@@ -3,6 +3,7 @@ package extension.burp;
 import extension.helpers.ConvertUtil;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
@@ -76,6 +77,38 @@ public class TargetScopeItemTest {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail();
         }
+    }
+
+    /**
+     * Test of parseURL method, of class TargetScopeItem.
+     */
+    @Test
+    public void testMultiLineParseURL() {
+        System.out.println("MultiLineParseURL");
+        {
+            String multilineURL ="http://www.example.com/\r\nhttp://text.example.com/\n";
+            String lines [] = multilineURL.split("\\r\\n|\\n|\\r|\\s");
+            for (var url: lines){
+                System.out.println("scope0:" + url);
+            }
+        }
+        {
+            String multilineURL ="http://www.example.com\nhttp://text.example.com/\nhttp://foo.bar.com/";
+            String lines [] = multilineURL.split("\\r\\n|\\n|\\r|\\s");
+            for (var url: lines){
+                System.out.println("scope1:" + url);
+            }
+        }
+        {
+            String multilineURL ="http://www.example.com\nhttp://text.example.com/\nhttp://foo.bar.com/\n";
+            Scanner scanner = new Scanner(multilineURL);
+            scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+            while (scanner.hasNext()){
+                String url = scanner.next();
+                System.out.println("scope2:" + url);
+            }
+        }
+
     }
 
 }

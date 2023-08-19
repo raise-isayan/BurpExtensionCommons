@@ -108,6 +108,13 @@ public class BurpVersionTest {
             BurpSuiteEdition.PROFESSIONAL
     );
 
+    public static final Version BURP_2023_9_VERSION_PRO = new MontoyaApiAdapter.VersionAdapter(
+            "Burp Suite Professional",
+            "2023",
+            "9",
+            "22507",
+            BurpSuiteEdition.PROFESSIONAL
+    );
 
     @BeforeAll
     public static void setUpClass() {
@@ -135,19 +142,20 @@ public class BurpVersionTest {
     @Test
     public void testParseFreeVersion() {
         System.out.println("parseFreeVersion");
-        Mockito.when(this.mockApi.burpSuite().version()).thenReturn(BURP_2020_9_5_VERSION_FREE);
-        BurpVersion instance = new BurpVersion(this.mockApi);
-        assertEquals("2020", instance.getMajor());
-        assertEquals("9.5", instance.getMinor());
-        assertEquals("16933", instance.getBuild());
-        assertEquals(2020, instance.getMajorVersion());
-        assertEquals(9, instance.getMinorVersion());
-        assertFalse(instance.isProfessional());
-        assertEquals("Burp Suite Community Edition", instance.getProductName());
-        assertEquals("Burp Suite Community Edition 2020.9.5", instance.getVersion());
-        System.out.println(instance.getBurpConfigHome());
-        System.out.println(instance.getBurpConfigFile());
-
+        {
+            Mockito.when(this.mockApi.burpSuite().version()).thenReturn(BURP_2020_9_5_VERSION_FREE);
+            BurpVersion instance = new BurpVersion(this.mockApi);
+            assertEquals("2020", instance.getMajor());
+            assertEquals("9.5", instance.getMinor());
+            assertEquals("16933", instance.getBuild());
+            assertEquals(2020, instance.getMajorVersion());
+            assertEquals(9, instance.getMinorVersion());
+            assertFalse(instance.isProfessional());
+            assertEquals("Burp Suite Community Edition", instance.getProductName());
+            assertEquals("Burp Suite Community Edition 2020.9.5", instance.getVersion());
+            System.out.println(instance.getBurpConfigHome());
+            System.out.println(instance.getBurpConfigFile());
+        }
     }
 
     /**
@@ -156,17 +164,18 @@ public class BurpVersionTest {
     @Test
     public void testParseProersion() {
         System.out.println("parseProVersion");
-        Mockito.when(this.mockApi.burpSuite().version()).thenReturn(BURP_2020_9_5_VERSION_PRO);
-        BurpVersion instance = new BurpVersion(this.mockApi);
-        assertEquals("2020", instance.getMajor());
-        assertEquals("9.5", instance.getMinor());
-        assertEquals("16933", instance.getBuild());
-        assertEquals(2020, instance.getMajorVersion());
-        assertEquals(9, instance.getMinorVersion());
-        assertTrue(instance.isProfessional());
-        assertEquals("Burp Suite Professional Edition", instance.getProductName());
-        assertEquals("Burp Suite Professional Edition 2020.9.5", instance.getVersion());
-
+        {
+            Mockito.when(this.mockApi.burpSuite().version()).thenReturn(BURP_2020_9_5_VERSION_PRO);
+            BurpVersion instance = new BurpVersion(this.mockApi);
+            assertEquals("2020", instance.getMajor());
+            assertEquals("9.5", instance.getMinor());
+            assertEquals("16933", instance.getBuild());
+            assertEquals(2020, instance.getMajorVersion());
+            assertEquals(9, instance.getMinorVersion());
+            assertTrue(instance.isProfessional());
+            assertEquals("Burp Suite Professional Edition", instance.getProductName());
+            assertEquals("Burp Suite Professional Edition 2020.9.5", instance.getVersion());
+        }
     }
 
     @Test

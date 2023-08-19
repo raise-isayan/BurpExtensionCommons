@@ -18,6 +18,7 @@ import java.awt.KeyboardFocusManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -115,7 +116,7 @@ public class ExtensionHelper {
      *
      * @param contextMenuEvent
      */
-    public void sendToAddHostIncludeToScope(ContextMenuEvent contextMenuEvent) {
+    public void addHostIncludeScope(ContextMenuEvent contextMenuEvent) {
         final List<HttpRequestResponse> messageList = contextMenuEvent.selectedRequestResponses();
         for (HttpRequestResponse messageInfo : messageList) {
             this.api.scope().includeInScope(HttpTarget.toURLString(messageInfo.request().httpService()));
@@ -127,10 +128,22 @@ public class ExtensionHelper {
      *
      * @param contextMenuEvent
      */
-    public void sendToAddHostToExcludeScope(ContextMenuEvent contextMenuEvent) {
+    public void addHostExcludeScope(ContextMenuEvent contextMenuEvent) {
         final List<HttpRequestResponse> messageList = contextMenuEvent.selectedRequestResponses();
         for (HttpRequestResponse messageInfo : messageList) {
             this.api.scope().excludeFromScope(HttpTarget.toURLString(messageInfo.request().httpService()));
+        }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param contextMenuEvent
+     */
+    public void addIncludeScope(ContextMenuEvent contextMenuEvent) {
+        final List<HttpRequestResponse> messageList = contextMenuEvent.selectedRequestResponses();
+        for (HttpRequestResponse messageInfo : messageList) {
+            this.api.scope().includeInScope(messageInfo.request().url());
         }
     }
 
@@ -139,10 +152,86 @@ public class ExtensionHelper {
      *
      * @param contextMenuEvent
      */
-    public void sendToAddToExcludeScope(ContextMenuEvent contextMenuEvent) {
+    public void addExcludeScope(ContextMenuEvent contextMenuEvent) {
         final List<HttpRequestResponse> messageList = contextMenuEvent.selectedRequestResponses();
         for (HttpRequestResponse messageInfo : messageList) {
             this.api.scope().excludeFromScope(messageInfo.request().url());
+        }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     */
+    public void addIncludeScope(String multilineURL) {
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()){
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                this.api.scope().includeInScope(url.toExternalForm());
+            } catch (MalformedURLException ex) {
+                this.api.scope().includeInScope(line);
+            }
+        }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     */
+    public void addExcludeScope(String multilineURL) {
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()){
+            String line = scanner.next().trim();
+            try {
+                URL url = new URL(line);
+                this.api.scope().excludeFromScope(url.toExternalForm());
+           } catch (MalformedURLException ex) {
+                this.api.scope().includeInScope(line);
+           }
+        }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     */
+    public void addHostIncludeScope(String multilineURL) {
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()){
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                this.api.scope().includeInScope(url.getHost());
+            } catch (MalformedURLException ex) {
+                this.api.scope().includeInScope(line);
+            }
+        }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     */
+    public void addHostExcludeScope(String multilineURL) {
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()){
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                this.api.scope().excludeFromScope(url.getHost());
+            } catch (MalformedURLException ex) {
+                this.api.scope().excludeFromScope(line);
+            }
         }
     }
 
