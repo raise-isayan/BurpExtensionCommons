@@ -3,7 +3,6 @@ package extension.burp;
 import extension.helpers.ConvertUtil;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
@@ -86,27 +85,27 @@ public class TargetScopeItemTest {
     public void testMultiLineParseURL() {
         System.out.println("MultiLineParseURL");
         {
-            String multilineURL ="http://www.example.com/\r\nhttp://text.example.com/\n";
-            String lines [] = multilineURL.split("\\r\\n|\\n|\\r|\\s");
-            for (var url: lines){
-                System.out.println("scope0:" + url);
-            }
+            String multilineURL = "http://www.example.com/\r\nhttp://text.example.com/\n";
+            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            assertEquals(2, urls.length);
+            assertEquals("http://www.example.com/", urls[0].toExternalForm());
+            assertEquals("http://text.example.com/", urls[1].toExternalForm());
         }
         {
-            String multilineURL ="http://www.example.com\nhttp://text.example.com/\nhttp://foo.bar.com/";
-            String lines [] = multilineURL.split("\\r\\n|\\n|\\r|\\s");
-            for (var url: lines){
-                System.out.println("scope1:" + url);
-            }
+            String multilineURL = "http://www.example.com\nhttp://text.example.com/\rhttps://foo.bar.com/";
+            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            assertEquals(3, urls.length);
+            assertEquals("http://www.example.com", urls[0].toExternalForm());
+            assertEquals("http://text.example.com/", urls[1].toExternalForm());
+            assertEquals("https://foo.bar.com/", urls[2].toExternalForm());
         }
         {
-            String multilineURL ="http://www.example.com\nhttp://text.example.com/\nhttp://foo.bar.com/\n";
-            Scanner scanner = new Scanner(multilineURL);
-            scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-            while (scanner.hasNext()){
-                String url = scanner.next();
-                System.out.println("scope2:" + url);
-            }
+            String multilineURL = "http://www.example.com:8888\nhttp://text.example.com:6000/\nhttps://foo.bar.com:8443/\n";
+            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            assertEquals(3, urls.length);
+            assertEquals("http://www.example.com:8888", urls[0].toExternalForm());
+            assertEquals("http://text.example.com:6000/", urls[1].toExternalForm());
+            assertEquals("https://foo.bar.com:8443/", urls[2].toExternalForm());
         }
 
     }

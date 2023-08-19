@@ -3,8 +3,10 @@ package extension.burp;
 import burp.BurpPreferences;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
+import extension.helpers.SwingUtil;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.ArrayList;
@@ -112,14 +114,27 @@ public class BurpConfigTest {
         try {
             String configFile = BurpConfigTest.class.getResource("/resources/ssl_pass_through_rules.json").getPath();
             String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
-            List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
-            rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", 443));
-            System.out.println("loadConfig:" + config);
-            String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules);
-            System.out.println("updateConfig:" + updateConfig);
-            String removeConfig = BurpConfig.updateSSLPassThroughRules(updateConfig, rules, true);
-            System.out.println("removeConfig:" + removeConfig);
-        } catch (IOException ex) {
+            {
+                List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
+                rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", 443));
+                System.out.println("loadConfig:" + config);
+                String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules);
+                System.out.println("updateConfig:" + updateConfig);
+                String removeConfig = BurpConfig.updateSSLPassThroughRules(updateConfig, rules, true);
+                System.out.println("removeConfig:" + removeConfig);
+            }
+            {
+                String paste = "https://www.example.com:8433/\thttp://foo.bar/";
+                URL [] urls = TargetScopeItem.parseMultilineURL(paste);
+                List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
+                for (URL u : urls) {
+                    System.out.println("url:" + u.toExternalForm());
+                    rules.add(new BurpConfig.SSLPassThroughRule(true, u.getHost(), u.getPort() > 0 ?  u.getPort() : u.getDefaultPort()));
+                }
+                String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules, false);
+                System.out.println("updateConfig2:" + updateConfig);
+            }
+        } catch (Exception e) {
             fail();
         }
     }

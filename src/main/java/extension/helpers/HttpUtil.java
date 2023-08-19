@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -600,4 +601,5 @@ public final class HttpUtil {
         Authenticator.setDefault(authenticator);
         return saveAuthenticator;
     }
+
 }

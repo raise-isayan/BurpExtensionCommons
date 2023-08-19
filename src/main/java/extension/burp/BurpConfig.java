@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 import javax.swing.UIManager;
 
 /**
@@ -565,6 +564,15 @@ public class BurpConfig {
     }
 
     /**
+     *
+     * @param api
+     * @param rules
+     */
+    public static void configSSLPassThroughRules(MontoyaApi api, List<SSLPassThroughRule> rules) {
+        configSSLPassThroughRules(api, rules, false);
+    }
+
+    /**
      * "proxy":{ "ssl_pass_through":{ "rules":[ { "enabled":true,
      * "host":"www,example.com", "port":"443", "protocol":"any" }, {
      * "enabled":true, "host":"test.com", "port":"443", "protocol":"any" } ] } }
@@ -576,7 +584,7 @@ public class BurpConfig {
      * @param remove
      */
     public static void configSSLPassThroughRules(MontoyaApi api, List<SSLPassThroughRule> rules, boolean remove) {
-        String config = api.burpSuite().exportUserOptionsAsJson("project_options.ssl_pass_through.rules");
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.ssl_pass_through.rules");
         String updateConfig = updateSSLPassThroughRules(config, rules, remove);
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
@@ -587,7 +595,7 @@ public class BurpConfig {
 
     static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject ssl_pass_through = root_json.getAsJsonObject("project_options").getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
+        JsonObject ssl_pass_through = root_json.getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
         Type listType = new TypeToken<ArrayList<BurpConfig.SSLPassThroughRule>>() { }.getType();
         JsonArray jsonArray = ssl_pass_through.getAsJsonArray("rules");
         List<BurpConfig.SSLPassThroughRule> passsThrougRules = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -625,7 +633,7 @@ public class BurpConfig {
         private String host = "";
         @Expose
         private int port;
-
+        @Expose
         private String protocol = "any";
 
         /**

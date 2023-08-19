@@ -187,7 +187,7 @@ public class ExtensionHelper {
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
         while (scanner.hasNext()){
-            String line = scanner.next().trim();
+            String line = scanner.next();
             try {
                 URL url = new URL(line);
                 this.api.scope().excludeFromScope(url.toExternalForm());

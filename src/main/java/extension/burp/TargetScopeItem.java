@@ -1,7 +1,11 @@
 package extension.burp;
 
 import extension.helpers.HttpUtil;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -165,6 +169,21 @@ public class TargetScopeItem {
             item.setFile((String.format("^%s.*", Pattern.quote(url.getFile()))));
         }
         return item;
+    }
+
+    public static URL[] parseMultilineURL(String multilineURL) {
+        List<URL> urls = new ArrayList<>();
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()){
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                urls.add(url);
+            } catch (MalformedURLException ex) {
+            }
+        }
+        return urls.toArray(URL[]::new);
     }
 
 }
