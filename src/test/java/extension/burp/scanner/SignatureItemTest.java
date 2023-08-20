@@ -44,7 +44,6 @@ public class SignatureItemTest {
     public void tearDown() {
     }
 
-
     /**
      * Test of parse method, of class SensitiveMatcher.
      */
@@ -53,7 +52,6 @@ public class SignatureItemTest {
         Marker mark = Marker.marker(1024, 2058);
         System.out.println("testMarker:" + mark);
     }
-
 
     /**
      * Test of markerSortOrder method, of class SignatureScanBase.
@@ -89,8 +87,8 @@ public class SignatureItemTest {
             for (int i = 0; i < applyUnionReuestMarkers.size(); i++) {
                 Marker pos = applyUnionReuestMarkers.get(i);
                 if (pre_pos != null) {
-                    assertTrue( pre_pos.range().startIndexInclusive() <= pos.range().startIndexInclusive() && pre_pos.range().startIndexInclusive() <= pos.range().endIndexExclusive());
-                    assertTrue( pre_pos.range().startIndexInclusive() <= pos.range().endIndexExclusive() && pre_pos.range().endIndexExclusive() <= pos.range().endIndexExclusive());
+                    assertTrue(pre_pos.range().startIndexInclusive() <= pos.range().startIndexInclusive() && pre_pos.range().startIndexInclusive() <= pos.range().endIndexExclusive());
+                    assertTrue(pre_pos.range().startIndexInclusive() <= pos.range().endIndexExclusive() && pre_pos.range().endIndexExclusive() <= pos.range().endIndexExclusive());
                 }
                 pre_pos = pos;
             }

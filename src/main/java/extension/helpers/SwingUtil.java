@@ -98,7 +98,9 @@ public final class SwingUtil {
         if (parent instanceof Container container) {
             for (int j = 0; j < container.getComponentCount(); j++) {
                 Component component = findTab(container.getComponent(j), caption);
-                if (component != null) return component;
+                if (component != null) {
+                    return component;
+                }
             }
         }
         return null;

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 public final class BurpVersion implements Comparable<BurpVersion> {
+
     private final static BurpVersion SUPPORT_MIN_VERSION = new BurpVersion("Burp Suite Support", "2023", "1.2", "");
 
     private String productName = "";
@@ -79,11 +80,11 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         return (version.compareTo(SUPPORT_MIN_VERSION) < 0);
     }
 
-
     private static boolean showUnsupport = false;
 
     /**
      * バージョンが古い場合警告を表示
+     *
      * @param version
      * @param productname
      * @return 警告が表示された場合はtrue

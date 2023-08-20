@@ -3,7 +3,6 @@ package extension.burp;
 import burp.BurpPreferences;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
-import extension.helpers.SwingUtil;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -125,11 +124,11 @@ public class BurpConfigTest {
             }
             {
                 String paste = "https://www.example.com:8433/\thttp://foo.bar/";
-                URL [] urls = TargetScopeItem.parseMultilineURL(paste);
+                URL[] urls = TargetScopeItem.parseMultilineURL(paste);
                 List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
                 for (URL u : urls) {
                     System.out.println("url:" + u.toExternalForm());
-                    rules.add(new BurpConfig.SSLPassThroughRule(true, u.getHost(), u.getPort() > 0 ?  u.getPort() : u.getDefaultPort()));
+                    rules.add(new BurpConfig.SSLPassThroughRule(true, u.getHost(), u.getPort() > 0 ? u.getPort() : u.getDefaultPort()));
                 }
                 String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules, false);
                 System.out.println("updateConfig2:" + updateConfig);

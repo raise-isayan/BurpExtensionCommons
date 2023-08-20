@@ -7,8 +7,10 @@ import java.util.Arrays;
  */
 public class Base64Util {
 
-    private static final String BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            + "abcdefghijklmnopqrstuvwxyz" + "0123456789+/";
+    private static final String BASE64_ALPHABET =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnopqrstuvwxyz" +
+            "0123456789+/";
 
     private static final int ALPHABET_LENGTH = 64;
     private final char[] alphabet;

@@ -26,7 +26,7 @@ public class BurpVersionTest {
     private MontoyaApi mockApi;
     private BurpSuite burpSuteApi;
 
-    public static final Version BURP_2020_9_5_VERSION_FREE = new  MontoyaApiAdapter.VersionAdapter(
+    public static final Version BURP_2020_9_5_VERSION_FREE = new MontoyaApiAdapter.VersionAdapter(
             "Burp Suite Community Edition",
             "2020",
             "9.5",
@@ -66,7 +66,6 @@ public class BurpVersionTest {
             BurpSuiteEdition.COMMUNITY_EDITION
     );
 
-
     public static final Version BURP_2023_2_2_VERSION_COMMUNITY = new MontoyaApiAdapter.VersionAdapter(
             "Burp Suite Community Edition",
             "2023",
@@ -75,8 +74,7 @@ public class BurpVersionTest {
             BurpSuiteEdition.COMMUNITY_EDITION
     );
 
-
-    public static final Version BURP_2020_9_5_VERSION_PRO = new  MontoyaApiAdapter.VersionAdapter(
+    public static final Version BURP_2020_9_5_VERSION_PRO = new MontoyaApiAdapter.VersionAdapter(
             "Burp Suite Professional Edition",
             "2020",
             "9.5",

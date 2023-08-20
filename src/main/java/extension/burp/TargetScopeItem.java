@@ -175,7 +175,7 @@ public class TargetScopeItem {
         List<URL> urls = new ArrayList<>();
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);

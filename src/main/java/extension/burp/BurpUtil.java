@@ -104,8 +104,7 @@ public class BurpUtil {
                 if (!selectionTextOnly) {
                     text = StringUtil.getStringCharset(message, StandardCharsets.ISO_8859_1);
                 }
-            }
-            else {
+            } else {
                 Range range = messageInfo.selectionOffsets().get();
                 text = StringUtil.getStringCharset(message, range.startIndexInclusive(), range.endIndexExclusive() - range.startIndexInclusive(), StandardCharsets.ISO_8859_1);
             }
@@ -128,9 +127,10 @@ public class BurpUtil {
         if (message.length > 0) {
             Range range = Range.range(messageInfo.caretPosition(), messageInfo.caretPosition());
             if (messageInfo.selectionOffsets().isEmpty()) {
-                if (selectionTextOnly) return;
-            }
-            else {
+                if (selectionTextOnly) {
+                    return;
+                }
+            } else {
                 range = messageInfo.selectionOffsets().get();
             }
             String updateMessage = StringUtil.getStringRaw(ConvertUtil.replaceByte(message, range.startIndexInclusive(), range.endIndexExclusive(), StringUtil.getBytesRaw(text)));

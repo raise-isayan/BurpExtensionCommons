@@ -1,15 +1,5 @@
 package extension.helpers;
 
-import burp.api.montoya.core.ByteArray;
-import burp.api.montoya.core.Marker;
-import burp.api.montoya.http.HttpService;
-import burp.api.montoya.http.message.ContentType;
-import burp.api.montoya.http.message.HttpHeader;
-import burp.api.montoya.http.message.params.HttpParameter;
-import burp.api.montoya.http.message.params.ParsedHttpParameter;
-import burp.api.montoya.http.message.requests.HttpRequest;
-import burp.api.montoya.http.message.requests.HttpTransformation;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,6 +80,5 @@ public class HttpRequestWapperTest {
             assertEquals(expResult, result);
         }
     }
-
 
 }

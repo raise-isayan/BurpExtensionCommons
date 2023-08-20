@@ -31,6 +31,7 @@ import javax.swing.table.TableModel;
  * @author isayan
  */
 public class ExtensionHelper {
+
     private final static Logger logger = Logger.getLogger(ExtensionHelper.class.getName());
     private final MontoyaApi api;
 
@@ -167,7 +168,7 @@ public class ExtensionHelper {
     public void addIncludeScope(String multilineURL) {
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
@@ -186,14 +187,14 @@ public class ExtensionHelper {
     public void addExcludeScope(String multilineURL) {
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
                 this.api.scope().excludeFromScope(url.toExternalForm());
-           } catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 this.api.scope().includeInScope(line);
-           }
+            }
         }
     }
 
@@ -205,7 +206,7 @@ public class ExtensionHelper {
     public void addHostIncludeScope(String multilineURL) {
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
@@ -224,7 +225,7 @@ public class ExtensionHelper {
     public void addHostExcludeScope(String multilineURL) {
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
@@ -350,7 +351,7 @@ public class ExtensionHelper {
     private final static Pattern HTTP2_VERSION_PATTERN = Pattern.compile("(\\S+) +(\\S+) +HTTP/2\r\n");
 
     // HTTP/1.x HTTP/2 に対応したラッパー
-    public static HttpRequest httpRequest(HttpService httpService,ByteArray request) {
+    public static HttpRequest httpRequest(HttpService httpService, ByteArray request) {
         HttpRequest warapRequest = HttpRequest.httpRequest(httpService, request);
         Matcher m = HTTP2_VERSION_PATTERN.matcher(StringUtil.getStringRaw(request.getBytes()));
         if (m.lookingAt()) {

@@ -482,15 +482,15 @@ public class BurpConfig {
     static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
-        Type listType = new TypeToken<ArrayList<HostnameResolution>>() { }.getType();
+        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
+        }.getType();
         JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         List<HostnameResolution> resolvHost = new ArrayList<>();
         for (HostnameResolution h : hosts) {
             if (remove) {
                 hostnameResolution.removeAll(hostnameResolution.stream().filter(m -> m.hostname.equalsIgnoreCase(h.hostname)).toList());
-            }
-            else {
+            } else {
                 if (hostnameResolution.stream().noneMatch(m -> m.hostname.equalsIgnoreCase(h.hostname))) {
                     resolvHost.add(h);
                 }
@@ -596,15 +596,15 @@ public class BurpConfig {
     static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject ssl_pass_through = root_json.getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
-        Type listType = new TypeToken<ArrayList<BurpConfig.SSLPassThroughRule>>() { }.getType();
+        Type listType = new TypeToken<ArrayList<BurpConfig.SSLPassThroughRule>>() {
+        }.getType();
         JsonArray jsonArray = ssl_pass_through.getAsJsonArray("rules");
         List<BurpConfig.SSLPassThroughRule> passsThrougRules = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         List<BurpConfig.SSLPassThroughRule> resolvRules = new ArrayList<>();
         for (SSLPassThroughRule h : rules) {
             if (remove) {
                 passsThrougRules.removeAll(passsThrougRules.stream().filter(m -> m.host.equalsIgnoreCase(h.host)).toList());
-            }
-            else {
+            } else {
                 if (passsThrougRules.stream().noneMatch(m -> m.host.equalsIgnoreCase(h.host))) {
                     resolvRules.add(h);
                 }

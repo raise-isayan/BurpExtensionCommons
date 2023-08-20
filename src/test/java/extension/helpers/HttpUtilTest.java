@@ -430,26 +430,26 @@ public class HttpUtilTest {
     @Test
     public void testExtractHTMLComments() {
         System.out.println("testExtractHTMLComments");
-        String body1 = "<html>\n" +
-                        "<meta charset=\"UTF-8\">\n" +
-                        "<body>\n" +
-                        "<!-- コメント -->\n" +
-                        "<b>テスト</b>\n" +
-                        "<!-- コメント -->\n" +
-                        "<!-- \r\n改行１\r\n改行２ -->\n" +
-                        "</body>\n" +
-                        "</html>";
-        String body2 = "<html>\n" +
-                        "<meta charset=\"UTF-8\">\n" +
-                        "<body>\n" +
-                        "<!-- テスト -->\n" +
-                        "<b>テスト</b>\n" +
-                        "<!-- コメント -->\n" +
-                        "</body>\n" +
-                        "</html>";
-        String body3 = "<html>\n" +
-"<!-- &#12467;&#12513;&#12531;&#12488;&#12434;&#21463;&#12369;&#20184;&#12369;&#12414;&#12375;&#12383;&#12290; -->\n" +
-"</html>";
+        String body1 = "<html>\n"
+                + "<meta charset=\"UTF-8\">\n"
+                + "<body>\n"
+                + "<!-- コメント -->\n"
+                + "<b>テスト</b>\n"
+                + "<!-- コメント -->\n"
+                + "<!-- \r\n改行１\r\n改行２ -->\n"
+                + "</body>\n"
+                + "</html>";
+        String body2 = "<html>\n"
+                + "<meta charset=\"UTF-8\">\n"
+                + "<body>\n"
+                + "<!-- テスト -->\n"
+                + "<b>テスト</b>\n"
+                + "<!-- コメント -->\n"
+                + "</body>\n"
+                + "</html>";
+        String body3 = "<html>\n"
+                + "<!-- &#12467;&#12513;&#12531;&#12488;&#12434;&#21463;&#12369;&#20184;&#12369;&#12414;&#12375;&#12383;&#12290; -->\n"
+                + "</html>";
 
         {
             String comments[] = HttpUtil.extractHTMLComments(body1);
@@ -499,16 +499,16 @@ public class HttpUtilTest {
     public void testExtractHTMLTitle() {
         System.out.println("testExtractHTMLComments");
         {
-            String body1 = "<html>\n" +
-                            "<meta charset=\"UTF-8\">\n" +
-                            "<title>\r\n 前後空白タイトル \r\n</title>" +
-                            "<body>\n" +
-                            "<!-- コメント -->\n" +
-                            "<b>テスト</b>\n" +
-                            "<!-- コメント -->\n" +
-                            "<!-- \r\n改行１\r\n改行２ -->\n" +
-                            "</body>\n" +
-                            "</html>";
+            String body1 = "<html>\n"
+                    + "<meta charset=\"UTF-8\">\n"
+                    + "<title>\r\n 前後空白タイトル \r\n</title>"
+                    + "<body>\n"
+                    + "<!-- コメント -->\n"
+                    + "<b>テスト</b>\n"
+                    + "<!-- コメント -->\n"
+                    + "<!-- \r\n改行１\r\n改行２ -->\n"
+                    + "</body>\n"
+                    + "</html>";
             {
                 String title = HttpUtil.extractHTMLTitle(body1);
                 assertEquals("前後空白タイトル", title);
@@ -523,7 +523,6 @@ public class HttpUtilTest {
             }
         }
     }
-
 
     /**
      * Test of StaticProxySelector class, of class HttpUtil.

@@ -254,7 +254,7 @@ public final class HttpUtil {
         String title = null;
         Matcher matcher = HTML_TITLE.matcher(message);
         if (matcher.find()) {
-           title  = matcher.group(1);
+            title = matcher.group(1);
         }
         return title.trim();
     }

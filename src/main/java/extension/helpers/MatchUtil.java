@@ -236,14 +236,59 @@ public class MatchUtil {
      */
     public static final Pattern CREDIT_CARD = Pattern.compile("(4[0-9]{12}(?:[0-9]{3})?|(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12}|(?:2131|1800|35\\d{3})\\d{11})");
 
+    private static final String[] TEST_CREDIT_CARD = new String[]{
+        // Visa
+        "4111111111111111",
+        "4242424242424242",
+        "4012888888881881",
+        "4222222222222",
+        // Master Card
+        "5555555555554444",
+        "5105105105105100",
+        "5431111111111111",
+        "5111111111111118",
+        // JCB
+        "3530111333300000",
+        "3566002020360505",
+        // American Express
+        "378282246310005",
+        "371449635398431",
+        "341111111111111",
+        "378734493671000",
+        // Diners Club
+        "30569309025904",
+        "38520000023237",
+        // Discover Card
+        "6011111111111117",
+        "6011000990139424",
+        "6011601160116611"
+    };
+
+    public static boolean isTestCreditCard(String value) {
+        for (String test : TEST_CREDIT_CARD) {
+            if (test.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String findCreditCard(String value) {
+        Matcher m = CREDIT_CARD.matcher(value);
+        if (m.find()) {
+            String pan = m.group(1);
+            return pan;
+        }
+        return null;
+    }
+
     public static boolean containsCreditCard(String value) {
         return CREDIT_CARD.matcher(value).find();
     }
 
     public static boolean containsCreditCard(String value, boolean checkDigit) {
-        Matcher m = CREDIT_CARD.matcher(value);
-        if (m.find()) {
-            String pan = m.group(1);
+        String pan = findCreditCard(value);
+        if (pan != null) {
             if (checkDigit) {
                 return isLuhnChecksum(pan);
             } else {

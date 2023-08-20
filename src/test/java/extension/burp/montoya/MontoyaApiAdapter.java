@@ -10,6 +10,7 @@ import burp.api.montoya.core.Version;
 public class MontoyaApiAdapter {
 
     public static class VersionAdapter implements Version {
+
         final String name;
         final String major;
         final String minor;

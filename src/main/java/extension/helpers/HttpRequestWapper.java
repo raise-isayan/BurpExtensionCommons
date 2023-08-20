@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest {
+
     private final static Pattern FIRSTLINE = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
 
     private final HttpRequest request;
@@ -230,8 +231,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         if (this.request.httpService() == null) {
             if (PROTOCOL_HTTP_2.equals(this.request.httpVersion())) {
                 return true;
-            }
-            else {
+            } else {
                 HttpHeader header = findHeader("Referer");
                 if (header != null) {
                     return header.value().startsWith("https://");
@@ -251,16 +251,15 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     public String getGuessCharset(String defaultCharset) {
         String guessCharset = getGuessCharset(this.request);
-        return guessCharset == null ? defaultCharset: guessCharset;
+        return guessCharset == null ? defaultCharset : guessCharset;
     }
 
     /**
      * httpRequest static method
      */
-
     public static String getUrlPath(String url) {
         int i = url.indexOf('?');
-        return i > 0 ? url.substring(0, i): url ;
+        return i > 0 ? url.substring(0, i) : url;
     }
 
     /**
@@ -274,7 +273,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     public static String getQueryParameter(String url) {
         int queryPos = url.indexOf('?');
-        return queryPos > -1 && url.length()-1 > queryPos ? url.substring(queryPos + 1) : null;
+        return queryPos > -1 && url.length() - 1 > queryPos ? url.substring(queryPos + 1) : null;
     }
 
     private static String getGuessCharset(HttpRequest httpRequest) {
@@ -290,15 +289,14 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
             ContentType contentType = httpRequest.contentType();
             if (ContentType.URL_ENCODED.equals(contentType)) {
                 if (hasQueryParameter(httpRequest.parameters())) {
-                    byte [] content = StringUtil.getBytesRaw(httpRequest.url());
-                    charset = HttpUtil.getGuessCode( SmartCodec.toUrlDecode(content));
+                    byte[] content = StringUtil.getBytesRaw(httpRequest.url());
+                    charset = HttpUtil.getGuessCode(SmartCodec.toUrlDecode(content));
                 }
                 if (charset == null) {
-                    byte [] content = httpRequest.body().getBytes();
-                    charset = HttpUtil.getGuessCode( SmartCodec.toUrlDecode(content));
+                    byte[] content = httpRequest.body().getBytes();
+                    charset = HttpUtil.getGuessCode(SmartCodec.toUrlDecode(content));
                 }
-            }
-            else {
+            } else {
                 charset = HttpUtil.getGuessCode(httpRequest.body().getBytes());
             }
         }

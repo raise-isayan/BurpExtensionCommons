@@ -3,7 +3,6 @@ package extension.helpers.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import extension.helpers.UtilTest;
 import extension.view.base.MatchItem;
 import java.io.File;
 import java.io.IOException;
@@ -327,7 +326,7 @@ public class JsonUtilTest {
             assertEquals(loadConfig.get("abc"), saveConfig.get("abc"));
             assertEquals(loadConfig.get("def"), saveConfig.get("def"));
         } catch (IOException ex) {
-           logger.log(Level.SEVERE, ex.getMessage(), ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

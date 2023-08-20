@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
  * @author isayan
  */
 public class HttpResponseWapper extends HttpMessageWapper implements HttpResponse {
+
     private final static Pattern FIRSTLINE = Pattern.compile("^(\\S+)\\s+(\\d+)\\s+(\\S+)$", Pattern.MULTILINE);
 
     private final HttpResponse response;
@@ -153,7 +154,7 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
         if (m.find()) {
             return response
                     .withHttpVersion(m.group(1))
-                    .withStatusCode((short)ConvertUtil.parseIntDefault(m.group(2), this.response.statusCode()))
+                    .withStatusCode((short) ConvertUtil.parseIntDefault(m.group(2), this.response.statusCode()))
                     .withReasonPhrase(m.group(3));
         }
         return this.response;
@@ -169,7 +170,7 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
 
     public String getGuessCharset(String defaultCharset) {
         String guessCharset = getGuessCharset(this.response);
-        return guessCharset == null ? defaultCharset: guessCharset;
+        return guessCharset == null ? defaultCharset : guessCharset;
     }
 
     private final static Pattern RESPONSE_META_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);

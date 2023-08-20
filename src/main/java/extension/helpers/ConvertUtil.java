@@ -168,13 +168,13 @@ public class ConvertUtil {
         return Character.toString(ch);
     }
 
-
     public static boolean isAlphaNum(int codePoint) {
         return (0x30 <= codePoint && codePoint <= 0x39) || (0x41 <= codePoint && codePoint <= 0x5a) || (0x61 <= codePoint && codePoint <= 0x7a);
     }
 
     /**
      * 指定した文字数にマッチする場合に改行を追加する
+     *
      * @param separator
      * @param value
      * @param length
@@ -357,8 +357,11 @@ public class ConvertUtil {
     }
 
     public static String toHexString(int input) {
-        byte [] hex = BigInteger.valueOf(input).toByteArray();
-        int i = 0; while (i < hex.length - 1  && hex[i] == 0) { i++; }
+        byte[] hex = BigInteger.valueOf(input).toByteArray();
+        int i = 0;
+        while (i < hex.length - 1 && hex[i] == 0) {
+            i++;
+        }
         return toHexString(Arrays.copyOfRange(hex, i, hex.length));
     }
 

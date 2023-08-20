@@ -19,7 +19,6 @@ public class BurpUtilTest {
     public BurpUtilTest() {
     }
 
-
     @BeforeAll
     public static void setUpClass() {
     }
@@ -30,7 +29,7 @@ public class BurpUtilTest {
 
     @BeforeEach
     public void setUp() {
-   }
+    }
 
     @AfterEach
     public void tearDown() {

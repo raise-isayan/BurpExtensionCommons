@@ -124,6 +124,7 @@ public class SmartCodec {
         ENTITY.put("thorn", (char) 254); // latin small letter thorn, U+00FE ISOlat1
         ENTITY.put("yuml", (char) 255); // latin small letter y with diaeresis, U+00FF ISOlat1s
     }
+
     /**
      * Encode
      */
@@ -326,7 +327,6 @@ public class SmartCodec {
     /**
      * Decode
      */
-
     private final static Pattern PTN_HTML = Pattern.compile("(&#(\\d+);)|(&#[xX]([0-9a-fA-F]+);)+");
     private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[uU]([0-9a-fA-F]{4})");
     private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[uU]([0-9a-fA-F]{4})");

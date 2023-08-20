@@ -180,7 +180,7 @@ public class ConvertUtilTest {
     @Test
     public void testToHexString() {
         System.out.println("toHexString");
-        byte [] hex = BigInteger.valueOf(0).toByteArray();
+        byte[] hex = BigInteger.valueOf(0).toByteArray();
         assertEquals(hex.length, 1);
 
         assertEquals("00", ConvertUtil.toHexString(0x00));

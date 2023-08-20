@@ -253,7 +253,6 @@ public class SmartCodecTest {
         assertEquals(x, SmartCodec.toUnicodeUrlDecode("jkf%ud840%udc0b%ud844%ude3dghi%ud844%udf1b%ud845%udc6e%ud846%udcbd%ud842%udf9f%ud845%udeb4%ud847%ude34%ud84c%uddc4%ud84d%uddc4abz019"));
     }
 
-
     @Test
     public void testSurrogatePair() {
         String surrogatePair = "𠀋𣜿𦹀𠈓𠠇";
@@ -340,8 +339,6 @@ public class SmartCodecTest {
             fail();
         }
     }
-
-
 
     public static String getBodyRaw(String content, boolean smartDecode) {
         if (smartDecode) {

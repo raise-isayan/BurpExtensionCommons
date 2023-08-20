@@ -281,7 +281,7 @@ public class MatchUtilTest {
                 "30569309025904",
                 "38520000023237",
                 // Discover Card
-    //            "6111111111111116",
+                //            "6111111111111116",
                 "6011111111111117",
                 "6011000990139424",
                 "6011601160116611"
@@ -346,6 +346,19 @@ public class MatchUtilTest {
                 }
                 assertEquals(expResult, result);
             }
+        }
+    }
+
+    @Test
+    public void testTestCreditCard() {
+        System.out.println("testCreditCard");
+        {
+            boolean result = MatchUtil.isTestCreditCard("4417123456789113");
+            assertFalse(result);
+        }
+        {
+            boolean result = MatchUtil.isTestCreditCard("4111111111111111");
+            assertTrue(result);
         }
     }
 

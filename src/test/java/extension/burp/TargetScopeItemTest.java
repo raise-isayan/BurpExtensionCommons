@@ -86,14 +86,14 @@ public class TargetScopeItemTest {
         System.out.println("MultiLineParseURL");
         {
             String multilineURL = "http://www.example.com/\r\nhttp://text.example.com/\n";
-            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            URL urls[] = TargetScopeItem.parseMultilineURL(multilineURL);
             assertEquals(2, urls.length);
             assertEquals("http://www.example.com/", urls[0].toExternalForm());
             assertEquals("http://text.example.com/", urls[1].toExternalForm());
         }
         {
             String multilineURL = "http://www.example.com\nhttp://text.example.com/\rhttps://foo.bar.com/";
-            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            URL urls[] = TargetScopeItem.parseMultilineURL(multilineURL);
             assertEquals(3, urls.length);
             assertEquals("http://www.example.com", urls[0].toExternalForm());
             assertEquals("http://text.example.com/", urls[1].toExternalForm());
@@ -101,7 +101,7 @@ public class TargetScopeItemTest {
         }
         {
             String multilineURL = "http://www.example.com:8888\nhttp://text.example.com:6000/\nhttps://foo.bar.com:8443/\n";
-            URL urls [] = TargetScopeItem.parseMultilineURL(multilineURL);
+            URL urls[] = TargetScopeItem.parseMultilineURL(multilineURL);
             assertEquals(3, urls.length);
             assertEquals("http://www.example.com:8888", urls[0].toExternalForm());
             assertEquals("http://text.example.com:6000/", urls[1].toExternalForm());

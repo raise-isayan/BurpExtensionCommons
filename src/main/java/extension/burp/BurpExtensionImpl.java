@@ -47,6 +47,4 @@ public class BurpExtensionImpl implements BurpExtension {
         return helper;
     }
 
-
 }
-

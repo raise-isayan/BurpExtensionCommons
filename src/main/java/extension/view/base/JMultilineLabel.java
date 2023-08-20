@@ -14,15 +14,15 @@ import javax.swing.JTextField;
  */
 public class JMultilineLabel extends JTextArea {
 
-    public JMultilineLabel (){
+    public JMultilineLabel() {
         this(null, 0, 0);
     }
 
-    public JMultilineLabel (String text){
+    public JMultilineLabel(String text) {
         this(text, 0, 0);
     }
 
-    public JMultilineLabel (String text,int rows,int columns){
+    public JMultilineLabel(String text, int rows, int columns) {
         super(text, rows, columns);
         setWrapStyleWord(true);
         setBorder(null);
