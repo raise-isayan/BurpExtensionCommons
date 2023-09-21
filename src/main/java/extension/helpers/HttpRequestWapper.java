@@ -85,28 +85,13 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     }
 
     @Override
-    public HttpRequest withAddedParameters(List<HttpParameter> parameters) {
-        return request.withAddedParameters(parameters);
-    }
-
-    @Override
     public HttpRequest withAddedParameters(HttpParameter... parameters) {
         return request.withAddedParameters(parameters);
     }
 
     @Override
-    public HttpRequest withRemovedParameters(List<HttpParameter> parameters) {
-        return request.withRemovedParameters(parameters);
-    }
-
-    @Override
     public HttpRequest withRemovedParameters(HttpParameter... parameters) {
         return request.withRemovedParameters(parameters);
-    }
-
-    @Override
-    public HttpRequest withUpdatedParameters(List<HttpParameter> parameters) {
-        return request.withUpdatedParameters(parameters);
     }
 
     @Override
@@ -316,6 +301,56 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     @Override
     public HttpRequest withParameter(HttpParameter parameter) {
         return request.withParameter(parameter);
+    }
+
+    @Override
+    public boolean isInScope() {
+        return request.isInScope();
+    }
+
+    @Override
+    public List<ParsedHttpParameter> parameters(HttpParameterType parameters) {
+        return request.parameters(parameters);
+    }
+
+    @Override
+    public boolean hasParameters() {
+        return request.hasParameters();
+    }
+
+    @Override
+    public ParsedHttpParameter parameter(String name, HttpParameterType type) {
+        return request.parameter(name, type);
+    }
+
+    @Override
+    public String parameterValue(String name, HttpParameterType type) {
+        return request.parameterValue(name, type);
+    }
+
+    @Override
+    public boolean hasParameter(String name, HttpParameterType type) {
+        return request.hasParameter(name, type);
+    }
+
+    @Override
+    public boolean hasParameter(HttpParameter parameter) {
+        return request.hasParameter(parameter);
+    }
+
+    @Override
+    public HttpRequest withAddedParameters(List<? extends HttpParameter> parameters) {
+        return request.withAddedParameters(parameters);
+    }
+
+    @Override
+    public HttpRequest withRemovedParameters(List<? extends HttpParameter> parameters) {
+        return request.withAddedParameters(parameters);
+    }
+
+    @Override
+    public HttpRequest withUpdatedParameters(List<? extends HttpParameter> parameters) {
+        return request.withAddedParameters(parameters);
     }
 
 }

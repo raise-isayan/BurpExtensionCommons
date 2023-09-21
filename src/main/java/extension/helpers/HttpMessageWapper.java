@@ -23,6 +23,7 @@ public class HttpMessageWapper implements HttpMessage {
     public final String PROTOCOL_HTTP_1_1 = "HTTP/1.1";
     public final String PROTOCOL_HTTP_2 = "HTTP/2";
 
+
     public enum ContentMimeType {
         JAVA_SCRIPT, JSON, XML, HTML
     };
@@ -231,6 +232,41 @@ public class HttpMessageWapper implements HttpMessage {
             body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_ASCII);
         }
         return body;
+    }
+
+    @Override
+    public boolean hasHeader(HttpHeader header) {
+        return message.hasHeader(header);
+    }
+
+    @Override
+    public boolean hasHeader(String name) {
+        return message.hasHeader(name);
+    }
+
+    @Override
+    public boolean hasHeader(String name, String value) {
+        return message.hasHeader(name, value);
+    }
+
+    @Override
+    public HttpHeader header(String name) {
+        return message.header(name);
+    }
+
+    @Override
+    public String headerValue(String name) {
+        return message.headerValue(name);
+    }
+
+    @Override
+    public boolean contains(String searchTerm, boolean caseSensitive) {
+        return message.contains(searchTerm, caseSensitive);
+    }
+
+    @Override
+    public boolean contains(Pattern pattern) {
+        return message.contains(pattern);
     }
 
 }

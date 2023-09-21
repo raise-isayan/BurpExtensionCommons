@@ -43,6 +43,7 @@ import burp.api.montoya.intruder.Intruder;
 import burp.api.montoya.intruder.PayloadProcessingAction;
 import burp.api.montoya.intruder.PayloadProcessingResult;
 import burp.api.montoya.logging.Logging;
+import burp.api.montoya.organizer.Organizer;
 import burp.api.montoya.persistence.PersistedList;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.persistence.Persistence;
@@ -128,6 +129,7 @@ public class MockMontoya {
     public final CookieJar cookieJar = Mockito.mock(CookieJar.class);
     public final HttpRequest httpRequestApi = Mockito.mock(HttpRequest.class);
     public final HttpResponse httpResponseApi = Mockito.mock(HttpResponse.class);
+    public final Organizer organizerApi = Mockito.mock(Organizer.class);
 
     public MockMontoya() {
         this.instanceMap.put(MockMontoyaObjectFactory.class, this.mockFactory);
@@ -160,6 +162,7 @@ public class MockMontoya {
         Mockito.when(this.mockApi.userInterface()).thenReturn(this.userInterfaceApi);
         Mockito.when(this.mockApi.utilities()).thenReturn(this.utilitiesApi);
         Mockito.when(this.mockApi.websockets()).thenReturn(this.websocketsApi);
+        Mockito.when(this.mockApi.organizer()).thenReturn(this.organizerApi);
 
         // other
         burp.api.montoya.internal.ObjectFactoryLocator.FACTORY = this.mockFactory;
@@ -256,6 +259,11 @@ public class MockMontoya {
             @Override
             public WebSockets websockets() {
                 return websocketsApi;
+            }
+
+            @Override
+            public Organizer organizer() {
+                return organizerApi;
             }
 
         };
@@ -544,6 +552,11 @@ public class MockMontoya {
                     return endIndexExclusive;
                 }
 
+                @Override
+                public boolean contains(int index){
+                    return startIndexInclusive <= index && index <= endIndexExclusive;
+                }
+
             };
         }
 
@@ -711,6 +724,11 @@ public class MockMontoya {
                         @Override
                         public int endIndexExclusive() {
                             return endIndexExclusive;
+                        }
+
+                        @Override
+                        public boolean contains(int index) {
+                            return startIndexInclusive <= index && index <= endIndexExclusive;
                         }
 
                     };

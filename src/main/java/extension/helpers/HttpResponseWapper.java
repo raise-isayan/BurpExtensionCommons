@@ -5,6 +5,7 @@ import burp.api.montoya.core.Marker;
 import burp.api.montoya.http.message.Cookie;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.MimeType;
+import burp.api.montoya.http.message.StatusCodeClass;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.http.message.responses.analysis.Attribute;
 import burp.api.montoya.http.message.responses.analysis.AttributeType;
@@ -203,6 +204,36 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
             zdtm = DateUtil.parseHttpDate(headerDate.value());
         }
         return zdtm;
+    }
+
+    @Override
+    public boolean isStatusCodeClass(StatusCodeClass statusCodeClass) {
+        return response.isStatusCodeClass(statusCodeClass);
+    }
+
+    @Override
+    public Cookie cookie(String name) {
+        return response.cookie(name);
+    }
+
+    @Override
+    public String cookieValue(String name) {
+        return response.cookieValue(name);
+    }
+
+    @Override
+    public boolean hasCookie(String name) {
+        return response.hasCookie(name);
+    }
+
+    @Override
+    public boolean hasCookie(Cookie cookie) {
+        return response.hasCookie(cookie);
+    }
+
+    @Override
+    public MimeType mimeType() {
+        return response.mimeType();
     }
 
 }
