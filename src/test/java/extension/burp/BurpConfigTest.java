@@ -138,4 +138,23 @@ public class BurpConfigTest {
         }
     }
 
+    @Test
+    public void testGetMatchReplaceRules() {
+        System.out.println("testGetMatchReplaceRules");
+        String configFile = BurpConfigTest.class.getResource("/resources/match_replace_rules.json").getPath();
+        try {
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            List<BurpConfig.MatchReplaceRule> rules = BurpConfig.getMatchReplaceRules(config);
+            assertEquals(12, rules.size());
+            for (BurpConfig.MatchReplaceRule rule : rules) {
+                System.out.println("==========");
+                System.out.println("rule.isSimpleMatch:" + rule.isSimpleMatch());
+                System.out.println("rule.getStringMatch:" + rule.getStringMatch());
+                System.out.println("rule.getRuleType:" + rule.getRuleType());
+            }
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
 }

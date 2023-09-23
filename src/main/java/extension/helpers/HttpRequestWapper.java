@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest {
 
-    private final static Pattern FIRSTLINE = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
+    public final static Pattern FIRST_LINE = Pattern.compile("^([a-zA-Z]+?)\\s+(\\S+)\\s+(\\S+)$", Pattern.MULTILINE);
 
     private final HttpRequest request;
 
@@ -178,7 +178,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     }
 
     public HttpRequest withRequestLine(String firstLine) {
-        Matcher m = FIRSTLINE.matcher(firstLine);
+        Matcher m = FIRST_LINE.matcher(firstLine);
         if (m.find()) {
             return request
                     .withMethod(m.group(1))
@@ -241,6 +241,8 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     /**
      * httpRequest static method
+     * @param url
+     * @return
      */
     public static String getUrlPath(String url) {
         int i = url.indexOf('?');

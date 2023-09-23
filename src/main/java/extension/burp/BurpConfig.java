@@ -694,4 +694,123 @@ public class BurpConfig {
 
     }
 
+    public static List<MatchReplaceRule> getMatchReplaceRules(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.match_replace_rules");
+        return getMatchReplaceRules(config);
+    }
+
+    static List<MatchReplaceRule> getMatchReplaceRules(String config) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("match_replace_rules");
+        Type listType = new TypeToken<ArrayList<BurpConfig.MatchReplaceRule>>() {
+        }.getType();
+        List<MatchReplaceRule> matchReplaceRule = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        return matchReplaceRule;
+    }
+
+    public static class MatchReplaceRule {
+        @Expose
+        private String comment = "";
+        @Expose
+        private boolean enabled = false;
+        @Expose
+        private boolean is_simple_match = false;
+        @Expose
+        private String rule_type = "";
+        @Expose
+        private String string_match = "";
+        @Expose
+        private String string_replace = "";
+
+        /**
+         * @return the comment
+         */
+        public String getComment() {
+            return comment;
+        }
+
+        /**
+         * @param comment the comment to set
+         */
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the is_simple_match
+         */
+        public boolean isSimpleMatch() {
+            return is_simple_match;
+        }
+
+        /**
+         * @param is_simple_match the is_simple_match to set
+         */
+        public void setSimpleMatch(boolean is_simple_match) {
+            this.is_simple_match = is_simple_match;
+        }
+
+        /**
+         * @return the rule_type
+         */
+        public String getRuleType() {
+            return rule_type;
+        }
+
+        /**
+         * @param rule_type the rule_type to set
+         */
+        public void setRuleType(String rule_type) {
+            this.rule_type = rule_type;
+        }
+
+        public String getRuleTypeName() {
+            return rule_type.replace('_', ' ');
+        }
+
+
+        /**
+         * @return the string_match
+         */
+        public String getStringMatch() {
+            return string_match;
+        }
+
+        /**
+         * @param string_match the string_match to set
+         */
+        public void setStringMatch(String string_match) {
+            this.string_match = string_match;
+        }
+
+        /**
+         * @return the string_replace
+         */
+        public String getStringReplace() {
+            return string_replace;
+        }
+
+        /**
+         * @param string_replace the string_replace to set
+         */
+        public void setStringReplace(String string_replace) {
+            this.string_replace = string_replace;
+        }
+    }
+
+
 }
