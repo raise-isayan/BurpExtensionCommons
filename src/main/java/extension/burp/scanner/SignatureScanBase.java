@@ -52,12 +52,13 @@ public class SignatureScanBase<M extends IssueItem> {
         if (!(requestMarkers.isEmpty() || responseMarkers.isEmpty())) {
             List<Marker> markers = new ArrayList<>();
             markers.addAll(requestMarkers);
+            baseRequestResponse = baseRequestResponse.withRequestMarkers(markers);
             markers.addAll(responseMarkers);
-            return baseRequestResponse.withRequestMarkers(markers);
+            baseRequestResponse = baseRequestResponse.withResponseMarkers(markers);
         } else if (!requestMarkers.isEmpty()) {
-            return baseRequestResponse.withRequestMarkers(requestMarkers);
+            baseRequestResponse = baseRequestResponse.withRequestMarkers(requestMarkers);
         } else if (!responseMarkers.isEmpty()) {
-            return baseRequestResponse.withResponseMarkers(responseMarkers);
+            baseRequestResponse = baseRequestResponse.withResponseMarkers(responseMarkers);
         }
         return baseRequestResponse;
     }

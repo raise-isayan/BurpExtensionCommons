@@ -157,4 +157,30 @@ public class BurpConfigTest {
         }
     }
 
+    @Test
+    public void testUpdateSocksProxy() {
+        try {
+            System.out.println("testUpdateSocksProxy(user)");
+            {
+                String configFile = BurpConfigTest.class.getResource("/resources/user_socks_proxy.json").getPath();
+                String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+                System.out.println("loadConfig:" + config);
+                String updateConfig = BurpConfig.updateSocksProxy(config, new BurpConfig.SocksProxy(true, "192.168.1.1", 8123, "user", "pass", false), false);
+                System.out.println("updateConfig:" + updateConfig);
+
+            }
+            System.out.println("testUpdateSocksProxy(project)");
+            {
+                String configFile = BurpConfigTest.class.getResource("/resources/project_socks_proxy.json").getPath();
+                String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+                System.out.println("loadConfig:" + config);
+                String updateConfig = BurpConfig.updateSocksProxy(config, new BurpConfig.SocksProxy(true, "192.168.1.1", 8123, "user", "pass", false), true);
+                System.out.println("updateConfig:" + updateConfig);
+
+            }
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
 }

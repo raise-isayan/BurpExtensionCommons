@@ -709,6 +709,7 @@ public class BurpConfig {
     }
 
     public static class MatchReplaceRule {
+
         @Expose
         private String comment = "";
         @Expose
@@ -782,7 +783,6 @@ public class BurpConfig {
             return rule_type.replace('_', ' ');
         }
 
-
         /**
          * @return the string_match
          */
@@ -812,5 +812,150 @@ public class BurpConfig {
         }
     }
 
+    /**
+     *
+     * @param api
+     * @param override_project
+     * @return
+     */
+    public static SocksProxy getSocksProxy(MontoyaApi api, boolean override_project) {
+        String config_key = override_project ? "project_options" : "user_options";
+        String config = override_project ? api.burpSuite().exportProjectOptionsAsJson(config_key + ".connections.socks_proxy") : api.burpSuite().exportUserOptionsAsJson(config_key + ".connections.socks_proxy");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject socks_proxy = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(socks_proxy, true), SocksProxy.class, true);
+    }
+
+    /**
+     *
+     * @param api
+     * @param socksProxy
+     * @param override_project
+     */
+    public static void configSocksProxy(MontoyaApi api, SocksProxy socksProxy, boolean override_project) {
+        String config_key = override_project ? "project_options" : "user_options";
+        String config = override_project ? api.burpSuite().exportProjectOptionsAsJson(config_key + ".connections.socks_proxy") : api.burpSuite().exportUserOptionsAsJson(config_key + ".connections.socks_proxy");
+        String updateConfig = updateSocksProxy(config, socksProxy, override_project);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+    }
+
+    static String updateSocksProxy(String config, SocksProxy socksProxy, boolean override_project) {
+        String config_key = override_project ? "project_options" : "user_options";
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject socks_proxy = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(socksProxy, true);
+        socks_proxy.add("socks_proxy", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class SocksProxy {
+
+        public SocksProxy(boolean use_proxy, String host, int port, String username, String password, boolean dns_over_socks) {
+            this.use_proxy = use_proxy;
+            this.host = host;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+            this.dns_over_socks = dns_over_socks;
+        }
+
+        @Expose
+        private boolean dns_over_socks = false;
+        @Expose
+        private String host = "";
+        @Expose
+        private String password = "";
+        @Expose
+        private int port = -1;
+        @Expose
+        private boolean use_proxy = false;
+        @Expose
+        private String username = "";
+
+        /**
+         * @return the dns_over_socks
+         */
+        public boolean isDnsOverSocks() {
+            return dns_over_socks;
+        }
+
+        /**
+         * @param dns_over_socks the dns_over_socks to set
+         */
+        public void setDnsOverSocks(boolean dns_over_socks) {
+            this.dns_over_socks = dns_over_socks;
+        }
+
+        /**
+         * @return the host
+         */
+        public String getHost() {
+            return host;
+        }
+
+        /**
+         * @param host the host to set
+         */
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        /**
+         * @return the password
+         */
+        public String getPassword() {
+            return password;
+        }
+
+        /**
+         * @param password the password to set
+         */
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        /**
+         * @return the port
+         */
+        public int getPort() {
+            return port;
+        }
+
+        /**
+         * @param port the port to set
+         */
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        /**
+         * @return the use_proxy
+         */
+        public boolean isUseProxy() {
+            return use_proxy;
+        }
+
+        /**
+         * @param use_proxy the use_proxy to set
+         */
+        public void setUseProxy(boolean use_proxy) {
+            this.use_proxy = use_proxy;
+        }
+
+        /**
+         * @return the username
+         */
+        public String getUsername() {
+            return username;
+        }
+
+        /**
+         * @param username the username to set
+         */
+        public void setUsername(String username) {
+            this.username = username;
+        }
+    }
 
 }
