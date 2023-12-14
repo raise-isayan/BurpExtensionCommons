@@ -355,4 +355,14 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withAddedParameters(parameters);
     }
 
+    @Override
+    public String pathWithoutQuery() {
+        return request.pathWithoutQuery();
+    }
+
+    @Override
+    public boolean hasParameters(HttpParameterType type) {
+        return request.hasParameters(type);
+    }
+
 }

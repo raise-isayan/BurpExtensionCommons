@@ -25,6 +25,10 @@ public class StringUtil {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    public static String literalEscape(String value) {
+        return value.replaceAll("[\\\\\"]", "\\\\$0");
+    }
+
     public static String repeat(String str, int n) {
         return String.join("", Collections.nCopies(n, str));
     }

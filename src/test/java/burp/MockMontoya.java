@@ -83,6 +83,7 @@ import burp.api.montoya.websocket.MessageAction;
 import burp.api.montoya.websocket.TextMessageAction;
 import burp.api.montoya.websocket.WebSockets;
 import extension.burp.MessageHighlightColor;
+import extension.helpers.ConvertUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1157,6 +1158,11 @@ public class MockMontoya {
         @Override
         public BurpSuiteEdition edition() {
             return this.edition;
+        }
+
+        @Override
+        public long buildNumber() {
+            return ConvertUtil.parseLongDefault(this.build, 0);
         }
 
     }

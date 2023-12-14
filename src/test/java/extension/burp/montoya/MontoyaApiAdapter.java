@@ -2,6 +2,7 @@ package extension.burp.montoya;
 
 import burp.api.montoya.core.BurpSuiteEdition;
 import burp.api.montoya.core.Version;
+import extension.helpers.ConvertUtil;
 
 /**
  *
@@ -48,6 +49,11 @@ public class MontoyaApiAdapter {
         @Override
         public BurpSuiteEdition edition() {
             return this.edition;
+        }
+
+        @Override
+        public long buildNumber() {
+            return ConvertUtil.parseLongDefault(this.build, 0);
         }
 
     }

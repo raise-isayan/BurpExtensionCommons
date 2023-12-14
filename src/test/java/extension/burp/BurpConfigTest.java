@@ -183,4 +183,18 @@ public class BurpConfigTest {
         }
     }
 
+    @Test
+    public void testHttpHistoryDisplayFilter() {
+        System.out.println("testHttpHistoryDisplayFilter");
+        String configFile = BurpConfigTest.class.getResource("/resources/http_history_display_filter.json").getPath();
+        try {
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            FilterProperty filter = new FilterProperty();
+            String update_filter = BurpConfig.updateBambda(config, filter);
+            System.out.println("updateFilter:" + update_filter);
+        } catch (Exception e) {
+            fail();
+        }
+    }
+
 }

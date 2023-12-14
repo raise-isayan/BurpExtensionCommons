@@ -66,8 +66,13 @@ public class BurpUtil {
         return new BurpVersion(frame.getTitle());
     }
 
-    public static String parseFilterPattern(String pattern) {
+    public static String[] splitFilterPattern(String pattern) {
         String[] extentions = pattern.split(",");
+        return extentions;
+    }
+
+    public static String parseFilterPattern(String pattern) {
+        String[] extentions = splitFilterPattern(pattern);
         StringBuilder buff = new StringBuilder();
         if (extentions.length == 1 && extentions[0].equals("")) {
             return buff.toString();

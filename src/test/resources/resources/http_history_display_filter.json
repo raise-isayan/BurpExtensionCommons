@@ -1,0 +1,7 @@
+{
+    "bambda":{
+        "http_history_display_filter":{
+            "bambda":"var mimeType = requestResponse.mimeType();\n\nreturn mimeType != MimeType.CSS\r\n && mimeType != MimeType.IMAGE_UNKNOWN\r\n && mimeType != MimeType.IMAGE_JPEG\r\n && mimeType != MimeType.IMAGE_GIF\r\n && mimeType != MimeType.IMAGE_PNG\r\n && mimeType != MimeType.IMAGE_BMP\r\n && mimeType != MimeType.IMAGE_TIFF\r\n && mimeType != MimeType.UNRECOGNIZED\r\n && mimeType != MimeType.SOUND\r\n && mimeType != MimeType.VIDEO\r\n && mimeType != MimeType.FONT_WOFF\r\n && mimeType != MimeType.FONT_WOFF2\r\n && mimeType != MimeType.APPLICATION_UNKNOWN\r\n && requestResponse.contains(\"xxx\", false);"
+        }
+    }
+}

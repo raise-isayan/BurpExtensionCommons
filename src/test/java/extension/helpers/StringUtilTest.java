@@ -36,7 +36,36 @@ public class StringUtilTest {
      * Test of isNullOrEmpty method, of class StringUtilTest.
      */
     @Test
+    public void testLiteralEscape() {
+        System.out.println("testLiteralEscape");
+        {
+            String result = StringUtil.literalEscape("\\");
+            assertEquals("\\\\", result);
+        }
+        {
+            String result = StringUtil.literalEscape("\"");
+            assertEquals("\\\"", result);
+        }
+        {
+            String result = StringUtil.literalEscape("'");
+            assertEquals("'", result);
+        }
+        {
+            String result = StringUtil.literalEscape("01234");
+            assertEquals("01234", result);
+        }
+        {
+            String result = StringUtil.literalEscape("01\\23\"4");
+            assertEquals("01\\\\23\\\"4", result);
+        }
+    }
+
+    /**
+     * Test of isNullOrEmpty method, of class StringUtilTest.
+     */
+    @Test
     public void testIsNullOrEmpty() {
+        System.out.println("testIsNullOrEmpty");
         {
             boolean result = StringUtil.isNullOrEmpty(null);
             assertEquals(true, result);
@@ -57,6 +86,7 @@ public class StringUtilTest {
 
     @Test
     public void testString_0() {
+        System.out.println("testString_0");
         String rep0 = StringUtil.stringReplace("1234567890", 0, 0, "abc");
         System.out.println("testString_0:" + rep0);
         String rep1 = StringUtil.stringReplace("1234567890", 1, 3, "abc");

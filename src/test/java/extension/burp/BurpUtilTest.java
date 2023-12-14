@@ -1,6 +1,5 @@
 package extension.burp;
 
-import extension.burp.montoya.BurpVersionTest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.AfterAll;

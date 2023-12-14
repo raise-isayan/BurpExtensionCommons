@@ -357,8 +357,10 @@ public class BurpConfig {
         }
     }
 
+    private final static BurpVersion SUPPORT_BAMBDA = new BurpVersion("Burp Suite Support", "2023", "10.3", "");
+
     public enum SupportApi {
-        BURPSUITE_USEROPTION
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
@@ -367,6 +369,9 @@ public class BurpConfig {
                 case BURPSUITE_USEROPTION:
                     api.burpSuite().exportUserOptionsAsJson("user_options");
                     break;
+                case BURPSUITE_BAMBDA:
+                    BurpVersion burp_version = BurpUtil.suiteVersion();
+                    return burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
             }
             return true;
         } catch (java.lang.NoSuchMethodError ex) {
@@ -956,6 +961,47 @@ public class BurpConfig {
         public void setUsername(String username) {
             this.username = username;
         }
+    }
+
+    /**
+     *
+     * @param api
+     * @return
+     */
+    public static Bambda getBambda(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter").getAsJsonObject("bambda");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(bambda, true), Bambda.class, true);
+    }
+
+    /**
+     *
+     * @param api
+     * @param filter
+     */
+    public static void configBambda(MontoyaApi api, FilterProperty filter) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
+        String updateConfig = updateBambda(config, filter);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+    }
+
+    static String updateBambda(String config, FilterProperty filter) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
+        history_filter.addProperty("bambda", filter.build());
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class Bambda {
+
+        public Bambda() {
+        }
+
+
+
+
     }
 
 }
