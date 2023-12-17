@@ -18,6 +18,9 @@ import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.StyledEditorKit;
 
 /**
  *
@@ -97,9 +100,6 @@ public class ResultFilterDialog extends CustomDialog {
         chkStat3xx = new javax.swing.JCheckBox();
         chkStat4xx = new javax.swing.JCheckBox();
         chkStat5xx = new javax.swing.JCheckBox();
-        pnlBambda = new javax.swing.JPanel();
-        scrollBabda = new javax.swing.JScrollPane();
-        txtBambda = new javax.swing.JTextArea();
         pnlApply = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnOK = new javax.swing.JButton();
@@ -437,16 +437,6 @@ public class ResultFilterDialog extends CustomDialog {
 
         tabbetFilter.addTab("Settings", pnlSettings);
 
-        pnlBambda.setLayout(new java.awt.BorderLayout());
-
-        txtBambda.setColumns(20);
-        txtBambda.setRows(5);
-        scrollBabda.setViewportView(txtBambda);
-
-        pnlBambda.add(scrollBabda, java.awt.BorderLayout.CENTER);
-
-        tabbetFilter.addTab("Bambda", pnlBambda);
-
         pnlMain.add(tabbetFilter, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(pnlMain, java.awt.BorderLayout.CENTER);
@@ -518,7 +508,29 @@ public class ResultFilterDialog extends CustomDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private final EditorKit javaStyleEditorKit = new StyledEditorKit() {
+        @Override
+        public Document createDefaultDocument() {
+            return new JavaSyntaxDocument();
+        }
+    };
+
+    private javax.swing.JPanel pnlBambda = new javax.swing.JPanel();
+    ;
+    private javax.swing.JScrollPane scrollBabda = new javax.swing.JScrollPane();
+    private javax.swing.JEditorPane txtBambda = new javax.swing.JEditorPane();
+
     private void customizeComponents() {
+        this.scrollBabda.setViewportView(this.txtBambda);
+
+        this.txtBambda.setEditorKitForContentType("text/java", this.javaStyleEditorKit);
+        this.txtBambda.setContentType("text/java");
+
+        this.pnlBambda.setLayout(new java.awt.BorderLayout());
+        this.scrollBabda.setViewportView(this.txtBambda);
+        this.pnlBambda.add(scrollBabda, java.awt.BorderLayout.CENTER);
+        this.tabbetFilter.addTab("Bambda", this.pnlBambda);
+
         this.pnlFilterByRequest.setLayout(new VerticalFlowLayout());
         this.pnlAnnotation.setLayout(new VerticalFlowLayout());
         this.pnlHighlightColor.setLayout(new VerticalFlowLayout());
@@ -664,7 +676,6 @@ public class ResultFilterDialog extends CustomDialog {
     private javax.swing.JPanel pnlAnnotation;
     private javax.swing.JPanel pnlAnnotations;
     private javax.swing.JPanel pnlApply;
-    private javax.swing.JPanel pnlBambda;
     private javax.swing.JPanel pnlBottom;
     private javax.swing.JPanel pnlCenter;
     private javax.swing.JPanel pnlColum;
@@ -679,9 +690,7 @@ public class ResultFilterDialog extends CustomDialog {
     private javax.swing.JPanel pnlName;
     private javax.swing.JPanel pnlSettings;
     private javax.swing.JPanel pnlStatus;
-    private javax.swing.JScrollPane scrollBabda;
     private javax.swing.JTabbedPane tabbetFilter;
-    private javax.swing.JTextArea txtBambda;
     private javax.swing.JTextField txtHide;
     private javax.swing.JTextField txtLiistenerPort;
     private javax.swing.JTextField txtMethod;
@@ -695,8 +704,7 @@ public class ResultFilterDialog extends CustomDialog {
     public void setProperty(FilterProperty filterProp) {
         if (filterProp.getFilterMode() == FilterProperty.FilterMode.SETTING) {
             this.tabbetFilter.setSelectedIndex(this.tabbetFilter.indexOfTab("Settings"));
-        }
-        else {
+        } else {
             this.tabbetFilter.setSelectedIndex(this.tabbetFilter.indexOfTab("Bambda"));
         }
         this.txtLiistenerPort.setText(filterProp.getListenerPort() > -1 ? Integer.toString(filterProp.getListenerPort()) : "");
@@ -731,8 +739,7 @@ public class ResultFilterDialog extends CustomDialog {
         FilterProperty filterProp = new FilterProperty();
         if (this.tabbetFilter.getSelectedIndex() == this.tabbetFilter.indexOfTab("Settings")) {
             filterProp.setFilterMode(FilterProperty.FilterMode.SETTING);
-        }
-        else {
+        } else {
             filterProp.setFilterMode(FilterProperty.FilterMode.BAMBDA);
         }
         filterProp.setListenerPort(ConvertUtil.parseIntDefault(this.txtLiistenerPort.getText(), -1));
@@ -759,7 +766,7 @@ public class ResultFilterDialog extends CustomDialog {
         filterProp.setPath(this.txtPath.getText());
         filterProp.setRequest(this.txtRequest.getText());
         filterProp.setResponse(this.txtResponse.getText());
-        filterProp.setBambdaQuery(this.txtBambda.getText());
+        filterProp.setBambda(this.txtBambda.getText());
         return filterProp;
     }
 

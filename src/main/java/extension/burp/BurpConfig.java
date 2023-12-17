@@ -989,7 +989,7 @@ public class BurpConfig {
     static String updateBambda(String config, FilterProperty filter) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
-        history_filter.addProperty("bambda", filter.build());
+        history_filter.addProperty("bambda", filter.getBambdaQuery());
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }

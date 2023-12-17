@@ -458,6 +458,7 @@ public class FilterProperty {
     }
 
     public void setProperty(FilterProperty property) {
+        this.setFilterMode(property.getFilterMode());
         this.setListenerPort(property.getListenerPort());
         this.setShowOnlyScopeItems(property.isShowOnlyScopeItems());
         this.setHideItemsWithoutResponses(property.isHideItemsWithoutResponses());
@@ -484,6 +485,7 @@ public class FilterProperty {
         this.setResponse(property.getResponse());
         this.setResponseRegex(property.isResponseRegex());
         this.setResponseIgnoreCase(property.isResponseIgnoreCase());
+        this.setBambda(property.getBambda());
     }
 
     @Expose
@@ -504,28 +506,28 @@ public class FilterProperty {
     }
 
     @Expose
-    private String bambdaQuery = "";
+    private String bambda = "";
 
     /**
      * @return the bambdaQuery
      */
-    public String getBambdaQuery() {
-        return bambdaQuery;
+    public String getBambda() {
+        return bambda;
     }
 
     /**
      * @param bambdaQuery the bambdaQuery to set
      */
-    public void setBambdaQuery(String bambdaQuery) {
-        this.bambdaQuery = bambdaQuery;
+    public void setBambda(String bambdaQuery) {
+        this.bambda = bambdaQuery;
     }
 
-    public String getBambda() {
+    public String getBambdaQuery() {
         if (this.filterMode == FilterMode.SETTING) {
             return this.build();
         }
         else {
-            return this.getBambdaQuery();
+            return this.getBambda();
         }
     }
 
