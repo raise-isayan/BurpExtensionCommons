@@ -391,14 +391,19 @@ public class FilterProperty {
         }
         // HighlightColor
         if (this.showOnlyHighlightColors) {
+            StringBuilder sub = new StringBuilder();
             for (MessageHighlightColor color : this.colors) {
-                if (sb.length() > 0) sb.append( "\n && ");
+                if (sub.length() > 0) sub.append( "\n || ");
                 if (color == MessageHighlightColor.WHITE) {
-                    sb.append( "requestResponse.annotations().highlightColor().equals(HighlightColor.").append("NONE").append(")");
+                    sub.append( "color.equals(HighlightColor.").append("NONE").append(")");
                 }
                 else {
-                    sb.append( "requestResponse.annotations().highlightColor().equals(HighlightColor.").append(color.name()).append(")");
+                    sub.append( "color.equals(HighlightColor.").append(color.name()).append(")");
                 }
+            }
+            if (!sub.isEmpty()) {
+                if (sb.length() > 0) sb.append( "\n && ");
+                sb.append("((Predicate<HighlightColor>)((color)->{ return ").append(sub).append("; })).test(requestResponse.annotations().highlightColor())");
             }
         }
         // Comments
@@ -406,7 +411,7 @@ public class FilterProperty {
             if (sb.length() > 0) sb.append( "\n && ");
             sb.append( "requestResponse.annotations().hasNotes()");
         }
-        // Status
+        // Status(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))
         if (!this.stat2xx) {
             if (sb.length() > 0) sb.append( "\n && ");
             sb.append( "!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_2XX_SUCCESS))");
@@ -435,7 +440,7 @@ public class FilterProperty {
         if (!this.request.isEmpty()) {
             if (sb.length() > 0) sb.append( "\n && ");
             if (this.requestRegex) {
-                sb.append("requestResponse.request().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.request)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append(")");
+                sb.append("requestResponse.request().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.request)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
             }
             else {
                 sb.append("requestResponse.request().contains(\"").append(StringUtil.literalEscape(this.request)).append("\", ").append(this.requestIgnoreCase).append(")");
@@ -444,13 +449,12 @@ public class FilterProperty {
         if (!this.response.isEmpty()) {
             if (sb.length() > 0) sb.append( "\n && ");
             if (this.responseRegex) {
-                sb.append("requestResponse.response().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.response)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append(")");
+                sb.append("requestResponse.response().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.response)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
             }
             else {
                 sb.append("requestResponse.response().contains(\"").append(StringUtil.literalEscape(this.response)).append("\", ").append(this.responseIgnoreCase).append(")");
             }
         }
-
         StringBuilder build = new StringBuilder();
         if (sb.isEmpty()) sb.append( "true");
         build.append( "return").append(" ").append(sb).append(";");
@@ -475,8 +479,9 @@ public class FilterProperty {
         this.setStat4xx(property.getStat4xx());
         this.setStat5xx(property.getStat5xx());
 
-        this.setHighlightColors(property.getHighlightColors());
         this.setShowOnlyComment(property.getShowOnlyComment());
+        this.setShowOnlyHighlightColors(property.getShowOnlyHighlightColors());
+        this.setHighlightColors(property.getHighlightColors());
         this.setMethod(property.getMethod());
         this.setPath(property.getPath());
         this.setRequest(property.getRequest());

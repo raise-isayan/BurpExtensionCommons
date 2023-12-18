@@ -84,7 +84,7 @@ public class JavaSyntaxDocument extends AbstractSyntaxDocument {
 
     @Override
     protected boolean isQuoteDelimiter(String character) {
-        String quoteDelimiters = "\"'";
+        String quoteDelimiters = "\\\"'";
         return quoteDelimiters.contains(character);
     }
 

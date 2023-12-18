@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package extension.burp;
 
 import java.util.EnumSet;
@@ -91,16 +87,24 @@ public class FilterPropertyTest {
             instance.setShowOnlyHighlightColors(true);
             instance.setHighlightColors(colors);
             String result = instance.build();
-            assertEquals("return requestResponse.annotations().highlightColor().equals(HighlightColor.NONE)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.RED)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.ORANGE)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.YELLOW)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.GREEN)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.CYAN)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.BLUE)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.PINK)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.MAGENTA)\n" +
-                " && requestResponse.annotations().highlightColor().equals(HighlightColor.GRAY);", result);
+            assertEquals("return ((Predicate<HighlightColor>)((color)->{ return color.equals(HighlightColor.NONE)\n" +
+                " || color.equals(HighlightColor.RED)\n" +
+                " || color.equals(HighlightColor.ORANGE)\n" +
+                " || color.equals(HighlightColor.YELLOW)\n" +
+                " || color.equals(HighlightColor.GREEN)\n" +
+                " || color.equals(HighlightColor.CYAN)\n" +
+                " || color.equals(HighlightColor.BLUE)\n" +
+                " || color.equals(HighlightColor.PINK)\n" +
+                " || color.equals(HighlightColor.MAGENTA)\n" +
+                " || color.equals(HighlightColor.GRAY); })).test(requestResponse.annotations().highlightColor());", result);
+        }
+        {
+            FilterProperty instance = new FilterProperty();
+            EnumSet<MessageHighlightColor> colors = EnumSet.allOf(MessageHighlightColor.class);
+            instance.setShowOnlyHighlightColors(false);
+            instance.setHighlightColors(colors);
+            String result = instance.build();
+            assertEquals("return true;", result);
         }
         {
             FilterProperty instance = new FilterProperty();
@@ -141,14 +145,6 @@ public class FilterPropertyTest {
         }
         {
             FilterProperty instance = new FilterProperty();
-            instance.setShowOnly(true);
-            instance.setHide(true);
-            String result = instance.build();
-            System.out.println(result);
-//            assertEquals("return requestResponse.request().isInScope();", result);
-        }
-        {
-            FilterProperty instance = new FilterProperty();
             instance.setRequest("www");
             String result = instance.build();
             assertEquals("return requestResponse.request().contains(\"www\", false);", result);
@@ -159,7 +155,7 @@ public class FilterPropertyTest {
             instance.setRequestRegex(true);
             instance.setRequestIgnoreCase(false);
             String result = instance.build();
-            System.out.println(result);
+            assertEquals("return requestResponse.request().contains(Pattern.compile(\"www\", Pattern.DOTALL | Pattern.CASE_INSENSITIVE));", result);
         }
         {
             FilterProperty instance = new FilterProperty();
@@ -173,7 +169,7 @@ public class FilterPropertyTest {
             instance.setResponseRegex(true);
             instance.setResponseIgnoreCase(false);
             String result = instance.build();
-            System.out.println(result);
+            assertEquals("return requestResponse.response().contains(Pattern.compile(\"www\", Pattern.DOTALL | Pattern.CASE_INSENSITIVE));", result);
         }
     }
 
