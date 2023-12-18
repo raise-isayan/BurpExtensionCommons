@@ -362,7 +362,7 @@ public class FilterProperty {
         }
         if (this.showOnlyParameterizedRequests) {
             if (sb.length() > 0) sb.append( "\n && ");
-            sb.append("requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY)");
+            sb.append("(requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY))");
         }
         if (this.showOnlyEditedMessage) {
             if (sb.length() > 0) sb.append( "\n && ");

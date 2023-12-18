@@ -64,7 +64,7 @@ public class FilterPropertyTest {
             FilterProperty instance = new FilterProperty();
             instance.setShowOnlyParameterizedRequests(true);
             String result = instance.build();
-            assertEquals("return requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY);", result);
+            assertEquals("return (requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY));", result);
         }
         {
             FilterProperty instance = new FilterProperty();
