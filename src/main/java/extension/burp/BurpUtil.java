@@ -24,6 +24,7 @@ import burp.api.montoya.ui.editor.EditorOptions;
 import extension.helpers.ConvertUtil;
 import extension.helpers.StringUtil;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +57,32 @@ public class BurpUtil {
         for (Frame frame : frames) {
             if (frame.isVisible() && frame.getTitle().startsWith("Burp Suite")) {
                 return frame;
+            }
+        }
+        return null;
+    }
+
+    public static JTabbedPane suiteTabbedPane() {
+        Frame frame = suiteFrame();
+        if (frame != null) {
+            return findSuiteTabbedPane(frame);
+        }
+        return null;
+    }
+
+    public static JTabbedPane findSuiteTabbedPane(Container container) {
+        if (container instanceof JTabbedPane jTabbedPane) {
+             return jTabbedPane;
+        }
+        else {
+            for (int i = 0; i < container.getComponentCount(); i++) {
+                Component c = container.getComponent(i);
+                if (c instanceof Container inner) {
+                    JTabbedPane tabbed = findSuiteTabbedPane(inner);
+                    if (tabbed != null) {
+                        return tabbed;
+                    }
+                }
             }
         }
         return null;
@@ -148,27 +175,31 @@ public class BurpUtil {
     }
 
     public static void sendToTextHighlight(IBurpTab tab) {
-        final Color burpTextHighlightColor = BurpConfig.getTabFlashColor();
         if (tab.getUiComponent() == null) {
             return;
         }
         Container container = tab.getUiComponent().getParent();
         if (container instanceof JTabbedPane jTabbedPane) {
-            final JTabbedPane tabbet = jTabbedPane;
-            final int index = tabbet.indexOfTab(tab.getTabCaption());
-            if (index > -1) {
-                tabbet.setBackgroundAt(index, burpTextHighlightColor);
-                // 解除
-                final Timer timer = new Timer(false);
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        tabbet.setForegroundAt(index, null);
-                        tabbet.setBackgroundAt(index, null);
-                    }
-                };
-                timer.schedule(task, 5000);
-            }
+            sendToTextHighlight(jTabbedPane, tab.getTabCaption());
+        }
+    }
+
+    public static void sendToTextHighlight(JTabbedPane jTabbedPane, String caption) {
+        final Color burpTextHighlightColor = BurpConfig.getTabFlashColor();
+        final JTabbedPane tabbet = jTabbedPane;
+        final int index = tabbet.indexOfTab(caption);
+        if (index > -1) {
+            tabbet.setBackgroundAt(index, burpTextHighlightColor);
+            // 解除
+            final Timer timer = new Timer(false);
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    tabbet.setForegroundAt(index, null);
+                    tabbet.setBackgroundAt(index, null);
+                }
+            };
+            timer.schedule(task, 5000);
         }
     }
 
