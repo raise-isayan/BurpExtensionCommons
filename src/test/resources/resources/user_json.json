@@ -1,0 +1,20 @@
+{
+    "proxy": {
+        "ssl_pass_through": {
+            "rules": [
+                {
+                    "enabled": true,
+                    "host": "www,example.com",
+                    "port": "443",
+                    "protocol": "any"
+                },
+                {
+                    "enabled": true,
+                    "host": "test.com",
+                    "port": "443",
+                    "protocol": "any"
+                }
+            ]
+        }
+    }
+}
