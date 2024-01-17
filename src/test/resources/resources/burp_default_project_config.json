@@ -539,7 +539,7 @@
         ],
         "miscellaneous":{
             "disable_logging_to_history_and_site_map":false,
-            "disable_out_of_scope_logging_to_history_and_site_map":true,
+            "disable_out_of_scope_logging_to_history_and_site_map":false,
             "disable_web_interface":false,
             "remove_unsupported_encodings_from_accept_encoding_headers_in_incoming_requests":true,
             "set_connection_close_header_on_responses":false,
@@ -555,191 +555,11 @@
         "request_listeners":[
             {
                 "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
+                "custom_tls_protocols":[],
                 "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8001,
+                "listen_mode":"loopback_only",
+                "listener_port":8080,
                 "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8002,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8003,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8010,
-                "running":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8011,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8012,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8013,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8020,
-                "running":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8030,
-                "running":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":8443,
-                "running":true,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":443,
-                "running":false,
-                "support_invisible_proxying":true,
-                "use_custom_tls_protocols":false
-            },
-            {
-                "certificate_mode":"per_host",
-                "custom_tls_protocols":[
-                    "SSLv3",
-                    "TLSv1",
-                    "TLSv1.1",
-                    "TLSv1.2",
-                    "TLSv1.3"
-                ],
-                "enable_http2":true,
-                "listen_mode":"all_interfaces",
-                "listener_port":80,
-                "running":false,
-                "support_invisible_proxying":true,
                 "use_custom_tls_protocols":false
             }
         ],
@@ -868,18 +688,7 @@
         "scope":{
             "advanced_mode":false,
             "exclude":[],
-            "include":[
-                {
-                    "enabled":true,
-                    "include_subdomains":false,
-                    "prefix":"https://www.example.com/"
-                },
-                {
-                    "enabled":true,
-                    "include_subdomains":false,
-                    "prefix":"https://www.google.com/"
-                }
-            ]
+            "include":[]
         }
     }
 }

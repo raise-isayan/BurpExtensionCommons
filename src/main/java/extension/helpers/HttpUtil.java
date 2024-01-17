@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -366,7 +365,7 @@ public final class HttpUtil {
 
     public static String toURL(String schema, String host, int port) {
         String url = String.format("%s://%s", schema, host);
-        if (port != getDefaultPort(false) && port != getDefaultPort(true)) {
+        if (port != getDefaultPort(false) && port != getDefaultPort(true) &&  port != -1) {
             url += ":" + port;
         }
         return url;
@@ -374,6 +373,10 @@ public final class HttpUtil {
 
     public static String toURL(String schema, String host, int port, String path) {
         return toURL(schema, host, port) + FileUtil.appendFirstSeparator(path, "/");
+    }
+
+    public static URL toURL(URL url) throws MalformedURLException {
+        return new URL(url.getProtocol(), url.getHost(), url.getPort() == -1 ? url.getDefaultPort() : url.getPort(), url.getFile());
     }
 
     public static String getDefaultProtocol(boolean useHttps) {

@@ -1,16 +1,22 @@
 {
-    "project_options":{
-        "connections":{
-            "hostname_resolution":[
+    "target":{
+        "scope":{
+            "advanced_mode":true,
+            "exclude":[],
+            "include":[
                 {
                     "enabled":true,
-                    "hostname":"test",
-                    "ip_address":"127.0.0.1"
+                    "file":"^/.*",
+                    "host":"^www\\.example\\.com$",
+                    "port":"^443$",
+                    "protocol":"https"
                 },
                 {
                     "enabled":true,
-                    "hostname":"hoge",
-                    "ip_address":"192.168.0.2"
+                    "file":"^/.*",
+                    "host":"^www\\.google\\.com$",
+                    "port":"^443$",
+                    "protocol":"https"
                 }
             ]
         }

@@ -11,7 +11,7 @@
             },
             "socks_proxy":{
                 "dns_over_socks":true,
-                "host":"192.0.2.11",
+                "host":"65.169.38.73",
                 "password":"pass",
                 "port":26592,
                 "use_proxy":false,
@@ -23,7 +23,8 @@
         },
         "display":{
             "character_sets":{
-                "mode":"recognize_automatically"
+                "mode":"use_a_specific_character_set",
+                "specific_character_set":"windows-31j"
             },
             "html_rendering":{
                 "allow_http_requests":true
@@ -45,7 +46,23 @@
             "extensions":[
                 {
                     "errors":"ui",
-                    "extension_file":"C:\\burp\\YaguraExtension-v3.0.jar",
+                    "extension_file":"C:\\App\\burp\\PassivePlus-v3.0.jar",
+                    "extension_type":"java",
+                    "loaded":true,
+                    "name":"PassivePlus v3.0",
+                    "output":"ui"
+                },
+                {
+                    "errors":"ui",
+                    "extension_file":"C:\\App\\burp\\ViewStateDecoder-v3.0.jar",
+                    "extension_type":"java",
+                    "loaded":true,
+                    "name":"ViewStateDecoder-v3.0.jar",
+                    "output":"ui"
+                },
+                {
+                    "errors":"ui",
+                    "extension_file":"C:\\App\\burp\\YaguraExtension-v3.0.jar",
                     "extension_type":"java",
                     "loaded":true,
                     "name":"YaguraExtension v3.0",
@@ -377,7 +394,7 @@
                     "type":"render"
                 },
                 {
-                    "show":false,
+                    "show":true,
                     "type":"headers",
                     "wrap_text":false
                 }

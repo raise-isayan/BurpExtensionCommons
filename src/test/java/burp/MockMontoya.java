@@ -76,7 +76,6 @@ import burp.api.montoya.ui.Selection;
 import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.menu.BasicMenuItem;
 import burp.api.montoya.ui.menu.Menu;
-import burp.api.montoya.ui.menu.MenuItem;
 import burp.api.montoya.utilities.Utilities;
 import burp.api.montoya.websocket.BinaryMessageAction;
 import burp.api.montoya.websocket.MessageAction;
@@ -84,9 +83,15 @@ import burp.api.montoya.websocket.TextMessageAction;
 import burp.api.montoya.websocket.WebSockets;
 import extension.burp.MessageHighlightColor;
 import extension.helpers.ConvertUtil;
+import extension.helpers.FileUtil;
+import extension.helpers.StringUtil;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.mockito.Mockito;
 
 /**
@@ -133,41 +138,54 @@ public class MockMontoya {
     public final Organizer organizerApi = Mockito.mock(Organizer.class);
 
     public MockMontoya() {
-        this.instanceMap.put(MockMontoyaObjectFactory.class, this.mockFactory);
+        try {
+            this.instanceMap.put(MockMontoyaObjectFactory.class, this.mockFactory);
+            String projectFile = MockMontoya.class.getResource("/resources/project_json.json").getPath();
+            String project_json = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(projectFile)));
+            String userFile = MockMontoya.class.getResource("/resources/user_json.json").getPath();
+            String user_json = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(userFile)));
 
-        Mockito.when(this.mockApi.burpSuite()).thenReturn(this.burpSuteApi);
-        Mockito.when(this.burpSuteApi.version()).thenReturn(this.versionApi);
-        Mockito.when(this.mockApi.collaborator()).thenReturn(this.collaboratorApi);
-        Mockito.when(this.collaboratorApi.createClient()).thenReturn(this.collaboratorClientApi);
-        Mockito.when(this.collaboratorClientApi.server()).thenReturn(this.collaboratorServerApi);
-        Mockito.when(this.collaboratorClientApi.getSecretKey()).thenReturn(this.mockFactory.secretKeyApi);
-        Mockito.when(this.mockApi.comparer()).thenReturn(this.comparerApi);
-        Mockito.when(this.mockApi.decoder()).thenReturn(this.decoderApi);
-        Mockito.when(this.mockApi.extension()).thenReturn(this.extensionApi);
+            Mockito.when(this.mockApi.burpSuite()).thenReturn(this.burpSuteApi);
+            Mockito.when(this.burpSuteApi.version()).thenReturn(this.versionApi);
+            Mockito.when(this.burpSuteApi.exportProjectOptionsAsJson(Mockito.anyString())).thenReturn(project_json);
+            Mockito.when(this.burpSuteApi.exportUserOptionsAsJson(Mockito.anyString())).thenReturn(user_json);
 
-        Mockito.when(this.mockApi.http()).thenReturn(this.httpApi);
-        Mockito.when(this.httpApi.createResponseVariationsAnalyzer()).thenReturn(this.responseVariationsAnalyzer);
-        Mockito.when(this.httpApi.cookieJar()).thenReturn(this.cookieJar);
-        Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class))).thenReturn(mockFactory.httpRequestResponseApi);
-        Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class), Mockito.any(HttpMode.class))).thenReturn(mockFactory.httpRequestResponseApi);
-        Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class), Mockito.any(HttpMode.class), Mockito.anyString())).thenReturn(mockFactory.httpRequestResponseApi);
+            Mockito.doNothing().when(this.burpSuteApi).importProjectOptionsFromJson(Mockito.anyString());
+            Mockito.doNothing().when(this.burpSuteApi).importUserOptionsFromJson(Mockito.anyString());
 
-        Mockito.when(this.mockApi.http()).thenReturn(this.httpApi);
-        Mockito.when(this.mockApi.logging()).thenReturn(this.loggingApi);
-        Mockito.when(this.mockApi.persistence()).thenReturn(this.persistenceApi);
-        Mockito.when(this.mockApi.proxy()).thenReturn(this.proxyApi);
-        Mockito.when(this.mockApi.repeater()).thenReturn(this.repeaterApi);
-        Mockito.when(this.mockApi.scanner()).thenReturn(this.scannerApi);
-        Mockito.when(this.mockApi.scope()).thenReturn(this.scopeApi);
-        Mockito.when(this.mockApi.siteMap()).thenReturn(this.siteMapApi);
-        Mockito.when(this.mockApi.userInterface()).thenReturn(this.userInterfaceApi);
-        Mockito.when(this.mockApi.utilities()).thenReturn(this.utilitiesApi);
-        Mockito.when(this.mockApi.websockets()).thenReturn(this.websocketsApi);
-        Mockito.when(this.mockApi.organizer()).thenReturn(this.organizerApi);
+            Mockito.when(this.mockApi.collaborator()).thenReturn(this.collaboratorApi);
+            Mockito.when(this.collaboratorApi.createClient()).thenReturn(this.collaboratorClientApi);
+            Mockito.when(this.collaboratorClientApi.server()).thenReturn(this.collaboratorServerApi);
+            Mockito.when(this.collaboratorClientApi.getSecretKey()).thenReturn(this.mockFactory.secretKeyApi);
+            Mockito.when(this.mockApi.comparer()).thenReturn(this.comparerApi);
+            Mockito.when(this.mockApi.decoder()).thenReturn(this.decoderApi);
+            Mockito.when(this.mockApi.extension()).thenReturn(this.extensionApi);
 
-        // other
-        burp.api.montoya.internal.ObjectFactoryLocator.FACTORY = this.mockFactory;
+            Mockito.when(this.mockApi.http()).thenReturn(this.httpApi);
+            Mockito.when(this.httpApi.createResponseVariationsAnalyzer()).thenReturn(this.responseVariationsAnalyzer);
+            Mockito.when(this.httpApi.cookieJar()).thenReturn(this.cookieJar);
+            Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class))).thenReturn(mockFactory.httpRequestResponseApi);
+            Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class), Mockito.any(HttpMode.class))).thenReturn(mockFactory.httpRequestResponseApi);
+            Mockito.when(this.httpApi.sendRequest(Mockito.any(HttpRequest.class), Mockito.any(HttpMode.class), Mockito.anyString())).thenReturn(mockFactory.httpRequestResponseApi);
 
+            Mockito.when(this.mockApi.http()).thenReturn(this.httpApi);
+            Mockito.when(this.mockApi.logging()).thenReturn(this.loggingApi);
+            Mockito.when(this.mockApi.persistence()).thenReturn(this.persistenceApi);
+            Mockito.when(this.mockApi.proxy()).thenReturn(this.proxyApi);
+            Mockito.when(this.mockApi.repeater()).thenReturn(this.repeaterApi);
+            Mockito.when(this.mockApi.scanner()).thenReturn(this.scannerApi);
+            Mockito.when(this.mockApi.scope()).thenReturn(this.scopeApi);
+            Mockito.when(this.mockApi.siteMap()).thenReturn(this.siteMapApi);
+            Mockito.when(this.mockApi.userInterface()).thenReturn(this.userInterfaceApi);
+            Mockito.when(this.mockApi.utilities()).thenReturn(this.utilitiesApi);
+            Mockito.when(this.mockApi.websockets()).thenReturn(this.websocketsApi);
+            Mockito.when(this.mockApi.organizer()).thenReturn(this.organizerApi);
+
+            // other
+            burp.api.montoya.internal.ObjectFactoryLocator.FACTORY = this.mockFactory;
+        } catch (IOException ex) {
+            Logger.getLogger(MockMontoya.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public <T extends Object> T instance(Class<T> type) {

@@ -1,6 +1,5 @@
 package extension.helpers.json;
 
-import burp.api.montoya.BurpExtension;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -195,6 +194,18 @@ public class JsonUtil {
         }
         Gson gson = gsonBuilder.create();
         return gson.toJsonTree(jsonObject);
+    }
+
+    public static <T> T jsonFromJsonElement(JsonElement jsonElement, Class<T> classOfT, boolean exludeFields) {
+        GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
+        for (Map.Entry<Class<?>, Object> set : typeAdapterMap.entrySet()) {
+            gsonBuilder.registerTypeHierarchyAdapter(set.getKey(), set.getValue());
+        }
+        if (exludeFields) {
+            gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+        }
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(gson.toJson(jsonElement), classOfT);
     }
 
     public static <T> T jsonFromJsonElement(JsonElement jsonElement, Type listType, boolean exludeFields) {

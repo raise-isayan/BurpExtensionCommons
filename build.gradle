@@ -56,8 +56,8 @@ dependencies {
 
     // Use JUnit Jupiter for testing.
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
 
     // https://mvnrepository.com/artifact/net.portswigger.burp.extensions/montoya-api
     testImplementation 'net.portswigger.burp.extensions:montoya-api:2023.10.4'

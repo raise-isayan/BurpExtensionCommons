@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
+import extension.helpers.HttpUtil;
 import extension.helpers.json.JsonUtil;
 import java.awt.Color;
 import java.io.File;
@@ -13,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -427,7 +430,7 @@ public class BurpConfig {
          * @return the mode
          */
         public String getMode() {
-            return mode;
+            return this.mode;
         }
 
         /**
@@ -441,7 +444,7 @@ public class BurpConfig {
          * @return the specific_character_set
          */
         public String getCharacterSet() {
-            return specific_character_set;
+            return this.specific_character_set;
         }
 
         /**
@@ -529,7 +532,7 @@ public class BurpConfig {
          * @return the enabled
          */
         public boolean isEnabled() {
-            return enabled;
+            return this.enabled;
         }
 
         /**
@@ -543,7 +546,7 @@ public class BurpConfig {
          * @return the hostname
          */
         public String getHostname() {
-            return hostname;
+            return this.hostname;
         }
 
         /**
@@ -557,7 +560,7 @@ public class BurpConfig {
          * @return the ip_address
          */
         public String getIPAddress() {
-            return ip_address;
+            return this.ip_address;
         }
 
         /**
@@ -645,7 +648,7 @@ public class BurpConfig {
          * @return the enabled
          */
         public boolean isEnabled() {
-            return enabled;
+            return this.enabled;
         }
 
         /**
@@ -659,7 +662,7 @@ public class BurpConfig {
          * @return the host
          */
         public String getHost() {
-            return host;
+            return this.host;
         }
 
         /**
@@ -673,7 +676,7 @@ public class BurpConfig {
          * @return the port
          */
         public int getPort() {
-            return port;
+            return this.port;
         }
 
         /**
@@ -687,7 +690,7 @@ public class BurpConfig {
          * @return the protocol
          */
         public String getProtocol() {
-            return protocol;
+            return this.protocol;
         }
 
         /**
@@ -732,7 +735,7 @@ public class BurpConfig {
          * @return the comment
          */
         public String getComment() {
-            return comment;
+            return this.comment;
         }
 
         /**
@@ -746,7 +749,7 @@ public class BurpConfig {
          * @return the enabled
          */
         public boolean isEnabled() {
-            return enabled;
+            return this.enabled;
         }
 
         /**
@@ -760,7 +763,7 @@ public class BurpConfig {
          * @return the is_simple_match
          */
         public boolean isSimpleMatch() {
-            return is_simple_match;
+            return this.is_simple_match;
         }
 
         /**
@@ -774,7 +777,7 @@ public class BurpConfig {
          * @return the rule_type
          */
         public String getRuleType() {
-            return rule_type;
+            return this.rule_type;
         }
 
         /**
@@ -785,14 +788,14 @@ public class BurpConfig {
         }
 
         public String getRuleTypeName() {
-            return rule_type.replace('_', ' ');
+            return this.rule_type.replace('_', ' ');
         }
 
         /**
          * @return the string_match
          */
         public String getStringMatch() {
-            return string_match;
+            return this.string_match;
         }
 
         /**
@@ -806,7 +809,7 @@ public class BurpConfig {
          * @return the string_replace
          */
         public String getStringReplace() {
-            return string_replace;
+            return this.string_replace;
         }
 
         /**
@@ -882,7 +885,7 @@ public class BurpConfig {
          * @return the dns_over_socks
          */
         public boolean isDnsOverSocks() {
-            return dns_over_socks;
+            return this.dns_over_socks;
         }
 
         /**
@@ -896,7 +899,7 @@ public class BurpConfig {
          * @return the host
          */
         public String getHost() {
-            return host;
+            return this.host;
         }
 
         /**
@@ -910,7 +913,7 @@ public class BurpConfig {
          * @return the password
          */
         public String getPassword() {
-            return password;
+            return this.password;
         }
 
         /**
@@ -924,7 +927,7 @@ public class BurpConfig {
          * @return the port
          */
         public int getPort() {
-            return port;
+            return this.port;
         }
 
         /**
@@ -938,7 +941,7 @@ public class BurpConfig {
          * @return the use_proxy
          */
         public boolean isUseProxy() {
-            return use_proxy;
+            return this.use_proxy;
         }
 
         /**
@@ -952,7 +955,7 @@ public class BurpConfig {
          * @return the username
          */
         public String getUsername() {
-            return username;
+            return this.username;
         }
 
         /**
@@ -968,11 +971,11 @@ public class BurpConfig {
      * @param api
      * @return
      */
-    public static Bambda getBambda(MontoyaApi api) {
+    public static String getBambda(MontoyaApi api) {
         String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter").getAsJsonObject("bambda");
-        return JsonUtil.jsonFromString(JsonUtil.jsonToString(bambda, true), Bambda.class, true);
+        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
+        return bambda.getAsJsonPrimitive("bambda").getAsString();
     }
 
     /**
@@ -994,13 +997,355 @@ public class BurpConfig {
         return updateConfig;
     }
 
-    public static class Bambda {
+    /**
+     *
+     * @param api
+     * @return
+     */
+    public static TargetScope getTargetScope(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("target.scope");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject targetScopeJson = root_json.getAsJsonObject("target").getAsJsonObject("scope");
+        TargetScope targetScope = JsonUtil.jsonFromJsonElement(targetScopeJson, TargetScope.class, true);
+        targetScope.setJson(config);
+        return targetScope;
+    }
 
-        public Bambda() {
+    static String updateTargetScope(String config, TargetScope targetScope) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject target = root_json.getAsJsonObject("target");
+        target.add("scope", targetScope.getJson());
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    /**
+     *
+     * @param api
+     * @param targetScope
+     */
+    public static void configTargetScope(MontoyaApi api, TargetScope targetScope) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("target.scope");
+        String updateConfig = updateTargetScope(config, targetScope);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+    }
+
+    public static class TargetScope {
+        @Expose
+        private boolean advanced_mode = false;
+
+        /**
+         * @return the advanced_mode
+         */
+        public boolean isAdvancedMode() {
+            return this.advanced_mode;
         }
 
+        /**
+         * @param advanced_mode the advanced_mode to set
+         */
+        public void setAdvancedMode(boolean advanced_mode) {
+            this.advanced_mode = advanced_mode;
+        }
 
+        private final List<TargetScopeURL> include_URL = new ArrayList<>();
+        private final List<TargetScopeURL> exclude_URL = new ArrayList<>();
 
+        private final List<TargetScopeAdvance> include_Advance = new ArrayList<>();
+        private final List<TargetScopeAdvance> exclude_Advance = new ArrayList<>();
+
+        /**
+         * @return the include_URL
+         */
+        public List<TargetScopeURL> getIncludeURL() {
+            return this.include_URL;
+        }
+
+        /**
+         * @param include_URL the include_URL to set
+         */
+        public void setIncludeURL(List<TargetScopeURL> include_URL) {
+            this.include_URL.clear();
+            this.include_URL.addAll(include_URL);
+        }
+
+        /**
+         * @return the exclude_URL
+         */
+        public List<TargetScopeURL> getExcludeURL() {
+            return this.exclude_URL;
+        }
+
+        /**
+         * @param exclude_URL the exclude_URL to set
+         */
+        public void setExcludeURL(List<TargetScopeURL> exclude_URL) {
+            this.exclude_URL.clear();
+            this.exclude_URL.addAll(exclude_URL);
+        }
+
+        /**
+         * @return the include_Advance
+         */
+        public List<TargetScopeAdvance> getIncludeAdvance() {
+            return this.include_Advance;
+        }
+
+        /**
+         * @param include_Advance the include_Advance to set
+         */
+        public void setIncludeAdvance(List<TargetScopeAdvance> include_Advance) {
+            this.include_Advance.clear();
+            this.include_Advance.addAll(include_Advance);
+        }
+
+        /**
+         * @return the exclude_Advance
+         */
+        public List<TargetScopeAdvance> getExcludeAdvance() {
+            return exclude_Advance;
+        }
+
+        /**
+         * @param exclude_Advance the exclude_Advance to set
+         */
+        public void setExcludeAdvance(List<TargetScopeAdvance> exclude_Advance) {
+            this.exclude_Advance.clear();
+            this.exclude_Advance.addAll(exclude_Advance);
+        }
+
+        public void setJson(String config) {
+            JsonObject root_json = JsonUtil.parseJsonObject(config);
+            JsonObject targetScope_json = root_json.getAsJsonObject("target").getAsJsonObject("scope");
+            BurpConfig.TargetScope targetScope = JsonUtil.jsonFromString(JsonUtil.jsonToString(targetScope_json, true), BurpConfig.TargetScope.class, true);
+            this.advanced_mode = targetScope.advanced_mode;
+            if (this.advanced_mode) {
+                Type listType = new TypeToken<ArrayList<TargetScopeAdvance>>() {
+                }.getType();
+                List<TargetScopeAdvance> includeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
+                List<TargetScopeAdvance> excludeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
+                this.setIncludeAdvance(includeAdvance);
+                this.setExcludeAdvance(excludeAdvance);
+            }
+            else {
+                Type listType = new TypeToken<ArrayList<TargetScopeURL>>() {
+                }.getType();
+                List<TargetScopeURL> includeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
+                List<TargetScopeURL> excludeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
+                this.setIncludeURL(includeURL);
+                this.setExcludeURL(excludeURL);
+            }
+        }
+
+        public JsonElement getJson() {
+            JsonElement root_json = JsonUtil.jsonToJsonElement(this, true);
+            if (root_json.isJsonObject()) {
+                JsonObject json_object = root_json.getAsJsonObject();
+                if (this.advanced_mode) {
+                    json_object.add("include", JsonUtil.jsonToJsonElement(this.include_Advance, true));
+                    json_object.add("exclude", JsonUtil.jsonToJsonElement(this.exclude_Advance, true));
+                }
+                else {
+                    json_object.add("include", JsonUtil.jsonToJsonElement(this.include_URL, true));
+                    json_object.add("exclude", JsonUtil.jsonToJsonElement(this.exclude_URL, true));
+                }
+            }
+            return root_json;
+        }
+
+    }
+
+    public static class TargetScopeURL {
+        @Expose
+        private boolean enabled = true;
+        @Expose
+        private boolean include_subdomains = false;
+        @Expose
+        private String prefix = "";
+
+        public static TargetScopeURL parseTargetURL(String url_string) throws MalformedURLException {
+            URL url = new URL(url_string);
+            return new TargetScopeURL(true, false, HttpUtil.toURL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()));
+        }
+
+        public TargetScopeURL(boolean enabled, boolean include_subdomains, String prefix) {
+            this.enabled = enabled;
+            this.include_subdomains = include_subdomains;
+            this.prefix = prefix;
+        }
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return this.enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the include_subdomains
+         */
+        public boolean getIncludeSubdomains() {
+            return this.include_subdomains;
+        }
+
+        /**
+         * @param include_subdomains the include_subdomains to set
+         */
+        public void setIncludeSubdomains(boolean include_subdomains) {
+            this.include_subdomains = include_subdomains;
+        }
+
+        /**
+         * @return the prefix
+         */
+        public String getPrefix() {
+            return this.prefix;
+        }
+
+        /**
+         * @param prefix the prefix to set
+         */
+        public void setPrefix(String prefix) {
+            this.prefix = prefix;
+        }
+
+    }
+
+    public static class TargetScopeAdvance {
+        @Expose
+        private boolean enabled = true;
+        @Expose
+        private String file = "";
+        @Expose
+        private String host = "";
+        @Expose
+        private String port = "";
+        @Expose
+        private String protocol = "";
+
+        public static TargetScopeAdvance parseTargetURL(String url_string) throws MalformedURLException {
+            URL url = HttpUtil.toURL(new URL(url_string));
+            return new TargetScopeAdvance(true, url.getProtocol(), escapeURL(url.getHost()), escapeURL(Integer.toString(url.getPort())), escapePath(url.getPath()));
+        }
+
+        public TargetScopeAdvance(boolean enabled, String protocol, String host, String port, String file) {
+            this.enabled = enabled;
+            this.file = file;
+            this.host = host;
+            this.port = port;
+            this.protocol = protocol;
+        }
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return this.enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the file
+         */
+        public String getFile() {
+            return this.file;
+        }
+
+        /**
+         * @param file the file to set
+         */
+        public void setFile(String file) {
+            this.file = file;
+        }
+
+        /**
+         * @return the host
+         */
+        public String getHost() {
+            return this.host;
+        }
+
+        /**
+         * @param host the host to set
+         */
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        /**
+         * @return the port
+         */
+        public String getPort() {
+            return this.port;
+        }
+
+        /**
+         * @param port the port to set
+         */
+        public void setPort(String port) {
+            this.port = port;
+        }
+
+        /**
+         * @return the protocol
+         */
+        public String getProtocol() {
+            return this.protocol;
+        }
+
+        /**
+         * @param protocol the protocol to set
+         */
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
+        /*
+         *
+         */
+        public static String escapeURL(String url) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("^");
+            for (int i = 0; i < url.length(); i = url.offsetByCodePoints(i, 1)) {
+                int codePoint = url.codePointAt(i);
+                if ('.' == (char)codePoint) {
+                    builder.append('\\');
+                }
+                builder.appendCodePoint(codePoint);
+            }
+            builder.append("$");
+            return builder.toString();
+        }
+
+        public static String escapePath(String path) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("^");
+            for (int i = 0; i < path.length(); i = path.offsetByCodePoints(i, 1)) {
+                int codePoint = path.codePointAt(i);
+                if ('.' == (char)codePoint) {
+                    builder.append('\\');
+                }
+                builder.appendCodePoint(codePoint);
+            }
+            if (!path.endsWith("/")) {
+                builder.append("/");
+            }
+            builder.append(".*");
+            return builder.toString();
+        }
 
     }
 

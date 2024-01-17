@@ -58,6 +58,18 @@ public class JsonUtilTest {
         assertEquals(expResult, result);
     }
 
+    @Test
+    public void testJsonEscape() {
+        System.out.println("jsonEscape");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("abc", 123);
+        jsonObject.addProperty("def", "test\\/\r\n\t\b\f\"\u0027testu0027");
+        String expResult = "{\"abc\":123,\"def\":\"test\\\\/\\r\\n\\t\\b\\f\\\"\u0027testu0027\"}";
+        String result = JsonUtil.stringifyJson(jsonObject);
+        System.out.println("json:" + result);
+        assertEquals(expResult, result);
+    }
+
     /**
      * Test of parse method, of class JsonUtil.
      */
