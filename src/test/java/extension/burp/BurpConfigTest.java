@@ -374,7 +374,7 @@ public class BurpConfigTest {
             FilterProperty filter = new FilterProperty();
             filter.setFilterMode(FilterProperty.FilterMode.BAMBDA);
             filter.setBambda("return false;");
-            String update_filter = BurpConfig.updateBambda(config, filter);
+            String update_filter = BurpConfig.updateBambda(config, filter, true);
             System.out.println("updateFilter:" + update_filter);
         } catch (Exception e) {
             fail();

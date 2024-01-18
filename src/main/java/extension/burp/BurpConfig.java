@@ -982,17 +982,26 @@ public class BurpConfig {
      *
      * @param api
      * @param filter
+     * @param changeFilterMode
      */
-    public static void configBambda(MontoyaApi api, FilterProperty filter) {
+    public static void configBambda(MontoyaApi api, FilterProperty filter, boolean changeFilterMode) {
         String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
-        String updateConfig = updateBambda(config, filter);
+        String updateConfig = updateBambda(config, filter, changeFilterMode);
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
 
-    static String updateBambda(String config, FilterProperty filter) {
+    static String updateBambda(String config, FilterProperty filter, boolean changeFilterMode) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
         history_filter.addProperty("bambda", filter.getBambdaQuery());
+        if (changeFilterMode) {
+            JsonObject filter_mode = new JsonObject();
+            filter_mode.addProperty("filter_mode", "BAMBDA");
+            JsonObject http_history_display_filter = new JsonObject();
+            http_history_display_filter.add("filter_mode", filter_mode);
+            root_json.add("proxy", http_history_display_filter);
+            //root_json.getAsJsonObject("proxy").getAsJsonObject("http_history_display_filter").addProperty("filter_mode", "BAMBDA");
+        }
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
