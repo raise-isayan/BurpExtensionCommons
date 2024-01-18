@@ -998,7 +998,7 @@ public class BurpConfig {
             JsonObject filter_mode = new JsonObject();
             filter_mode.addProperty("filter_mode", "BAMBDA");
             JsonObject http_history_display_filter = new JsonObject();
-            http_history_display_filter.add("filter_mode", filter_mode);
+            http_history_display_filter.add("http_history_display_filter", filter_mode);
             root_json.add("proxy", http_history_display_filter);
             //root_json.getAsJsonObject("proxy").getAsJsonObject("http_history_display_filter").addProperty("filter_mode", "BAMBDA");
         }
