@@ -160,22 +160,47 @@ public class ExtensionHelper {
         }
     }
 
-    /**
-     * Add Url To Include Scope
-     *
-     * @param multilineURL
-     */
-    public void addIncludeScope(String multilineURL) {
+    static String [] parseMultiLineURL(String multilineURL, boolean includeIgnoreURL) {
+        List<String> urls = new java.util.ArrayList<>();
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
         while (scanner.hasNext()) {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
-                this.api.scope().includeInScope(url.toExternalForm());
+                urls.add(HttpUtil.normalizeURL(url.toExternalForm()));
             } catch (MalformedURLException ex) {
-                this.api.scope().includeInScope(line);
+                if (includeIgnoreURL) urls.add(line);
             }
+        }
+        return urls.toArray(String[]::new);
+    }
+
+    static String [] parseMultiLineNetloc(String multilineURL, boolean includeIgnoreURL) {
+        List<String> urls = new java.util.ArrayList<>();
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()) {
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                urls.add(HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol()));
+            } catch (MalformedURLException ex) {
+                if (includeIgnoreURL) urls.add(line);
+            }
+        }
+        return urls.toArray(String[]::new);
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     */
+    public void addIncludeScope(String multilineURL) {
+        String[] urls = parseMultiLineURL(multilineURL, true);
+        for (String u : urls) {
+            this.api.scope().includeInScope(u);
         }
     }
 
@@ -185,16 +210,9 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addExcludeScope(String multilineURL) {
-        Scanner scanner = new Scanner(multilineURL);
-        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            try {
-                URL url = new URL(line);
-                this.api.scope().excludeFromScope(url.toExternalForm());
-            } catch (MalformedURLException ex) {
-                this.api.scope().includeInScope(line);
-            }
+        String[] urls = parseMultiLineURL(multilineURL, true);
+        for (String u : urls) {
+            this.api.scope().excludeFromScope(u);
         }
     }
 
@@ -203,17 +221,10 @@ public class ExtensionHelper {
      *
      * @param multilineURL
      */
-    public void addHostIncludeScope(String multilineURL) {
-        Scanner scanner = new Scanner(multilineURL);
-        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            try {
-                URL url = new URL(line);
-                this.api.scope().includeInScope(url.getHost());
-            } catch (MalformedURLException ex) {
-                this.api.scope().includeInScope(line);
-            }
+    public void addNetlocIncludeScope(String multilineURL) {
+        String[] urls = parseMultiLineNetloc(multilineURL, true);
+        for (String u : urls) {
+            this.api.scope().includeInScope(u);
         }
     }
 
@@ -223,16 +234,9 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addHostExcludeScope(String multilineURL) {
-        Scanner scanner = new Scanner(multilineURL);
-        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            try {
-                URL url = new URL(line);
-                this.api.scope().excludeFromScope(url.getHost());
-            } catch (MalformedURLException ex) {
-                this.api.scope().excludeFromScope(line);
-            }
+        String[] urls = parseMultiLineNetloc(multilineURL, true);
+        for (String u : urls) {
+            this.api.scope().excludeFromScope(u);
         }
     }
 

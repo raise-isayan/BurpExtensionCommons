@@ -313,21 +313,15 @@ public final class HttpUtil {
         return name;
     }
 
-    public static String normalizeURL(String value) {
-        Pattern pattern = Pattern.compile("^(https?)://(.*?)(:(?:80|443))/");
-        StringBuffer buff = new StringBuffer();
-        Matcher m = pattern.matcher(value);
-        if (m.find()) {
-            String protocol = m.group(1);
-            String port = m.group(3);
-            if ("http:".startsWith(protocol) && ":80".equals(port)) {
-                m.appendReplacement(buff, "$1://$2/");
-            } else if ("https:".startsWith(protocol) && ":443".equals(port)) {
-                m.appendReplacement(buff, "$1://$2/");
-            }
+    public static String normalizeURL(String urlString) throws MalformedURLException {
+        URL url = new URL(urlString);
+        if (url.getDefaultPort() == url.getPort()) {
+            //     public URL(String protocol, String host, int port, String file)
+            return (new URL(url.getProtocol(), url.getHost(), -1, url.getFile())).toExternalForm();
         }
-        m.appendTail(buff);
-        return buff.toString();
+        else {
+            return (new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile())).toExternalForm();
+        }
     }
 
     public static Map.Entry<String, String> getParameter(String plain) {

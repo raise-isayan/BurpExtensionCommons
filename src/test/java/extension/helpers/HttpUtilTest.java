@@ -107,15 +107,24 @@ public class HttpUtilTest {
      */
     @Test
     public void testNormalizeURL() {
-        System.out.println("normalizeURL");
-        assertEquals("http://example.com/", HttpUtil.normalizeURL("http://example.com:80/"));
-        assertEquals("http://example.com:8080/", HttpUtil.normalizeURL("http://example.com:8080/"));
-        assertEquals("https://example.com:4438/", HttpUtil.normalizeURL("https://example.com:4438/"));
-        assertEquals("https://example.com/", HttpUtil.normalizeURL("https://example.com:443/"));
-        assertEquals("http://example.com/xxx", HttpUtil.normalizeURL("http://example.com:80/xxx"));
-        assertEquals("https://example.com/xxx", HttpUtil.normalizeURL("https://example.com:443/xxx"));
-        assertEquals("https://example.com:8443/xxx", HttpUtil.normalizeURL("https://example.com:8443/xxx"));
-        assertEquals("https://example.com/xxx", HttpUtil.normalizeURL("https://example.com:443/xxx"));
+        try {
+            System.out.println("normalizeURL");
+            assertEquals("http://example.com", HttpUtil.normalizeURL("http://example.com"));
+            assertEquals("http://example.com/", HttpUtil.normalizeURL("http://example.com:80/"));
+            assertEquals("http://example.com:8080", HttpUtil.normalizeURL("http://example.com:8080"));
+            assertEquals("http://example.com:8080/", HttpUtil.normalizeURL("http://example.com:8080/"));
+            assertEquals("https://example.com:4438", HttpUtil.normalizeURL("https://example.com:4438"));
+            assertEquals("https://example.com:4438/", HttpUtil.normalizeURL("https://example.com:4438/"));
+            assertEquals("https://example.com/", HttpUtil.normalizeURL("https://example.com:443/"));
+            assertEquals("http://example.com/xxx", HttpUtil.normalizeURL("http://example.com:80/xxx"));
+            assertEquals("https://example.com/xxx", HttpUtil.normalizeURL("https://example.com:443/xxx"));
+            assertEquals("https://example.com:8443/xxx", HttpUtil.normalizeURL("https://example.com:8443/xxx"));
+            assertEquals("https://example.com/xxx", HttpUtil.normalizeURL("https://example.com:443/xxx"));
+            assertEquals("https://example.com/xxx?test=query", HttpUtil.normalizeURL("https://example.com:443/xxx?test=query"));
+        } catch (MalformedURLException ex) {
+            logger.log(Level.SEVERE, null, ex);
+            fail(ex.getMessage());
+        }
     }
 
     /**
