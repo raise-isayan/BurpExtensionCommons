@@ -174,17 +174,24 @@ public class BurpUtil {
         }
     }
 
-    public static void sendToTextHighlight(IBurpTab tab) {
+    public static void flashTab(String caption) {
+        JTabbedPane tab = BurpUtil.suiteTabbedPane();
+        if (tab != null) {
+            flashTab(tab, caption);
+        }
+    }
+
+    public static void flashTab(IBurpTab tab) {
         if (tab.getUiComponent() == null) {
             return;
         }
         Container container = tab.getUiComponent().getParent();
         if (container instanceof JTabbedPane jTabbedPane) {
-            sendToTextHighlight(jTabbedPane, tab.getTabCaption());
+            BurpUtil.flashTab(jTabbedPane, tab.getTabCaption());
         }
     }
 
-    public static void sendToTextHighlight(JTabbedPane jTabbedPane, String caption) {
+    public static void flashTab(JTabbedPane jTabbedPane, String caption) {
         final Color burpTextHighlightColor = BurpConfig.getTabFlashColor();
         final JTabbedPane tabbet = jTabbedPane;
         final int index = tabbet.indexOfTab(caption);

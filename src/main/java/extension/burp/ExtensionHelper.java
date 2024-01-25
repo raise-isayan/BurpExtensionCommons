@@ -18,7 +18,6 @@ import java.awt.KeyboardFocusManager;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -160,45 +159,13 @@ public class ExtensionHelper {
         }
     }
 
-    static String [] parseMultiLineURL(String multilineURL, boolean includeIgnoreURL) {
-        List<String> urls = new java.util.ArrayList<>();
-        Scanner scanner = new Scanner(multilineURL);
-        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            try {
-                URL url = new URL(line);
-                urls.add(HttpUtil.normalizeURL(url.toExternalForm()));
-            } catch (MalformedURLException ex) {
-                if (includeIgnoreURL) urls.add(line);
-            }
-        }
-        return urls.toArray(String[]::new);
-    }
-
-    static String [] parseMultiLineNetloc(String multilineURL, boolean includeIgnoreURL) {
-        List<String> urls = new java.util.ArrayList<>();
-        Scanner scanner = new Scanner(multilineURL);
-        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
-        while (scanner.hasNext()) {
-            String line = scanner.next();
-            try {
-                URL url = new URL(line);
-                urls.add(HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol()));
-            } catch (MalformedURLException ex) {
-                if (includeIgnoreURL) urls.add(line);
-            }
-        }
-        return urls.toArray(String[]::new);
-    }
-
     /**
      * Add Url To Include Scope
      *
      * @param multilineURL
      */
     public void addIncludeScope(String multilineURL) {
-        String[] urls = parseMultiLineURL(multilineURL, true);
+        String[] urls = HttpUtil.parseMultiLineURL(multilineURL, false);
         for (String u : urls) {
             this.api.scope().includeInScope(u);
         }
@@ -210,7 +177,7 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addExcludeScope(String multilineURL) {
-        String[] urls = parseMultiLineURL(multilineURL, true);
+        String[] urls = HttpUtil.parseMultiLineURL(multilineURL, false);
         for (String u : urls) {
             this.api.scope().excludeFromScope(u);
         }
@@ -222,7 +189,7 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addNetlocIncludeScope(String multilineURL) {
-        String[] urls = parseMultiLineNetloc(multilineURL, true);
+        String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
         for (String u : urls) {
             this.api.scope().includeInScope(u);
         }
@@ -234,10 +201,72 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addHostExcludeScope(String multilineURL) {
-        String[] urls = parseMultiLineNetloc(multilineURL, true);
+        String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
         for (String u : urls) {
             this.api.scope().excludeFromScope(u);
         }
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     * @param ignoreExists
+     */
+    public void addIncludeTargetScope(String multilineURL, boolean ignoreExists) {
+        String[] urls = HttpUtil.parseMultiLineURL(multilineURL, true);
+        BurpConfig.TargetScope targetScope = BurpConfig.getTargetScope(this.api);
+        List<BurpConfig.TargetScopeURL> targetURL = targetScope.getIncludeURL();
+        List<BurpConfig.TargetScopeAdvance> targetAdvance = targetScope.getIncludeAdvance();
+        for (String u : urls) {
+            try {
+                if (targetScope.isAdvancedMode()) {
+                    BurpConfig.TargetScopeAdvance target = BurpConfig.TargetScopeAdvance.parseTargetURL(u);
+                    if ((ignoreExists && targetAdvance.contains(target)) || !targetAdvance.contains(target)) {
+                        targetAdvance.add(target);
+                    }
+                } else {
+                    BurpConfig.TargetScopeURL target = BurpConfig.TargetScopeURL.parseTargetURL(u);
+                    if ((ignoreExists && targetURL.contains(target)) || !targetURL.contains(target)) {
+                        targetURL.add(target);
+                    }
+                }
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(ExtensionHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        BurpConfig.configTargetScope(this.api, targetScope);
+    }
+
+    /**
+     * Add Url To Exclude Scope
+     *
+     * @param multilineURL
+     * @param ignoreExists
+     */
+    public void addExcludeTargetScope(String multilineURL, boolean ignoreExists) {
+        String[] urls = HttpUtil.parseMultiLineURL(multilineURL, true);
+        BurpConfig.TargetScope targetScope = BurpConfig.getTargetScope(this.api);
+        List<BurpConfig.TargetScopeURL> targetURL = targetScope.getExcludeURL();
+        List<BurpConfig.TargetScopeAdvance> targetAdvance = targetScope.getExcludeAdvance();
+        for (String u : urls) {
+            try {
+                if (targetScope.isAdvancedMode()) {
+                    BurpConfig.TargetScopeAdvance target = BurpConfig.TargetScopeAdvance.parseTargetURL(u);
+                    if ((ignoreExists && targetAdvance.contains(target)) || !targetAdvance.contains(target)) {
+                        targetAdvance.add(target);
+                    }
+                } else {
+                    BurpConfig.TargetScopeURL target = BurpConfig.TargetScopeURL.parseTargetURL(u);
+                    if ((ignoreExists && targetURL.contains(target)) || !targetURL.contains(target)) {
+                        targetURL.add(target);
+                    }
+                }
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(ExtensionHelper.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        BurpConfig.configTargetScope(this.api, targetScope);
     }
 
     /**

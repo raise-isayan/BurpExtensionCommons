@@ -238,6 +238,24 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testGetTargetScope() {
+        System.out.println("testGetTargetScope");
+        {
+            try {
+                BurpConfig.TargetScope targetScope = new BurpConfig.TargetScope();
+                List<BurpConfig.TargetScopeURL> targetURL = targetScope.getIncludeURL();
+                targetURL.add(BurpConfig.TargetScopeURL.parseTargetURL("https://www.example,com/"));
+                for (int i = 0; i < targetURL.size(); i++) {
+                    System.out.println("target:" + targetURL.get(i).getPrefix());
+                }
+                assertTrue(targetURL.contains(BurpConfig.TargetScopeURL.parseTargetURL("https://www.example,com/")));
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(BurpConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    @Test
     public void testGetTargetScopeURL() {
         System.out.println("testGetTargetScopeURL");
         try {

@@ -1,5 +1,6 @@
 package extension.helpers;
 
+import extension.burp.ExtensionHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -566,6 +567,53 @@ public class HttpUtilTest {
         } catch (URISyntaxException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testMultiLine() {
+        System.out.println("testMultiLine");
+        {
+            String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
+            String[] urls = HttpUtil.parseMultiLineURL(multilineURL, true);
+            assertEquals(6, urls.length);
+            assertEquals("https://www.example.com:8443", urls[0]);
+            assertEquals("https://www.example.co.jp", urls[1]);
+            assertEquals("http://www.example.co.jp:8080", urls[2]);
+            assertEquals("http://www.example.co.jp", urls[3]);
+            assertEquals("https://www.google.com/", urls[4]);
+            assertEquals("localhost", urls[5]);
+        }
+        {
+            String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
+            String[] urls = HttpUtil.parseMultiLineURL(multilineURL, false);
+            assertEquals(5, urls.length);
+            assertEquals("https://www.example.com:8443", urls[0]);
+            assertEquals("https://www.example.co.jp", urls[1]);
+            assertEquals("http://www.example.co.jp:8080", urls[2]);
+            assertEquals("http://www.example.co.jp", urls[3]);
+            assertEquals("https://www.google.com/", urls[4]);
+        }
+        {
+            String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
+            String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, true);
+            assertEquals(6, urls.length);
+            assertEquals("www.example.com:8443", urls[0]);
+            assertEquals("www.example.co.jp", urls[1]);
+            assertEquals("www.example.co.jp:8080", urls[2]);
+            assertEquals("www.example.co.jp", urls[3]);
+            assertEquals("www.google.com", urls[4]);
+            assertEquals("localhost", urls[5]);
+        }
+        {
+            String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
+            String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
+            assertEquals(5, urls.length);
+            assertEquals("www.example.com:8443", urls[0]);
+            assertEquals("www.example.co.jp", urls[1]);
+            assertEquals("www.example.co.jp:8080", urls[2]);
+            assertEquals("www.example.co.jp", urls[3]);
+            assertEquals("www.google.com", urls[4]);
         }
     }
 

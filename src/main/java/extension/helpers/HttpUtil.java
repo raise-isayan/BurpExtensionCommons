@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -597,6 +598,38 @@ public final class HttpUtil {
         Authenticator saveAuthenticator = Authenticator.getDefault();
         Authenticator.setDefault(authenticator);
         return saveAuthenticator;
+    }
+
+    public static String [] parseMultiLineURL(String multilineURL, boolean includeIgnoreURL) {
+        List<String> urls = new java.util.ArrayList<>();
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()) {
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                urls.add(HttpUtil.normalizeURL(url.toExternalForm()));
+            } catch (MalformedURLException ex) {
+                if (includeIgnoreURL) urls.add(line);
+            }
+        }
+        return urls.toArray(String[]::new);
+    }
+
+    public static String [] parseMultiLineNetloc(String multilineURL, boolean includeIgnoreURL) {
+        List<String> urls = new java.util.ArrayList<>();
+        Scanner scanner = new Scanner(multilineURL);
+        scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
+        while (scanner.hasNext()) {
+            String line = scanner.next();
+            try {
+                URL url = new URL(line);
+                urls.add(HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol()));
+            } catch (MalformedURLException ex) {
+                if (includeIgnoreURL) urls.add(line);
+            }
+        }
+        return urls.toArray(String[]::new);
     }
 
 }

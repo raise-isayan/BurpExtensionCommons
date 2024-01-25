@@ -1225,6 +1225,18 @@ public class BurpConfig {
             this.prefix = prefix;
         }
 
+        @Override
+        public boolean equals(Object value) {
+            if (value instanceof TargetScopeURL url) {
+                return this.enabled == url.enabled
+                        && this.include_subdomains == url.include_subdomains
+                        && (this.prefix == null ? url.prefix == null : this.prefix.equals(url.prefix));
+            }
+            else {
+                return false;
+            }
+        }
+
     }
 
     public static class TargetScopeAdvance {
@@ -1354,6 +1366,20 @@ public class BurpConfig {
             }
             builder.append(".*");
             return builder.toString();
+        }
+
+        @Override
+        public boolean equals(Object value) {
+            if (value instanceof TargetScopeAdvance url) {
+                return this.enabled == url.enabled
+                        && (this.file == null ? url.file == null : this.file.equals(url.file))
+                        && (this.host == null ? url.host == null : this.host.equals(url.host))
+                        && (this.port == null ? url.port == null : this.port.equals(url.port))
+                        && (this.protocol == null ? url.protocol == null : this.protocol.equals(url.protocol));
+            }
+            else {
+                return false;
+            }
         }
 
     }
