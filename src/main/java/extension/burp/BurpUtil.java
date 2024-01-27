@@ -70,9 +70,11 @@ public class BurpUtil {
         return null;
     }
 
-    public static JTabbedPane findSuiteTabbedPane(Container container) {
+    protected static JTabbedPane findSuiteTabbedPane(Container container) {
         if (container instanceof JTabbedPane jTabbedPane) {
-             return jTabbedPane;
+            if ("burpTabBar".equals(jTabbedPane.getName())) {
+                return jTabbedPane;
+            }
         }
         else {
             for (int i = 0; i < container.getComponentCount(); i++) {
@@ -177,17 +179,17 @@ public class BurpUtil {
     public static void flashTab(String caption) {
         JTabbedPane tab = BurpUtil.suiteTabbedPane();
         if (tab != null) {
-            flashTab(tab, caption);
+            BurpUtil.flashTab(tab, caption);
         }
     }
 
-    public static void flashTab(IBurpTab tab) {
+    public static void flashTab(IBurpTab tab, String caption) {
         if (tab.getUiComponent() == null) {
             return;
         }
         Container container = tab.getUiComponent().getParent();
         if (container instanceof JTabbedPane jTabbedPane) {
-            BurpUtil.flashTab(jTabbedPane, tab.getTabCaption());
+            BurpUtil.flashTab(jTabbedPane, caption);
         }
     }
 

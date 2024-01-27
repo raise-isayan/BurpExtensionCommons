@@ -456,6 +456,17 @@ public class BurpConfig {
 
     }
 
+    public static synchronized List<HostnameResolution> getHostnameResolution(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("project_options.connections.hostname_resolution");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
+        }.getType();
+        JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
+        List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        return hostnameResolution;
+    }
+
     /**
      * config: { "project_options":{ "connections":{ "hostname_resolution":[ {
      * "enabled":true, "hostname":"test", "ip_address":"127.0.0.1" }, {
@@ -819,6 +830,7 @@ public class BurpConfig {
             this.string_replace = string_replace;
         }
     }
+
 
     /**
      *
