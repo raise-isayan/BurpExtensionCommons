@@ -8,6 +8,7 @@ import extension.burp.BurpConfig.TargetScope;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import extension.helpers.json.JsonUtil;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.KeyStroke;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -395,6 +397,43 @@ public class BurpConfigTest {
             String update_filter = BurpConfig.updateBambda(config, filter, true);
             System.out.println("updateFilter:" + update_filter);
         } catch (Exception e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testGetHotkey() {
+        System.out.println("getHotkey");
+        List<BurpConfig.Hotkey> hotkeys = BurpConfig.getHotkey(api);
+        assertEquals(45, hotkeys.size());
+    }
+
+    @Test
+    public void testParseHotkey() {
+        System.out.println("testParseHotkey");
+        {
+            KeyStroke copyKey = BurpConfig.Hotkey.parseHotkey("Ctrl+C");
+            System.out.println("fromCopyKey:" + copyKey);
+        }
+        {
+            KeyStroke copyKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK);
+            System.out.println("toCopyKey:" + BurpConfig.Hotkey.toHotkeyText(copyKey));
+        }
+    }
+
+    @Test
+    public void testUpdateHotkey() {
+        try {
+            System.out.println("testUpdateHotkey");
+            String configFile = BurpConfigTest.class.getResource("/resources/user_hotkey.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            List<BurpConfig.Hotkey> hotkeys = new ArrayList<>();
+            hotkeys.add(new BurpConfig.Hotkey(BurpConfig.Hotkey.HotkeyAction.EDITOR_COPY, KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK)));
+            hotkeys.add(new BurpConfig.Hotkey(BurpConfig.Hotkey.HotkeyAction.EDITOR_CUT, KeyStroke.getKeyStroke(KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK)));
+            hotkeys.add(new BurpConfig.Hotkey(BurpConfig.Hotkey.HotkeyAction.EDITOR_PASTE, KeyStroke.getKeyStroke(KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_DOWN_MASK)));
+            String updateConfig = BurpConfig.updateHotkey(config, hotkeys);
+            System.out.println("updateConfig:" + updateConfig);
+        } catch (IOException ex) {
             fail();
         }
     }

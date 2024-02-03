@@ -9,6 +9,8 @@ import com.google.gson.reflect.TypeToken;
 import extension.helpers.HttpUtil;
 import extension.helpers.json.JsonUtil;
 import java.awt.Color;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,8 +20,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.StringTokenizer;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
 /**
@@ -831,7 +838,6 @@ public class BurpConfig {
         }
     }
 
-
     /**
      *
      * @param api
@@ -1052,6 +1058,7 @@ public class BurpConfig {
     }
 
     public static class TargetScope {
+
         @Expose
         private boolean advanced_mode = false;
 
@@ -1147,8 +1154,7 @@ public class BurpConfig {
                 List<TargetScopeAdvance> excludeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
                 this.setIncludeAdvance(includeAdvance);
                 this.setExcludeAdvance(excludeAdvance);
-            }
-            else {
+            } else {
                 Type listType = new TypeToken<ArrayList<TargetScopeURL>>() {
                 }.getType();
                 List<TargetScopeURL> includeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
@@ -1165,8 +1171,7 @@ public class BurpConfig {
                 if (this.advanced_mode) {
                     json_object.add("include", JsonUtil.jsonToJsonElement(this.include_Advance, true));
                     json_object.add("exclude", JsonUtil.jsonToJsonElement(this.exclude_Advance, true));
-                }
-                else {
+                } else {
                     json_object.add("include", JsonUtil.jsonToJsonElement(this.include_URL, true));
                     json_object.add("exclude", JsonUtil.jsonToJsonElement(this.exclude_URL, true));
                 }
@@ -1177,6 +1182,7 @@ public class BurpConfig {
     }
 
     public static class TargetScopeURL {
+
         @Expose
         private boolean enabled = true;
         @Expose
@@ -1243,8 +1249,7 @@ public class BurpConfig {
                 return this.enabled == url.enabled
                         && this.include_subdomains == url.include_subdomains
                         && (this.prefix == null ? url.prefix == null : this.prefix.equals(url.prefix));
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -1252,6 +1257,7 @@ public class BurpConfig {
     }
 
     public static class TargetScopeAdvance {
+
         @Expose
         private boolean enabled = true;
         @Expose
@@ -1354,7 +1360,7 @@ public class BurpConfig {
             builder.append("^");
             for (int i = 0; i < url.length(); i = url.offsetByCodePoints(i, 1)) {
                 int codePoint = url.codePointAt(i);
-                if ('.' == (char)codePoint) {
+                if ('.' == (char) codePoint) {
                     builder.append('\\');
                 }
                 builder.appendCodePoint(codePoint);
@@ -1368,7 +1374,7 @@ public class BurpConfig {
             builder.append("^");
             for (int i = 0; i < path.length(); i = path.offsetByCodePoints(i, 1)) {
                 int codePoint = path.codePointAt(i);
-                if ('.' == (char)codePoint) {
+                if ('.' == (char) codePoint) {
                     builder.append('\\');
                 }
                 builder.appendCodePoint(codePoint);
@@ -1388,12 +1394,197 @@ public class BurpConfig {
                         && (this.host == null ? url.host == null : this.host.equals(url.host))
                         && (this.port == null ? url.port == null : this.port.equals(url.port))
                         && (this.protocol == null ? url.protocol == null : this.protocol.equals(url.protocol));
-            }
-            else {
+            } else {
                 return false;
             }
         }
 
+    }
+
+    public static class Hotkey {
+
+        public enum HotkeyAction {
+            SEND_TO_REPEATER,
+            SEND_TO_INTRUDER,
+            SEND_TO_ORGANIZER,
+            FORWARD_INTERCEPTED_PROXY_MESSAGE,
+            TOGGLE_PROXY_INTERCEPTION,
+            ISSUE_REPEATER_REQUEST,
+            SWITCH_TO_DASHBOARD,
+            SWITCH_TO_TARGET,
+            SWITCH_TO_PROXY,
+            SWITCH_TO_INTRUDER,
+            SWITCH_TO_REPEATER,
+            SWITCH_TO_LOGGER,
+            SWITCH_TO_ORGANIZER,
+            GO_TO_PREVIOUS_TAB,
+            GO_TO_NEXT_TAB,
+            EDITOR_CUT,
+            EDITOR_COPY,
+            EDITOR_PASTE,
+            EDITOR_UNDO,
+            EDITOR_REDO,
+            EDITOR_SELECT_ALL,
+            EDITOR_SEARCH,
+            EDITOR_GO_TO_PREVIOUS_SEARCH_MATCH,
+            EDITOR_GO_TO_NEXT_SEARCH_MATCH,
+            EDITOR_URL_DECODE,
+            EDITOR_URL_ENCODE_KEY_CHARACTERS,
+            EDITOR_HTML_DECODE,
+            EDITOR_HTML_ENCODE_KEY_CHARACTERS,
+            EDITOR_BASE64_DECODE,
+            EDITOR_BASE64_ENCODE,
+            EDITOR_BACKSPACE_WORD,
+            EDITOR_DELETE_WORD,
+            EDITOR_DELETE_LINE,
+            EDITOR_GO_TO_PREVIOUS_WORD,
+            EDITOR_GO_TO_PREVIOUS_WORD_EXTEND_SELECTION,
+            EDITOR_GO_TO_NEXT_WORD,
+            EDITOR_GO_TO_NEXT_WORD_EXTEND_SELECTION,
+            EDITOR_GO_TO_PREVIOUS_PARAGRAPH,
+            EDITOR_GO_TO_PREVIOUS_PARAGRAPH_EXTEND_SELECTION,
+            EDITOR_GO_TO_NEXT_PARAGRAPH,
+            EDITOR_GO_TO_NEXT_PARAGRAPH_EXTEND_SELECTION,
+            EDITOR_GO_TO_START_OF_DOCUMENT,
+            EDITOR_GO_TO_START_OF_DOCUMENT_EXTEND_SELECTION,
+            EDITOR_GO_TO_END_OF_DOCUMENT,
+            EDITOR_GO_TO_END_OF_DOCUMENT_EXTEND_SELECTION;
+
+            @Override
+            public String toString() {
+                String value = name().toLowerCase();
+                return value;
+            }
+
+        }
+
+        @Expose
+        private String action = "";
+        @Expose
+        private String hotkey = "";
+
+        public Hotkey(String action, String hotkey) {
+            this.action = action;
+            this.hotkey = hotkey;
+        }
+
+        public Hotkey(HotkeyAction action, KeyStroke hotkey) {
+            this(action.toString(), hotkey.toString());
+        }
+
+        /**
+         * @return the action
+         */
+        public String getAction() {
+            return action;
+        }
+
+        /**
+         * @return the action
+         */
+        public HotkeyAction toHotkeyAction() {
+            return Enum.valueOf(HotkeyAction.class, action);
+        }
+
+        /**
+         * @param action the action to set
+         */
+        public void setAction(String action) {
+            this.action = action;
+        }
+
+        /**
+         * @return the hotkey
+         */
+        public String getHotkey() {
+            return hotkey;
+        }
+
+        /**
+         * @param hotkey the hotkey to set
+         */
+        public void setHotkey(String hotkey) {
+            this.hotkey = hotkey;
+        }
+
+        final static Map<String, Integer> uninitializedMap = new HashMap<>(8, 1.0f);
+
+        static {
+            uninitializedMap.put("Shift", Integer.valueOf(InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK));
+            uninitializedMap.put("Ctrl", Integer.valueOf(InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK));
+            uninitializedMap.put("Meta", Integer.valueOf(InputEvent.META_DOWN_MASK | InputEvent.META_MASK));
+            uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
+            uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
+            uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK|InputEvent.ALT_GRAPH_MASK));
+            uninitializedMap.put("Button1", Integer.valueOf(InputEvent.BUTTON1_DOWN_MASK));
+            uninitializedMap.put("Button2", Integer.valueOf(InputEvent.BUTTON2_DOWN_MASK));
+            uninitializedMap.put("Button3", Integer.valueOf(InputEvent.BUTTON3_DOWN_MASK));
+        }
+
+        public static KeyStroke parseHotkey(String hotkey) {
+            Map<String, Integer> modifierKeywords = Collections.synchronizedMap(uninitializedMap);
+            int mask = 0;
+            char keyCode = 0;
+            StringTokenizer st = new StringTokenizer(hotkey, "+");
+            int count = st.countTokens();
+            for (int i = 0; i < count; i++) {
+                String token = st.nextToken();
+                Integer tokenMask = modifierKeywords.get(token);
+                if (tokenMask != null) {
+                    mask |= tokenMask;
+                }
+                if (i == count - 1) {
+                    keyCode = token.charAt(0);
+                }
+            }
+            return KeyStroke.getKeyStroke(keyCode, mask);
+        }
+
+        public static String toHotkeyText(KeyStroke keyStroke) {
+            StringBuilder buf = new StringBuilder();
+            buf.append(KeyEvent.getModifiersExText(keyStroke.getModifiers()));
+            buf.append("+");
+            buf.append((char)keyStroke.getKeyCode());
+            return buf.toString();
+        }
+
+    }
+
+    /**
+     *
+     * @param api
+     * @return
+     */
+    public static List<Hotkey> getHotkey(MontoyaApi api) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc.hotkeys");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject miscJson = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        Type listType = new TypeToken<ArrayList<Hotkey>>() {
+        }.getType();
+        JsonArray jsonArray = miscJson.getAsJsonArray("hotkeys");
+        List<Hotkey> hotkeys = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        return hotkeys;
+    }
+
+    /**
+     * *
+     *
+     * @param api
+     * @param hotkeys
+     */
+    public static void configHotkey(MontoyaApi api, List<Hotkey> hotkeys) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc.hotkeys");
+        String updateConfig = updateHotkey(config, hotkeys);
+        api.burpSuite().importUserOptionsFromJson(updateConfig);
+    }
+
+    static String updateHotkey(String config, List<Hotkey> hotkeys) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject miscJson = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hotkeys, true);
+        miscJson.add("hotkeys", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
     }
 
 }
