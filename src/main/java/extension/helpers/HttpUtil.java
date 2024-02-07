@@ -256,7 +256,10 @@ public final class HttpUtil {
         if (matcher.find()) {
             title = matcher.group(1);
         }
-        return title.trim();
+        if (title != null)
+            return title.trim();
+        else
+            return null;
     }
 
     public static String[] extractHTMLComments(String message) {

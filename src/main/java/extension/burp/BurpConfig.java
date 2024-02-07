@@ -1514,7 +1514,6 @@ public class BurpConfig {
             uninitializedMap.put("Ctrl", Integer.valueOf(InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK));
             uninitializedMap.put("Meta", Integer.valueOf(InputEvent.META_DOWN_MASK | InputEvent.META_MASK));
             uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
-            uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
             uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK|InputEvent.ALT_GRAPH_MASK));
             uninitializedMap.put("Button1", Integer.valueOf(InputEvent.BUTTON1_DOWN_MASK));
             uninitializedMap.put("Button2", Integer.valueOf(InputEvent.BUTTON2_DOWN_MASK));
