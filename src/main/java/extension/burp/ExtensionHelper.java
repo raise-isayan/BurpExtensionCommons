@@ -232,7 +232,7 @@ public class ExtensionHelper {
                     }
                 }
             } catch (MalformedURLException ex) {
-                Logger.getLogger(ExtensionHelper.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
         BurpConfig.configTargetScope(this.api, targetScope);
@@ -263,7 +263,7 @@ public class ExtensionHelper {
                     }
                 }
             } catch (MalformedURLException ex) {
-                Logger.getLogger(ExtensionHelper.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
         BurpConfig.configTargetScope(this.api, targetScope);

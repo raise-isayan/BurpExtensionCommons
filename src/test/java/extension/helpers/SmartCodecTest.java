@@ -3,6 +3,7 @@ package extension.helpers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -88,20 +89,20 @@ public class SmartCodecTest {
     }
 
     /**
-     * Test of toHtmlHexEncode method, of class TransUtil.
+     * Test of toHtmlUnicodeEncode method, of class TransUtil.
      */
     @Test
-    public void testToHtmlHexEncode() {
-        System.out.println("toHtmlHexEncode");
-        assertEquals("&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#x3d;&#x7e;&#x7c;&#x60;&#x7b;&#x7d;&#x2a;&#x2b;&#x3c;&#x3e;&#x3f;&#x5f;&#x5c;&#xd;&#xa;abcedf", SmartCodec.toHtmlHexEncode("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", false));
-        assertEquals("&#X21;&#X22;&#X23;&#X24;&#X25;&#X26;&#X27;&#X28;&#X29;&#X3D;&#X7E;&#X7C;&#X60;&#X7B;&#X7D;&#X2A;&#X2B;&#X3C;&#X3E;&#X3F;&#X5F;&#X5C;&#XD;&#XA;abcedf", SmartCodec.toHtmlHexEncode("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", true));
+    public void testToHtmUnicodeEncode() {
+        System.out.println("toHtmlUnicodeEncode");
+        assertEquals("&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#x3d;&#x7e;&#x7c;&#x60;&#x7b;&#x7d;&#x2a;&#x2b;&#x3c;&#x3e;&#x3f;&#x5f;&#x5c;&#xd;&#xa;abcedf", SmartCodec.toHtmlUnicodeEncode("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", false));
+        assertEquals("&#X21;&#X22;&#X23;&#X24;&#X25;&#X26;&#X27;&#X28;&#X29;&#X3D;&#X7E;&#X7C;&#X60;&#X7B;&#X7D;&#X2A;&#X2B;&#X3C;&#X3E;&#X3F;&#X5F;&#X5C;&#XD;&#XA;abcedf", SmartCodec.toHtmlUnicodeEncode("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", true));
 
         int ch[] = new int[]{(int) 'j', (int) 'k', (int) 'f', 0x2000B, 0x2123D, (int) 'g', (int) 'h', (int) 'i', 0x2131B, 0x2146E, 0x218BD, 0x20B9F, 0x216B4, 0x21E34, 0x231C4, 0x235C4, (int) 'a', (int) 'b', (int) 'z', (int) '0', (int) '1', (int) '9'};
         String x = new String(ch, 0, ch.length);
-        System.out.println("c:" + SmartCodec.toHtmlHexEncode(x, false));
-        assertEquals("jkf&#x2000b;&#x2123d;ghi&#x2131b;&#x2146e;&#x218bd;&#x20b9f;&#x216b4;&#x21e34;&#x231c4;&#x235c4;abz019", SmartCodec.toHtmlHexEncode(x, false));
-        assertEquals("jkf&#X2000B;&#X2123D;ghi&#X2131B;&#X2146E;&#X218BD;&#X20B9F;&#X216B4;&#X21E34;&#X231C4;&#X235C4;abz019", SmartCodec.toHtmlHexEncode(x, true));
-        assertEquals("&#x6a;&#x6b;&#x66;&#x2000b;&#x2123d;&#x67;&#x68;&#x69;&#x2131b;&#x2146e;&#x218bd;&#x20b9f;&#x216b4;&#x21e34;&#x231c4;&#x235c4;&#x61;&#x62;&#x7a;&#x30;&#x31;&#x39;", SmartCodec.toHtmlHexEncode(x, SmartCodec.ENCODE_PATTERN_ALL, false));
+        System.out.println("c:" + SmartCodec.toHtmlUnicodeEncode(x, false));
+        assertEquals("jkf&#x2000b;&#x2123d;ghi&#x2131b;&#x2146e;&#x218bd;&#x20b9f;&#x216b4;&#x21e34;&#x231c4;&#x235c4;abz019", SmartCodec.toHtmlUnicodeEncode(x, false));
+        assertEquals("jkf&#X2000B;&#X2123D;ghi&#X2131B;&#X2146E;&#X218BD;&#X20B9F;&#X216B4;&#X21E34;&#X231C4;&#X235C4;abz019", SmartCodec.toHtmlUnicodeEncode(x, true));
+        assertEquals("&#x6a;&#x6b;&#x66;&#x2000b;&#x2123d;&#x67;&#x68;&#x69;&#x2131b;&#x2146e;&#x218bd;&#x20b9f;&#x216b4;&#x21e34;&#x231c4;&#x235c4;&#x61;&#x62;&#x7a;&#x30;&#x31;&#x39;", SmartCodec.toHtmlUnicodeEncode(x, SmartCodec.ENCODE_PATTERN_ALL, false));
     }
 
     /**
@@ -315,6 +316,11 @@ public class SmartCodecTest {
             assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
         }
         {
+            String html = "<html><h4>&#x30de;&#x30eb;&#x30c1;&#x30d0;&#x30a4;&#x30c8;&#x30c6;&#x30b9;&#x30c8;</h4></html>";
+            String decode = SmartCodec.toHtmlDecode(html);
+            assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
+        }
+        {
             String html = "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>";
             String decode = SmartCodec.toHtmlDecode(html);
             assertEquals(decode, "<html><h4>!\"#$%&'()!\"#$%&'()1234567890<マルチバイトテストabcdef></h4></html>");
@@ -326,6 +332,40 @@ public class SmartCodecTest {
         }
 
     }
+
+    @Test
+    public void testHtmlDecodeCharset() {
+        try {
+            {
+                String html = "<html><h4>&#x83;&#x7d;&#x83;&#x8b;&#x83;&#x60;&#x83;&#x6f;&#x83;&#x43;&#x83;&#x67;&#x83;&#x65;&#x83;&#x58;&#x83;&#x67;</h4></html>";
+                String decode = SmartCodec.toHtmlDecode(html, "Shift_JIS");
+                assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
+            }
+            {
+                String html = "<html><h4>&#xe3;&#x83;&#x9e;&#xe3;&#x83;&#xab;&#xe3;&#x83;&#x81;&#xe3;&#x83;&#x90;&#xe3;&#x82;&#xa4;&#xe3;&#x83;&#x88;&#xe3;&#x83;&#x86;&#xe3;&#x82;&#xb9;&#xe3;&#x83;&#x88;</h4></html>";
+                String decode = SmartCodec.toHtmlDecode(html, StandardCharsets.UTF_8.name());
+                assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
+            }
+            {
+                String html = "<html><h4>&#x30de;&#x30eb;&#x30c1;&#x30d0;&#x30a4;&#x30c8;&#x30c6;&#x30b9;&#x30c8;</h4></html>";
+                String decode = SmartCodec.toHtmlUnicodeDecode(html);
+                assertEquals(decode, "<html><h4>マルチバイトテスト</h4></html>");
+            }
+            {
+                String html = "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>";
+                String decode = SmartCodec.toHtmlUnicodeDecode(html);
+                assertEquals(decode, "<html><h4>!\"#$%&'()!\"#$%&'()1234567890<マルチバイトテストabcdef></h4></html>");
+            }
+            {
+                String html = "<html><h4>&#x21;&#x22;&#x23;&#x24;&#x25;&#x26;&#x27;&#x28;&#x29;&#33;&#34;&#35;&#36;&#37;&#38;&#39;&#40;&#41;1234567890&lt;&#12510;&#12523;&#12481;&#12496;&#12452;&#12488;&#12486;&#12473;&#12488;abcdef&gt;</h4></html>";
+                String decode = SmartCodec.toHtmlUnicodeDecode(html, SmartCodec.ENCODE_PATTERN_STANDARD);
+                assertEquals(decode, "<html><h4>&#x21;&#x22;#&#x24;%&#x26;&#x27;&#x28;&#x29;&#33;&#34;#&#36;%&#38;&#39;&#40;&#41;1234567890<マルチバイトテストabcdef></h4></html>");
+            }
+        } catch (UnsupportedEncodingException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+    }
+
 
     @Test
     public void testSmartDecode() {

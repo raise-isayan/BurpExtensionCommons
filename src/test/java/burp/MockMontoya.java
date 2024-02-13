@@ -85,6 +85,7 @@ import extension.burp.MessageHighlightColor;
 import extension.helpers.ConvertUtil;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
+import extension.view.base.TableRowTransferHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -101,6 +102,7 @@ import org.mockito.Mockito;
  * https://github.com/PortSwigger/burp-extensions-montoya-api/blob/30b377428a332aed568c22af17cb08b891450027/api/src/test/java/burp/api/montoya/TestExtension.java
  */
 public class MockMontoya {
+    private final static Logger logger = Logger.getLogger(MockMontoya.class.getName());
 
     private Map<Class, Object> instanceMap = new HashMap<>();
     public final MockMontoyaObjectFactory mockFactory = Mockito.spy(new MockMontoyaObjectFactory());
@@ -184,7 +186,7 @@ public class MockMontoya {
             // other
             burp.api.montoya.internal.ObjectFactoryLocator.FACTORY = this.mockFactory;
         } catch (IOException ex) {
-            Logger.getLogger(MockMontoya.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

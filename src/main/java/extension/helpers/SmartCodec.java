@@ -128,7 +128,6 @@ public class SmartCodec {
     /**
      * Encode
      */
-
     /**
      * @param entityName
      * @return
@@ -160,11 +159,11 @@ public class SmartCodec {
         return buff.toString();
     }
 
-    public static String toHtmlHexEncode(String input, boolean upperCase) {
-        return toHtmlHexEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
+    public static String toHtmlUnicodeEncode(String input, boolean upperCase) {
+        return toHtmlUnicodeEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
     }
 
-    public static String toHtmlHexEncode(String input, Pattern pattern, boolean upperCase) {
+    public static String toHtmlUnicodeEncode(String input, Pattern pattern, boolean upperCase) {
         StringBuilder buff = new StringBuilder();
         int length = input.length();
         for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
@@ -327,17 +326,50 @@ public class SmartCodec {
     /**
      * Decode
      */
-    private final static Pattern PTN_HTML = Pattern.compile("(&#(\\d+);)|(&#[xX]([0-9a-fA-F]+);)+");
+    private final static Pattern PTN_HTML_UNICODE = Pattern.compile("(&(?:(#\\d{3,})|(#[xX][0-9a-fA-F]+));)+");
     private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[uU]([0-9a-fA-F]{4})");
     private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[uU]([0-9a-fA-F]{4})");
+
+    private static String toHtmlEntiyDecode(String input, Pattern pattern) {
+        StringBuilder buff = new StringBuilder();
+        Pattern p = Pattern.compile("&(\\w+);");
+        Matcher m = p.matcher(input);
+        while (m.find()) {
+            String htmlwd = m.group(1);
+            if (htmlwd == null) {
+                continue;
+            }
+            String htmlch = "";
+            if (htmlwd.equals("lt")) {
+                htmlch = "<";
+            } else if (htmlwd.equals("gt")) {
+                htmlch = ">";
+            } else if (htmlwd.equals("amp")) {
+                htmlch = "&";
+            } else if (htmlwd.equals("quot")) {
+                htmlch = "\"";
+            } else {
+                htmlch = fromHTMLEntity(htmlwd);
+                if (htmlch == null) {
+                    htmlch = m.group(0);    // 変換しない
+                }
+            }
+            Matcher m2 = pattern.matcher(htmlch);
+            if (m2.matches()) {
+                m.appendReplacement(buff, htmlch);
+            }
+        }
+        m.appendTail(buff);
+        return buff.toString();
+    }
 
     public static String toHtmlDecode(String input) {
         return toHtmlDecode(input, ENCODE_PATTERN_ALL);
     }
 
     public static String toHtmlDecode(String input, Pattern pattern) {
-        StringBuffer buff = new StringBuffer();
-        Pattern p = Pattern.compile("(&(?:(#\\d+)|(#[xX][0-9a-fA-F]+)|(\\w+));)");
+        StringBuilder buff = new StringBuilder();
+        Pattern p = Pattern.compile("(&(?:(#\\d+)|(#[xX][0-9a-fA-F]+));)");
         Matcher m = p.matcher(input);
         while (m.find()) {
             String html = m.group(1);
@@ -358,35 +390,11 @@ public class SmartCodec {
                     if (m2.matches()) {
                         m.appendReplacement(buff, Matcher.quoteReplacement(cpStr));
                     }
-                } else if (html.startsWith("&")) {
-                    String htmlwd = m.group(4);
-                    if (htmlwd == null) {
-                        continue;
-                    }
-                    String htmlch = "";
-                    if (htmlwd.equals("lt")) {
-                        htmlch = "<";
-                    } else if (htmlwd.equals("gt")) {
-                        htmlch = ">";
-                    } else if (htmlwd.equals("amp")) {
-                        htmlch = "&";
-                    } else if (htmlwd.equals("quot")) {
-                        htmlch = "\"";
-                    } else {
-                        htmlch = fromHTMLEntity(htmlwd);
-                        if (htmlch == null) {
-                            htmlch = m.group(0);    // 変換しない
-                        }
-                    }
-                    Matcher m2 = pattern.matcher(htmlch);
-                    if (m2.matches()) {
-                        m.appendReplacement(buff, htmlch);
-                    }
                 }
             }
         }
         m.appendTail(buff);
-        return buff.toString();
+        return toHtmlEntiyDecode(buff.toString(), pattern);
     }
 
     /**
@@ -396,12 +404,57 @@ public class SmartCodec {
      * @throws UnsupportedEncodingException
      */
     public static String toHtmlDecode(String input, String charset) throws UnsupportedEncodingException {
-        String decode = toHtmlDecode(input, ENCODE_PATTERN_ALL);
+        return toHtmlDecode(input, ENCODE_PATTERN_ALL, charset);
+    }
+
+    /**
+     * @param input
+     * @param pattern
+     * @param charset
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String toHtmlDecode(String input, Pattern pattern, String charset) throws UnsupportedEncodingException {
+        String decode = toHtmlDecode(input, pattern);
         if (charset == null) {
             return decode;
         } else {
             return StringUtil.getStringCharset(StringUtil.getBytesRaw(decode), charset);
         }
+    }
+
+    public static String toHtmlUnicodeDecode(String input) {
+        return toHtmlUnicodeDecode(input, ENCODE_PATTERN_ALL);
+    }
+
+    public static String toHtmlUnicodeDecode(String input, Pattern pattern) {
+        StringBuilder buff = new StringBuilder();
+        Pattern p = Pattern.compile("(&(?:(#\\d+)|(#[xX][0-9a-fA-F]+));)");
+        Matcher m = p.matcher(input);
+        while (m.find()) {
+            String html = m.group(1);
+            if (html != null) {
+                if (html.startsWith("&#x") || html.startsWith("&#X")) {
+                    String htmlhex = m.group(3);
+                    int ch = Integer.parseInt(htmlhex.substring(2), 16);
+                    String cpStr = Character.toString(ch);
+                    Matcher m2 = pattern.matcher(cpStr);
+                    if (m2.matches()) {
+                        m.appendReplacement(buff, Matcher.quoteReplacement(cpStr));
+                    }
+                } else if (html.startsWith("&#")) {
+                    String htmldec = m.group(2);
+                    int ch = Integer.parseInt(htmldec.substring(1), 10);
+                    String cpStr = Character.toString(ch);
+                    Matcher m2 = pattern.matcher(cpStr);
+                    if (m2.matches()) {
+                        m.appendReplacement(buff, Matcher.quoteReplacement(cpStr));
+                    }
+                }
+            }
+        }
+        m.appendTail(buff);
+        return toHtmlEntiyDecode(buff.toString(), pattern);
     }
 
     public static String toUrlDecode(String pString, Charset charset) {

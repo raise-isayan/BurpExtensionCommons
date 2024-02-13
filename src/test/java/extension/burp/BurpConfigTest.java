@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author isayan
  */
 public class BurpConfigTest {
+    private final static Logger logger = Logger.getLogger(BurpConfigTest.class.getName());
 
     public BurpConfigTest() {
     }
@@ -252,7 +253,7 @@ public class BurpConfigTest {
                 }
                 assertTrue(targetURL.contains(BurpConfig.TargetScopeURL.parseTargetURL("https://www.example,com/")));
             } catch (MalformedURLException ex) {
-                Logger.getLogger(BurpConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
@@ -280,7 +281,7 @@ public class BurpConfigTest {
                 assertEquals("https://www.example.com:8443/path/", target_scope_url.getPrefix());
             }
         } catch (MalformedURLException ex) {
-            Logger.getLogger(BurpConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -313,7 +314,7 @@ public class BurpConfigTest {
                 assertEquals("^/path/.*", target_scope_url.getFile());
             }
         } catch (MalformedURLException ex) {
-            Logger.getLogger(BurpConfigTest.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

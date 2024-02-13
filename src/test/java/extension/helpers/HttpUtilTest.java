@@ -1,6 +1,5 @@
 package extension.helpers;
 
-import extension.burp.ExtensionHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +122,7 @@ public class HttpUtilTest {
             assertEquals("https://example.com/xxx", HttpUtil.normalizeURL("https://example.com:443/xxx"));
             assertEquals("https://example.com/xxx?test=query", HttpUtil.normalizeURL("https://example.com:443/xxx?test=query"));
         } catch (MalformedURLException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             fail(ex.getMessage());
         }
     }
@@ -499,7 +498,7 @@ public class HttpUtilTest {
                 assertEquals(1, comments.length);
                 assertEquals("<!--  エンコード -->", comments[0]);
             } catch (IOException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
 
@@ -529,7 +528,7 @@ public class HttpUtilTest {
                 String title = HttpUtil.extractHTMLTitle(encodeFile);
                 assertEquals("タイトル", title);
             } catch (IOException ex) {
-                Logger.getLogger(HttpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
     }
