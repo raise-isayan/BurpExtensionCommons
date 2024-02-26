@@ -39,7 +39,7 @@ Please import BurpExtensionCommons.jar in the release folder as a Java library a
 
 ### Development environment
 * NetBean 20 (https://netbeans.apache.org/)
-* Gradle 7.5 (https://gradle.org/)
+* Gradle 7.6 (https://gradle.org/)
 
 ## build
  gradlew release

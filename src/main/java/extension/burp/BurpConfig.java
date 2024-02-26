@@ -7,6 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
 import extension.helpers.HttpUtil;
+import extension.helpers.json.JsonBuilder;
+import extension.helpers.json.JsonObjectBuilder;
 import extension.helpers.json.JsonUtil;
 import java.awt.Color;
 import java.awt.event.InputEvent;
@@ -1013,11 +1015,9 @@ public class BurpConfig {
         JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
         history_filter.addProperty("bambda", filter.getBambdaQuery());
         if (changeFilterMode) {
-            JsonObject filter_mode = new JsonObject();
-            filter_mode.addProperty("filter_mode", "BAMBDA");
-            JsonObject http_history_display_filter = new JsonObject();
-            http_history_display_filter.add("http_history_display_filter", filter_mode);
-            root_json.add("proxy", http_history_display_filter);
+            JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add("http_history_display_filter",
+                JsonBuilder.createObjectBuilder().add("filter_mode", "BAMBDA").build());
+            root_json.add("proxy", jsonBuilder.build());
             //root_json.getAsJsonObject("proxy").getAsJsonObject("http_history_display_filter").addProperty("filter_mode", "BAMBDA");
         }
         String updateConfig = JsonUtil.prettyJson(root_json, true);

@@ -396,6 +396,19 @@ public class BurpConfigTest {
             filter.setFilterMode(FilterProperty.FilterMode.BAMBDA);
             filter.setBambda("return false;");
             String update_filter = BurpConfig.updateBambda(config, filter, true);
+            String except = "{\n" +
+                "  \"bambda\": {\n" +
+                "    \"http_history_display_filter\": {\n" +
+                "      \"bambda\": \"return false;\"\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"proxy\": {\n" +
+                "    \"http_history_display_filter\": {\n" +
+                "      \"filter_mode\": \"BAMBDA\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+            assertEquals(except, update_filter);
             System.out.println("updateFilter:" + update_filter);
         } catch (Exception e) {
             fail();

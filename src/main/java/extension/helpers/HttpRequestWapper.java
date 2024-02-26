@@ -200,6 +200,25 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return hasQueryParameter(this.request.parameters());
     }
 
+    public boolean hasUrlDecodeParameter() {
+        List<ParsedHttpParameter> params = this.parameters();
+        boolean isDecodeParam = false;
+        for (ParsedHttpParameter p : params) {
+            switch (p.type()) {
+                case URL:
+                case COOKIE:
+                    isDecodeParam = true;
+                    break;
+                case BODY:
+                    isDecodeParam = false;
+                    break;
+                case MULTIPART_ATTRIBUTE:
+                    break;
+            }
+        }
+        return (this.contentType() == ContentType.URL_ENCODED) || (this.contentType() == ContentType.NONE && isDecodeParam);
+    }
+
     public boolean isGET() {
         return METHOD_GET.equals(this.request.method());
     }

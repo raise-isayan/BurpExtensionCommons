@@ -39,7 +39,7 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 
 ### 開発環境
 * NetBean 20 (https://netbeans.apache.org/)
-* Gradle 7.5 (https://gradle.org/)
+* Gradle 7.6 (https://gradle.org/)
 
 ## ビルド
  gradlew release

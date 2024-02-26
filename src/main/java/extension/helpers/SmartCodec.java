@@ -326,7 +326,7 @@ public class SmartCodec {
     /**
      * Decode
      */
-    private final static Pattern PTN_HTML_UNICODE = Pattern.compile("(&(?:(#\\d{3,})|(#[xX][0-9a-fA-F]+));)+");
+    private final static Pattern PTN_HTML_UNICODE = Pattern.compile("(&(?:(#\\d)|(#[xX][0-9a-fA-F]+));)+");
     private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[uU]([0-9a-fA-F]{4})");
     private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[uU]([0-9a-fA-F]{4})");
 
