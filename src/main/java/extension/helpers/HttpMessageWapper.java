@@ -7,6 +7,7 @@ import burp.api.montoya.http.message.HttpMessage;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -225,7 +226,16 @@ public class HttpMessageWapper implements HttpMessage {
         return result;
     }
 
-    public String getBodyString(boolean smartDecode, String charset) throws UnsupportedEncodingException {
+    public String getBodyString(String charset, boolean smartDecode) throws UnsupportedEncodingException {
+        String body = StringUtil.getStringCharset(this.body().getBytes(), charset);
+        if (smartDecode) {
+            body = SmartCodec.toUnicodeDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
+            body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_ASCII);
+        }
+        return body;
+    }
+
+    public String getBodyString(Charset charset, boolean smartDecode) {
         String body = StringUtil.getStringCharset(this.body().getBytes(), charset);
         if (smartDecode) {
             body = SmartCodec.toUnicodeDecode(body, SmartCodec.ENCODE_PATTERN_LIGHT);
