@@ -619,7 +619,7 @@ public final class HttpUtil {
         return urls.toArray(String[]::new);
     }
 
-    public static String [] parseMultiLineNetloc(String multilineURL, boolean includeIgnoreURL) {
+    public static String [] parseMultiLineTopURL(String multilineURL, boolean includeIgnoreURL) {
         List<String> urls = new java.util.ArrayList<>();
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
@@ -627,7 +627,7 @@ public final class HttpUtil {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
-                urls.add(HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol()));
+                urls.add(String.format("%s://%s/", url.getProtocol(), HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol())));
             } catch (MalformedURLException ex) {
                 if (includeIgnoreURL) urls.add(line);
             }

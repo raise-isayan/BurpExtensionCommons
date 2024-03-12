@@ -189,7 +189,7 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addNetlocIncludeScope(String multilineURL) {
-        String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
+        String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, false);
         for (String u : urls) {
             this.api.scope().includeInScope(u);
         }
@@ -201,7 +201,7 @@ public class ExtensionHelper {
      * @param multilineURL
      */
     public void addHostExcludeScope(String multilineURL) {
-        String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
+        String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, false);
         for (String u : urls) {
             this.api.scope().excludeFromScope(u);
         }
@@ -215,6 +215,27 @@ public class ExtensionHelper {
      */
     public void addIncludeTargetScope(String multilineURL, boolean ignoreExists) {
         String[] urls = HttpUtil.parseMultiLineURL(multilineURL, true);
+        addIncludeTargetScope(urls, ignoreExists);
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param multilineURL
+     * @param ignoreExists
+     */
+    public void addIncludeTopURLTargetScope(String multilineURL, boolean ignoreExists) {
+        String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, true);
+        addIncludeTargetScope(urls, ignoreExists);
+    }
+
+    /**
+     * Add Url To Include Scope
+     *
+     * @param urls
+     * @param ignoreExists
+     */
+    public void addIncludeTargetScope(String[] urls, boolean ignoreExists) {
         BurpConfig.TargetScope targetScope = BurpConfig.getTargetScope(this.api);
         List<BurpConfig.TargetScopeURL> targetURL = targetScope.getIncludeURL();
         List<BurpConfig.TargetScopeAdvance> targetAdvance = targetScope.getIncludeAdvance();
@@ -246,6 +267,16 @@ public class ExtensionHelper {
      */
     public void addExcludeTargetScope(String multilineURL, boolean ignoreExists) {
         String[] urls = HttpUtil.parseMultiLineURL(multilineURL, true);
+        addExcludeTargetScope(urls, ignoreExists);
+    }
+
+    /**
+     * Add Url To Exclude Scope
+     *
+     * @param urls
+     * @param ignoreExists
+     */
+    protected void addExcludeTargetScope(String[] urls, boolean ignoreExists) {
         BurpConfig.TargetScope targetScope = BurpConfig.getTargetScope(this.api);
         List<BurpConfig.TargetScopeURL> targetURL = targetScope.getExcludeURL();
         List<BurpConfig.TargetScopeAdvance> targetAdvance = targetScope.getExcludeAdvance();
@@ -268,6 +299,7 @@ public class ExtensionHelper {
         }
         BurpConfig.configTargetScope(this.api, targetScope);
     }
+
 
     /**
      * Message Info Copy

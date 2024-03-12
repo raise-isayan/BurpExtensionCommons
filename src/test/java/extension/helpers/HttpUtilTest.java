@@ -595,24 +595,24 @@ public class HttpUtilTest {
         }
         {
             String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
-            String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, true);
+            String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, true);
             assertEquals(6, urls.length);
-            assertEquals("www.example.com:8443", urls[0]);
-            assertEquals("www.example.co.jp", urls[1]);
-            assertEquals("www.example.co.jp:8080", urls[2]);
-            assertEquals("www.example.co.jp", urls[3]);
-            assertEquals("www.google.com", urls[4]);
+            assertEquals("https://www.example.com:8443/", urls[0]);
+            assertEquals("https://www.example.co.jp/", urls[1]);
+            assertEquals("http://www.example.co.jp:8080/", urls[2]);
+            assertEquals("http://www.example.co.jp/", urls[3]);
+            assertEquals("https://www.google.com/", urls[4]);
             assertEquals("localhost", urls[5]);
         }
         {
             String multilineURL = "https://www.example.com:8443\r\nhttps://www.example.co.jp:443\r\nhttp://www.example.co.jp:8080\nhttp://www.example.co.jp:80\rhttps://www.google.com/ localhost";
-            String[] urls = HttpUtil.parseMultiLineNetloc(multilineURL, false);
+            String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, false);
             assertEquals(5, urls.length);
-            assertEquals("www.example.com:8443", urls[0]);
-            assertEquals("www.example.co.jp", urls[1]);
-            assertEquals("www.example.co.jp:8080", urls[2]);
-            assertEquals("www.example.co.jp", urls[3]);
-            assertEquals("www.google.com", urls[4]);
+            assertEquals("https://www.example.com:8443/", urls[0]);
+            assertEquals("https://www.example.co.jp/", urls[1]);
+            assertEquals("http://www.example.co.jp:8080/", urls[2]);
+            assertEquals("http://www.example.co.jp/", urls[3]);
+            assertEquals("https://www.google.com/", urls[4]);
         }
     }
 

@@ -384,4 +384,14 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.hasParameters(type);
     }
 
+    @Override
+    public String query() {
+        return request.query();
+    }
+
+    @Override
+    public String fileExtension() {
+        return request.fileExtension();
+    }
+
 }

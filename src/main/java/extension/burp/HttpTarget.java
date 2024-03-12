@@ -1,8 +1,12 @@
 package extension.burp;
 
 import extension.helpers.HttpUtil;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -18,15 +22,21 @@ public class HttpTarget implements burp.api.montoya.http.HttpService {
     private String host;
     private int port;
     private boolean secure;
+    private String ipAddress;
 
     public HttpTarget(URL url) {
         this(url.getHost(), (url.getPort() > 0) ? url.getPort() : url.getDefaultPort(), isSecure(url.getProtocol()));
     }
 
     public HttpTarget(String host, int port, boolean secure) {
+        this(host, port, secure, null);
+    }
+
+    public HttpTarget(String host, int port, boolean secure, String ipAddress) {
         this.host = host;
         this.port = port;
         this.secure = secure;
+        this.ipAddress = ipAddress;
     }
 
     public static String toURLString(burp.api.montoya.http.HttpService httpService) {
@@ -74,6 +84,15 @@ public class HttpTarget implements burp.api.montoya.http.HttpService {
     @Override
     public boolean secure() {
         return this.secure;
+    }
+
+    @Override
+    public String ipAddress() {
+        try {
+            return InetAddress.getByName(this.host).getHostAddress();
+        } catch (UnknownHostException ex) {
+            return null;
+        }
     }
 
     public String getHost() {
