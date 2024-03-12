@@ -5,8 +5,6 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -88,10 +86,15 @@ public class HttpTarget implements burp.api.montoya.http.HttpService {
 
     @Override
     public String ipAddress() {
-        try {
-            return InetAddress.getByName(this.host).getHostAddress();
-        } catch (UnknownHostException ex) {
-            return null;
+        if (this.ipAddress != null) {
+            return this.ipAddress;
+        }
+        else {
+            try {
+                return InetAddress.getByName(this.host).getHostAddress();
+            } catch (UnknownHostException ex) {
+                return null;
+            }
         }
     }
 
