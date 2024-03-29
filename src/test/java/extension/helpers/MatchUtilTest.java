@@ -310,6 +310,31 @@ public class MatchUtilTest {
     }
 
     @Test
+    public void testNotContainsCreditCard() {
+        System.out.println("notContainsCreditCard");
+        {
+            boolean result = MatchUtil.containsCreditCard("a4111111111111111z", true);
+            assertFalse(result);
+        }
+        {
+            boolean result = MatchUtil.containsCreditCard("4111111111111111", true);
+            assertTrue(result);
+        }
+        {
+            boolean result = MatchUtil.containsCreditCard("abc\n4111111111111111\nxyz", true);
+            assertTrue(result);
+        }
+        {
+            boolean result = MatchUtil.containsCreditCard("abc\n4111111111111111z", true);
+            assertFalse(result);
+        }
+        {
+            boolean result = MatchUtil.containsCreditCard("a4111111111111111\nxyz", true);
+            assertFalse(result);
+        }
+    }
+
+    @Test
     public void testIsLuhnChecksum() {
         System.out.println("isLuhnChecksum");
         {

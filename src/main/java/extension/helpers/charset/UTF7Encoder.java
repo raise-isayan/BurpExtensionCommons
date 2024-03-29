@@ -37,6 +37,7 @@ public class UTF7Encoder extends CharsetEncoder {
     /* (non-Javadoc)
 	 * @see java.nio.charset.CharsetEncoder#implReset()
      */
+    @Override
     protected void implReset() {
         base64mode = false;
         sextet = 0;
@@ -61,6 +62,7 @@ public class UTF7Encoder extends CharsetEncoder {
      * @param out The output byte buffer
      * @return A coder-result object describing the reason for termination
      */
+    @Override
     protected CoderResult implFlush(ByteBuffer out) {
         if (base64mode) {
             if (out.remaining() < 2) {
@@ -101,6 +103,7 @@ public class UTF7Encoder extends CharsetEncoder {
      * @param out The output byte buffer
      * @return A coder-result object describing the reason for termination
      */
+    @Override
     protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
         while (in.hasRemaining()) {
             if (out.remaining() < 4) {

@@ -37,6 +37,7 @@ public class UTF7Charset extends Charset {
     /* (non-Javadoc)
 	 * @see java.nio.charset.Charset#contains(java.nio.charset.Charset)
      */
+    @Override
     public boolean contains(final Charset cs) {
         return CONTAINED.contains(cs.name());
     }
@@ -44,6 +45,7 @@ public class UTF7Charset extends Charset {
     /* (non-Javadoc)
 	 * @see java.nio.charset.Charset#newDecoder()
      */
+    @Override
     public CharsetDecoder newDecoder() {
         return new UTF7Decoder(this);
     }
@@ -51,6 +53,7 @@ public class UTF7Charset extends Charset {
     /* (non-Javadoc)
 	 * @see java.nio.charset.Charset#newEncoder()
      */
+    @Override
     public CharsetEncoder newEncoder() {
         return new UTF7Encoder(this);
     }

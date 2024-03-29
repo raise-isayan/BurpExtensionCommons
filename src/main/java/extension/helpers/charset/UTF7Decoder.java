@@ -27,6 +27,7 @@ public class UTF7Decoder extends CharsetDecoder {
     /* (non-Javadoc)
 	 * @see java.nio.charset.CharsetDecoder#decodeLoop(java.nio.ByteBuffer, java.nio.CharBuffer)
      */
+    @Override
     protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
         while (in.hasRemaining()) {
             byte b = in.get();
@@ -118,6 +119,7 @@ public class UTF7Decoder extends CharsetDecoder {
     /* (non-Javadoc)
 	 * @see java.nio.charset.CharsetDecoder#implFlush(java.nio.CharBuffer)
      */
+    @Override
     protected CoderResult implFlush(CharBuffer out) {
         if ((base64mode && strict) || base64bitsWaiting()) {
             return CoderResult.malformedForLength(1);
@@ -128,6 +130,7 @@ public class UTF7Decoder extends CharsetDecoder {
     /* (non-Javadoc)
 	 * @see java.nio.charset.CharsetDecoder#implReset()
      */
+    @Override
     protected void implReset() {
         setUnshifted();
         justUnshifted = false;
