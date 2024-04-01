@@ -226,6 +226,21 @@ public class HttpMessageWapper implements HttpMessage {
         return result;
     }
 
+    public String getMessageString(String charset) throws UnsupportedEncodingException {
+        String messageString = StringUtil.getStringCharset(this.toByteArray().getBytes(), charset);
+        return messageString;
+    }
+
+    public String getMessageString(Charset charset) {
+        String messageString = StringUtil.getStringCharset(this.toByteArray().getBytes(), charset);
+        return messageString;
+    }
+
+    public byte [] getMessageByte(String charset) throws UnsupportedEncodingException {
+        byte [] messageByte = this.toByteArray().getBytes();
+        return messageByte;
+    }
+
     public String getBodyString(String charset, boolean smartDecode) throws UnsupportedEncodingException {
         String body = StringUtil.getStringCharset(this.body().getBytes(), charset);
         if (smartDecode) {
