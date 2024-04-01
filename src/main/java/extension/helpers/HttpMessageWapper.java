@@ -236,7 +236,7 @@ public class HttpMessageWapper implements HttpMessage {
         return messageString;
     }
 
-    public byte [] getMessageByte(String charset) throws UnsupportedEncodingException {
+    public byte [] getMessageByte() throws UnsupportedEncodingException {
         byte [] messageByte = this.toByteArray().getBytes();
         return messageByte;
     }
