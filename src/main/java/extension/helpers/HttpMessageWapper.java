@@ -236,7 +236,7 @@ public class HttpMessageWapper implements HttpMessage {
         return messageString;
     }
 
-    public byte [] getMessageByte() throws UnsupportedEncodingException {
+    public byte [] getMessageByte() {
         byte [] messageByte = this.toByteArray().getBytes();
         return messageByte;
     }
@@ -257,6 +257,10 @@ public class HttpMessageWapper implements HttpMessage {
             body = SmartCodec.toHtmlDecode(body, SmartCodec.ENCODE_PATTERN_ASCII);
         }
         return body;
+    }
+
+    public byte [] getBodyByte() {
+        return this.body().getBytes();
     }
 
     @Override
