@@ -68,7 +68,7 @@ public class SignatureItemTest {
         applyRequestMarkers.add(Marker.marker(312, 790));
         applyRequestMarkers.add(Marker.marker(-1, -1));
         applyRequestMarkers.add(Marker.marker(2017, 4790));
-        SignatureScanBase.markerSortOrder(applyRequestMarkers, applyResponseMarkers);
+        ScanGenerate.markerSortOrder(applyRequestMarkers, applyResponseMarkers);
         for (int i = 0; i < applyRequestMarkers.size(); i++) {
             Marker pos = applyRequestMarkers.get(i);
             System.out.println("reqst:" + pos.range().startIndexInclusive() + "\treqed:" + pos.range().endIndexExclusive());
@@ -82,7 +82,7 @@ public class SignatureItemTest {
 
         System.out.println("========");
         {
-            List<Marker> applyUnionReuestMarkers = SignatureScanBase.markerUnionRegion(applyRequestMarkers);
+            List<Marker> applyUnionReuestMarkers = ScanGenerate.markerUnionRegion(applyRequestMarkers);
             Marker pre_pos = null;
             for (int i = 0; i < applyUnionReuestMarkers.size(); i++) {
                 Marker pos = applyUnionReuestMarkers.get(i);
@@ -94,7 +94,7 @@ public class SignatureItemTest {
             }
         }
         {
-            List<Marker> applyUnionResponseMarkers = SignatureScanBase.markerUnionRegion(applyResponseMarkers);
+            List<Marker> applyUnionResponseMarkers = ScanGenerate.markerUnionRegion(applyResponseMarkers);
             Marker pre_pos = null;
             for (int i = 0; i < applyUnionResponseMarkers.size(); i++) {
                 Marker pos = applyUnionResponseMarkers.get(i);

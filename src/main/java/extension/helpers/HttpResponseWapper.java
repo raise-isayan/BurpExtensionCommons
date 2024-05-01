@@ -30,6 +30,10 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
         this.response = response;
     }
 
+    public boolean hasHttpResponse() {
+        return this.response != null;
+    }
+
     @Override
     public short statusCode() {
         return response.statusCode();

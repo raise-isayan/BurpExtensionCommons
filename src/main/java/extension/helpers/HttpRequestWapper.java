@@ -29,6 +29,10 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         this.request = request;
     }
 
+    public boolean hasHttpRequest() {
+        return this.request != null;
+    }
+
     @Override
     public HttpService httpService() {
         return request.httpService();

@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -467,32 +468,135 @@ public class ConvertUtilTest {
     }
 
     /**
-     *
-     * public static long bytesToLong(final byte[] bytes, ByteOrder byteOrder) {
-     * ByteBuffer buf = ByteBuffer.allocate(Long.SIZE/Byte.SIZE);
-     * buf.order(byteOrder); if (byteOrder == ByteOrder.LITTLE_ENDIAN)
-     * buf.put(bytes); for (int i = bytes.length; i < Long.SIZE/Byte.SIZE; i++)
-     * { buf.put((byte)0); } if (byteOrder == ByteOrder.BIG_ENDIAN)
-     * buf.put(bytes); buf.position(0); return buf.getLong(); }
-     *
-     * public static byte []longToBytes(final long value, ByteOrder byteOrder) {
-     * ByteBuffer buf = ByteBuffer.allocate(Long.SIZE/Byte.SIZE);
-     * buf.order(byteOrder); buf.putLong(value); int pos = 0; if (byteOrder ==
-     * ByteOrder.BIG_ENDIAN) { byte [] array = buf.array(); for (int i = 0; i < array.length; i++) {
-     * if (array[i] != 0) {
-     * pos = i;
-     * break;
-     * }
-     * }
-     *
-     * }
-     * buf.position(pos);
-     * int limit = buf.array().length;
-     * if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-     * byte [] array = buf.array();
-     * for (int i = array.length; i > 0; i--) { if (array[i-1] != 0) { limit =
-     * i; break; } } } buf.limit(limit); byte [] b = new byte[buf.remaining()];
-     * buf.get(b); return b; }
-     *
+     * Test of decode/encode/StandardLangMeta method, of class TransUtil.
      */
+    @Test
+    public void testStandardLangMeta() {
+        System.out.println("decode/encode/StandardLangMeta");
+        assertEquals("a\tb\rc\nd", ConvertUtil.decodeStandardLangMeta("a\\tb\\rc\\nd"));
+        assertEquals("a\\b\\c\\\\d", ConvertUtil.decodeStandardLangMeta("a\\b\\c\\\\d"));
+        assertEquals("a\\tb\\rc\\nd", ConvertUtil.encodeStandardLangMeta("a\tb\rc\nd"));
+        assertEquals("a\\\\d", ConvertUtil.encodeStandardLangMeta("a\\\\d"));
+    }
+
+    /**
+     * Test of decode/encode/StandardLangMeta method, of class TransUtil.
+     */
+    @Test
+    public void testJsonMeta() {
+        System.out.println("decode/encode/testJsonMeta");
+        assertEquals("a\tb\rc\nd", ConvertUtil.decodeJsonLiteral("a\\tb\\rc\\nd", true));
+        assertEquals("a\b\\c\\d", ConvertUtil.decodeJsonLiteral("a\\b\\c\\\\d", true));
+        assertEquals("a\\tb\\rc\\nd", ConvertUtil.encodeJsonLiteral("a\tb\rc\nd", true));
+        assertEquals("a\\\\\\\\d", ConvertUtil.encodeJsonLiteral("a\\\\d", true));
+
+        assertEquals("test\\/\\r\\n\\t\\b\\f\\\"\\\\u0027testu0027", ConvertUtil.encodeJsonLiteral("test/\r\n\t\b\f\"\\u0027testu0027", true));
+        assertEquals("test/\r\n\t\b\f\"\\u0027testu0027", ConvertUtil.decodeJsonLiteral("test\\/\\r\\n\\t\\b\\f\\\"\\\\u0027testu0027", true));
+    }
+
+    /**
+     * Test of encodeJsLangMeta,decodeJsLangMeta method, of class TransUtil.
+     */
+    @Test
+    public void testJsLangMeta() {
+        System.out.println("JsLangMeta");
+        assertEquals("abc\rdef\nghi\tfgh\\IJK", ConvertUtil.decodeJsLangMeta("abc\\rdef\\nghi\\tfgh\\\\IJK"));
+        assertEquals("abc" + Character.toString((char) 0x08) + "def" + Character.toString((char) 0x0c) + "ghi" + Character.toString((char) 0x0b) + "IJK", ConvertUtil.decodeJsLangMeta("abc\\bdef\\fghi\\vIJK"));
+        assertEquals("abcdefghi\tIJK", ConvertUtil.decodeJsLangMeta("\\x61bcdefghi\\x09I\\x4A\\x4b"));
+        assertEquals("abcdefghi\tIJK", ConvertUtil.decodeJsLangMeta("\\u0061bcdefghi\\u0009I\\u004A\\u004b"));
+        assertEquals("あいうえお", ConvertUtil.decodeJsLangMeta("\\u3042\\u3044\\u3046\\u3048\\u304a"));
+        assertEquals("あ\r\nいうえお", ConvertUtil.decodeJsLangMeta("\\u3042\\r\\n\\u3044\\u3046\\u3048\\u304a"));
+        // regexp
+        assertEquals("\\$1", Matcher.quoteReplacement(ConvertUtil.decodeJsLangMeta("$1")));
+        assertEquals("\\\\\\$1", Matcher.quoteReplacement(ConvertUtil.decodeJsLangMeta("\\$1")));
+        assertEquals("\r\\\\\\$1", Matcher.quoteReplacement(ConvertUtil.decodeJsLangMeta("\\r\\$1")));
+    }
+
+    /**
+     * Test of encodeJsLangQuote,decodeJsLangQuote method, of class TransUtil.
+     */
+    @Test
+    public void testJsLangQuote() {
+        System.out.println("testJsLangQuote");
+        assertEquals("host", ConvertUtil.encodeJsLangQuote("host", false));
+        assertEquals("\\\\123\\\"456\\\\", ConvertUtil.encodeJsLangQuote("\\123\"456\\", false));
+        assertEquals("\\\\123\\\'456\\\\", ConvertUtil.encodeJsLangQuote("\\123'456\\", false));
+
+        assertEquals("host", ConvertUtil.decodeJsLangQuote("host", false));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeJsLangQuote("\\\\123\\\"456\\\\", false));
+        assertEquals("\\123\'456\\", ConvertUtil.decodeJsLangQuote("\\\\123\\\'456\\\\", false));
+
+        // metachar
+        assertEquals("\\r\\nhost\\t", ConvertUtil.encodeJsLangQuote("\r\nhost\t", true));
+        assertEquals("ho\\\\st", ConvertUtil.encodeJsLangQuote("ho\\st", true));
+        assertEquals("\\\\123\\\"456\\\\", ConvertUtil.encodeJsLangQuote("\\123\"456\\", true));
+        assertEquals("\\\\123\\\'456\\\\", ConvertUtil.encodeJsLangQuote("\\123'456\\", true));
+
+        assertEquals("\r\nhost\t", ConvertUtil.decodeJsLangQuote("\\r\\nhost\\t", true));
+        assertEquals("ho\\st", ConvertUtil.decodeJsLangQuote("ho\\\\st", true));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeJsLangQuote("\\\\123\\\"456\\\\", true));
+        assertEquals("\\123\'456\\", ConvertUtil.decodeJsLangQuote("\\\\123\\\'456\\\\", true));
+    }
+
+    /**
+     * Test of encodeCLangQuote,decodeCLangQuote method, of class TransUtil.
+     */
+    @Test
+    public void testCLangQuote() {
+        System.out.println("testCLangQuote");
+        assertEquals("host", ConvertUtil.encodeCLangQuote("host", false));
+        assertEquals("\\\\123\\\"456\\\\", ConvertUtil.encodeCLangQuote("\\123\"456\\", false));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.encodeCLangQuote("\\123'456\\", false));
+
+        assertEquals("host", ConvertUtil.decodeCLangQuote("host", false));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeCLangQuote("\\\\123\\\"456\\\\", false));
+        assertEquals("\\123'456\\", ConvertUtil.decodeCLangQuote("\\\\123'456\\\\", false));
+
+        // metachar
+        assertEquals("\\r\\nhost\\t", ConvertUtil.encodeCLangQuote("\r\nhost\t", true));
+        assertEquals("ho\\\\st", ConvertUtil.encodeCLangQuote("ho\\st", true));
+        assertEquals("\\\\123\\\"456\\\\", ConvertUtil.encodeCLangQuote("\\123\"456\\", true));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.encodeCLangQuote("\\123'456\\", true));
+
+        assertEquals("\r\nhost\t", ConvertUtil.decodeCLangQuote("\\r\\nhost\\t", true));
+        assertEquals("ho\\st", ConvertUtil.decodeCLangQuote("ho\\\\st", true));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeCLangQuote("\\\\123\\\"456\\\\", true));
+        assertEquals("\\123'456\\", ConvertUtil.decodeCLangQuote("\\\\123'456\\\\", true));
+    }
+
+    /**
+     * Test of encodeSQLLangQuote,decodeSQLLangQuote method, of class TransUtil.
+     */
+    @Test
+    public void testSQLLangQuote() {
+        System.out.println("testSQLLangQuote");
+        assertEquals("host", ConvertUtil.encodeSQLLangQuote("host", false));
+        assertEquals("ho\\st", ConvertUtil.encodeSQLLangQuote("ho\\st", false));
+        assertEquals("\\123''456\\", ConvertUtil.encodeSQLLangQuote("\\123'456\\", false));
+        assertEquals("\\123\"456\\", ConvertUtil.encodeSQLLangQuote("\\123\"456\\", false));
+
+        // metachar
+        assertEquals("\\r\\nhost\\t", ConvertUtil.encodeSQLLangQuote("\r\nhost\t", true));
+        assertEquals("ho\\st", ConvertUtil.encodeSQLLangQuote("ho\\st", true));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLangQuote("\\\\123''456\\\\", true));
+        assertEquals("\\123\"456\\", ConvertUtil.encodeSQLLangQuote("\\123\"456\\", true));
+
+        assertEquals("\r\nhost\t", ConvertUtil.decodeSQLangQuote("\\r\\nhost\\t", true));
+        assertEquals("ho\\st", ConvertUtil.decodeSQLangQuote("ho\\st", true));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLangQuote("\\\\123''456\\\\", true));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeSQLangQuote("\\123\"456\\", true));
+    }
+
+        @Test
+    public void testToRegexEncodeDecode() {
+        System.out.println("testToRegexEncode");
+        String expValue = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+        {
+            String regex = ConvertUtil.toRegexEncode(expValue, false);
+            Pattern ptn = Pattern.compile(regex);
+            String expResult = ConvertUtil.toRegexDecode(regex, false);
+            assertEquals(expResult, expValue);
+        }
+    }
+
 }

@@ -24,7 +24,6 @@ public class HttpMessageWapper implements HttpMessage {
     public final String PROTOCOL_HTTP_1_1 = "HTTP/1.1";
     public final String PROTOCOL_HTTP_2 = "HTTP/2";
 
-
     public enum ContentMimeType {
         JAVA_SCRIPT, JSON, XML, HTML
     };
@@ -33,6 +32,10 @@ public class HttpMessageWapper implements HttpMessage {
 
     public HttpMessageWapper(HttpMessage message) {
         this.message = message;
+    }
+
+    public boolean hasHttpMessage() {
+        return this.message != null;
     }
 
     @Override

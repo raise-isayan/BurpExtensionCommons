@@ -3,14 +3,12 @@ package extension.burp.scanner;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import javax.swing.event.EventListenerList;
 import burp.api.montoya.core.Marker;
 import burp.api.montoya.core.Range;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.scanner.ScanCheck;
-import burp.api.montoya.scanner.audit.issues.AuditIssue;
 
 /**
  *
@@ -27,10 +25,6 @@ public class SignatureScanBase<M extends IssueItem> {
 
     public String getIssueName() {
         return issueName;
-    }
-
-    public AuditIssue makeScanIssue(HttpRequestResponse messageInfo, List<M> issueItem) {
-        return null;
     }
 
     public ScanCheck passiveScanCheck() {
@@ -61,88 +55,6 @@ public class SignatureScanBase<M extends IssueItem> {
             baseRequestResponse = baseRequestResponse.withResponseMarkers(responseMarkers);
         }
         return baseRequestResponse;
-    }
-
-    private final static Comparator<Range> COMPARE_RANGE = new Comparator<>() {
-        @Override
-        public int compare(Range o1, Range o2) {
-            if ((o1 == null || o2 == null)) {
-                return 0;
-            }
-            int cmp = Integer.compare(o1.startIndexInclusive(), o2.startIndexInclusive());
-            if (cmp == 0) {
-                return Integer.compare(o2.endIndexExclusive(), o1.endIndexExclusive());
-            } else {
-                return cmp;
-            }
-        }
-    };
-
-    private final static Comparator<Marker> COMPARE_MARKER = new Comparator<>() {
-        @Override
-        public int compare(Marker o1, Marker o2) {
-            if ((o1 == null || o2 == null)) {
-                return 0;
-            }
-            int cmp = Integer.compare(o1.range().startIndexInclusive(), o2.range().startIndexInclusive());
-            if (cmp == 0) {
-                return Integer.compare(o2.range().endIndexExclusive(), o1.range().endIndexExclusive());
-            } else {
-                return cmp;
-            }
-        }
-    };
-
-    protected static void rangeSortOrder(List<Range> applyRequestMarkers, List<Range> applyResponseMarkers) {
-        // ソートする
-        if (applyRequestMarkers != null) {
-            applyRequestMarkers.sort(COMPARE_RANGE);
-        }
-        if (applyResponseMarkers != null) {
-            applyResponseMarkers.sort(COMPARE_RANGE);
-        }
-    }
-
-    protected static void markerSortOrder(List<Marker> applyRequestMarkers, List<Marker> applyResponseMarkers) {
-        // ソートする
-        if (applyRequestMarkers != null) {
-            applyRequestMarkers.sort(COMPARE_MARKER);
-        }
-        if (applyResponseMarkers != null) {
-            applyResponseMarkers.sort(COMPARE_MARKER);
-        }
-    }
-
-    protected static List<Range> rangeUnionRegion(List<Range> markers) {
-        // 領域が重なってる場合に除外
-        // A の領域のなかに B が一部でも含まれる場合にはBを含めない
-        List<Range> regions = new ArrayList<>();
-        NEXT:
-        for (Range mark : markers) {
-            for (Range reg : regions) {
-                if (reg.startIndexInclusive() <= mark.startIndexInclusive() && mark.startIndexInclusive() <= reg.endIndexExclusive()) {
-                    continue NEXT;
-                }
-            }
-            regions.add(mark);
-        }
-        return regions;
-    }
-
-    protected static List<Marker> markerUnionRegion(List<Marker> markers) {
-        // 領域が重なってる場合に除外
-        // A の領域のなかに B が一部でも含まれる場合にはBを含めない
-        List<Marker> regions = new ArrayList<>();
-        NEXT:
-        for (Marker mark : markers) {
-            for (Marker reg : regions) {
-                if (reg.range().startIndexInclusive() <= mark.range().startIndexInclusive() && mark.range().startIndexInclusive() <= reg.range().endIndexExclusive()) {
-                    continue NEXT;
-                }
-            }
-            regions.add(mark);
-        }
-        return regions;
     }
 
     private final EventListenerList propertyChangeList = new EventListenerList();
