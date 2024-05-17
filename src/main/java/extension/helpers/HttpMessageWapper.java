@@ -214,16 +214,16 @@ public class HttpMessageWapper implements HttpMessage {
         boolean result = false;
         switch (contentMimeType) {
             case JAVA_SCRIPT:
-                result = mimeType.equalsIgnoreCase("text/javascript") || mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("application/x-javascript");
+                result = mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("text/javascript")  || mimeType.equalsIgnoreCase("text/x-javascript") || mimeType.equalsIgnoreCase("application/x-javascript");
                 break;
             case JSON:
-                result = mimeType.equalsIgnoreCase("application/json") || mimeType.equalsIgnoreCase("application/javascript");
+                result = mimeType.equalsIgnoreCase("application/json") || mimeType.equalsIgnoreCase("text/json");
                 break;
             case XML:
                 result = mimeType.equalsIgnoreCase("application/xml") || mimeType.equalsIgnoreCase("text/xml");
                 break;
             case HTML:
-                result = mimeType.equalsIgnoreCase("text/html");
+                result = mimeType.equalsIgnoreCase("text/html") || mimeType.equalsIgnoreCase("application/xhtml+xml");
                 break;
         }
         return result;

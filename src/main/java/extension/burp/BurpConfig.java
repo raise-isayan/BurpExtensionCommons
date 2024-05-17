@@ -649,7 +649,7 @@ public class BurpConfig {
 
     public static class SSLPassThroughRule {
 
-        public SSLPassThroughRule(boolean enabled, String host, int port) {
+        public SSLPassThroughRule(boolean enabled, String host, String port) {
             this.enabled = enabled;
             this.host = host;
             this.port = port;
@@ -660,7 +660,7 @@ public class BurpConfig {
         @Expose
         private String host = "";
         @Expose
-        private int port;
+        private String port;
         @Expose
         private String protocol = "any";
 
@@ -695,14 +695,14 @@ public class BurpConfig {
         /**
          * @return the port
          */
-        public int getPort() {
+        public String getPort() {
             return this.port;
         }
 
         /**
          * @param port the port to set
          */
-        public void setPort(int port) {
+        public void setPort(String port) {
             this.port = port;
         }
 
@@ -1271,7 +1271,7 @@ public class BurpConfig {
 
         public static TargetScopeAdvance parseTargetURL(String url_string) throws MalformedURLException {
             URL url = HttpUtil.toURL(new URL(url_string));
-            return new TargetScopeAdvance(true, url.getProtocol(), escapeURL(url.getHost()), escapeURL(Integer.toString(url.getPort())), escapePath(url.getPath()));
+            return new TargetScopeAdvance(true, url.getProtocol(), BurpUtil.escapeRegex(url.getHost()), BurpUtil.escapeRegex(Integer.toString(url.getPort())), BurpUtil.escapeRegexPath(url.getPath()));
         }
 
         public TargetScopeAdvance(boolean enabled, String protocol, String host, String port, String file) {
@@ -1350,40 +1350,6 @@ public class BurpConfig {
          */
         public void setProtocol(String protocol) {
             this.protocol = protocol;
-        }
-
-        /*
-         *
-         */
-        public static String escapeURL(String url) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("^");
-            for (int i = 0; i < url.length(); i = url.offsetByCodePoints(i, 1)) {
-                int codePoint = url.codePointAt(i);
-                if ('.' == (char) codePoint) {
-                    builder.append('\\');
-                }
-                builder.appendCodePoint(codePoint);
-            }
-            builder.append("$");
-            return builder.toString();
-        }
-
-        public static String escapePath(String path) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("^");
-            for (int i = 0; i < path.length(); i = path.offsetByCodePoints(i, 1)) {
-                int codePoint = path.codePointAt(i);
-                if ('.' == (char) codePoint) {
-                    builder.append('\\');
-                }
-                builder.appendCodePoint(codePoint);
-            }
-            if (!path.endsWith("/")) {
-                builder.append("/");
-            }
-            builder.append(".*");
-            return builder.toString();
         }
 
         @Override

@@ -157,7 +157,7 @@ public class BurpConfigTest {
             String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
             {
                 List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
-                rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", 443));
+                rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", "443"));
                 System.out.println("loadConfig:" + config);
                 String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules);
                 System.out.println("updateConfig:" + updateConfig);
@@ -170,7 +170,8 @@ public class BurpConfigTest {
                 List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
                 for (URL u : urls) {
                     System.out.println("url:" + u.toExternalForm());
-                    rules.add(new BurpConfig.SSLPassThroughRule(true, u.getHost(), u.getPort() > 0 ? u.getPort() : u.getDefaultPort()));
+                    int port = u.getPort() > 0 ? u.getPort() : u.getDefaultPort();
+                    rules.add(new BurpConfig.SSLPassThroughRule(true, u.getHost(), StringUtil.toString(port)));
                 }
                 String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules, false);
                 System.out.println("updateConfig2:" + updateConfig);

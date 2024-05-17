@@ -212,6 +212,40 @@ public class BurpUtil {
         }
     }
 
+    /*
+     *
+     */
+    public static String escapeRegex(String url) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("^");
+        for (int i = 0; i < url.length(); i = url.offsetByCodePoints(i, 1)) {
+            int codePoint = url.codePointAt(i);
+            if ('.' == (char) codePoint) {
+                builder.append('\\');
+            }
+            builder.appendCodePoint(codePoint);
+        }
+        builder.append("$");
+        return builder.toString();
+    }
+
+    public static String escapeRegexPath(String path) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("^");
+        for (int i = 0; i < path.length(); i = path.offsetByCodePoints(i, 1)) {
+            int codePoint = path.codePointAt(i);
+            if ('.' == (char) codePoint) {
+                builder.append('\\');
+            }
+            builder.appendCodePoint(codePoint);
+        }
+        if (!path.endsWith("/")) {
+            builder.append("/");
+        }
+        builder.append(".*");
+        return builder.toString();
+    }
+
     public static class HttpHandlerAdapter implements HttpHandler {
 
         @Override

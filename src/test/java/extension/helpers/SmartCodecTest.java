@@ -47,9 +47,16 @@ public class SmartCodecTest {
      */
     @Test
     public void testToHtmlEncode() {
-        System.out.println("toHtmlEncode");
+        System.out.println("testHtmlEncode");
         assertEquals("!&quot;#$%&amp;'()=~|`{}*+&lt;&gt;?_\\\r\nabcedf", HttpUtil.toHtmlEncode("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf"));
     }
+
+    @Test
+    public void testSmartCodecHtmlDecode() {
+        System.out.println("testSmartCodecHtmlDecode");
+        assertEquals("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", SmartCodec.toHtmlDecode("!&quot;#$%&amp;'()=~|`{}*+&lt;&gt;?_\\\r\nabcedf"));
+    }
+
 
     /**
      * Test of toHtmlDecode method, of class TransUtil.
