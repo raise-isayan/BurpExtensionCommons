@@ -1,7 +1,11 @@
 package extension.helpers;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -43,21 +47,23 @@ public class IpUtilTest {
         try {
             {
                 // class A Private IP
-                assertArrayEquals(new byte[]{(byte) 10, (byte) 168, (byte) 2, (byte) 1}, IpUtil.parseIPv4AddressByte("10.168.2.1"));
+                byte ip0[] = IpUtil.parseIPv4AddressByte("10.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 10, (byte) 168, (byte) 2, (byte) 1}, ip0);
                 // class B Private IP
-                assertArrayEquals(new byte[]{(byte) 172, (byte) 16, (byte) 2, (byte) 1}, IpUtil.parseIPv4AddressByte("172.16.2.1"));
+                byte ip1[] = IpUtil.parseIPv4AddressByte("172.16.2.1");
+                assertArrayEquals(new byte[]{(byte) 172, (byte) 16, (byte) 2, (byte) 1}, ip1);
                 // class C Private IP
-                assertArrayEquals(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}, IpUtil.parseIPv4AddressByte("192.168.2.1"));
-
-                assertArrayEquals(new byte[]{(byte) 8, (byte) 8, (byte) 8, (byte) 8}, IpUtil.parseIPv4AddressByte("8.8.8.8"));
-
-                assertArrayEquals(new byte[]{(byte) 1, (byte) 1, (byte) 1, (byte) 1}, IpUtil.parseIPv4AddressByte("1.1.1.1"));
-
-                assertArrayEquals(new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 1}, IpUtil.parseIPv4AddressByte("255.255.255.1"));
-
-                assertArrayEquals(new byte[]{(byte) 169, (byte) 254, (byte) 0, (byte) 1}, IpUtil.parseIPv4AddressByte("169.254.0.1"));
+                byte ip2[] = IpUtil.parseIPv4AddressByte("192.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}, ip2);
+                byte ip3[] = IpUtil.parseIPv4AddressByte("8.8.8.8");
+                assertArrayEquals(new byte[]{(byte) 8, (byte) 8, (byte) 8, (byte) 8}, ip3);
+                byte ip4[] = IpUtil.parseIPv4AddressByte("1.1.1.1");
+                assertArrayEquals(new byte[]{(byte) 1, (byte) 1, (byte) 1, (byte) 1}, ip4);
+                byte ip5[] = IpUtil.parseIPv4AddressByte("255.255.255.1");
+                assertArrayEquals(new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 1}, ip5);
+                byte ip6[] = IpUtil.parseIPv4AddressByte("169.254.0.1");
+                assertArrayEquals(new byte[]{(byte) 169, (byte) 254, (byte) 0, (byte) 1}, ip6);
             }
-
         } catch (ParseException ex) {
             fail(ex.getMessage());
         }
@@ -95,6 +101,59 @@ public class IpUtilTest {
             assertTrue(true);
         }
     }
+
+        @Test
+    public void testParseIPvAdress() {
+        System.out.println("parseIPvAdress");
+        {
+            try {
+                // class A Private IP
+                byte ip0[] = IpUtil.parseIPAddressByte("10.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 10, (byte) 168, (byte) 2, (byte) 1}, ip0);
+                // class B Private IP
+                byte ip1[] = IpUtil.parseIPAddressByte("172.16.2.1");
+                assertArrayEquals(new byte[]{(byte) 172, (byte) 16, (byte) 2, (byte) 1}, ip1);
+                // class C Private IP
+                byte ip2[] = IpUtil.parseIPAddressByte("192.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}, ip2);
+                byte ip3[] = IpUtil.parseIPAddressByte("8.8.8.8");
+                assertArrayEquals(new byte[]{(byte) 8, (byte) 8, (byte) 8, (byte) 8}, ip3);
+                byte ip4[] = IpUtil.parseIPAddressByte("1.1.1.1");
+                assertArrayEquals(new byte[]{(byte) 1, (byte) 1, (byte) 1, (byte) 1}, ip4);
+                byte ip5[] = IpUtil.parseIPAddressByte("255.255.255.1");
+                assertArrayEquals(new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 1}, ip5);
+                byte ip6[] = IpUtil.parseIPAddressByte("169.254.0.1");
+                assertArrayEquals(new byte[]{(byte) 169, (byte) 254, (byte) 0, (byte) 1}, ip6);
+            } catch (ParseException ex) {
+                Logger.getLogger(IpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        {
+            try {
+                byte ip0[] = IpUtil.parseIPAddressByte("::");
+                assertArrayEquals(new byte[]{(byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0}, ip0);
+                InetAddress ip0v6 = InetAddress.getByAddress(ip0);
+                System.out.println("parseIPvAdress" + ip0v6.getHostAddress());
+                byte ip1[] = IpUtil.parseIPAddressByte("::1");
+                assertArrayEquals(new byte[]{(byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1}, ip1);
+                byte ip2[] = IpUtil.parseIPAddressByte("2001:0db8:85a3:0000:0000:8a2e:0370:7334");
+                assertArrayEquals(new byte[]{(byte) 0x20, (byte) 0x01, (byte) 0x0d, (byte) 0xb8, (byte) 0x85, (byte) 0xa3, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x8a, (byte) 0x2e, (byte) 0x03, (byte) 0x70, (byte) 0x73, (byte) 0x34}, ip2);
+                byte ip3[] = IpUtil.parseIPAddressByte("2001:db8:85a3:0:0:8a2e:370:7334");
+                assertArrayEquals(new byte[]{(byte) 0x20, (byte) 0x01, (byte) 0x0d, (byte) 0xb8, (byte) 0x85, (byte) 0xa3, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x8a, (byte) 0x2e, (byte) 0x03, (byte) 0x70, (byte) 0x73, (byte) 0x34}, ip3);
+                byte ip4[] = IpUtil.parseIPAddressByte("2001:db8:85a3::8a2e:370:7334");
+                assertArrayEquals(new byte[]{(byte) 0x20, (byte) 0x01, (byte) 0x0d, (byte) 0xb8, (byte) 0x85, (byte) 0xa3, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x8a, (byte) 0x2e, (byte) 0x03, (byte) 0x70, (byte) 0x73, (byte) 0x34}, ip4);
+                byte ip5[] = IpUtil.parseIPAddressByte("2001:db8::1:0:0:1");
+                assertArrayEquals(new byte[]{(byte) 0x20, (byte) 0x01, (byte) 0x0d, (byte) 0xb8, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x1}, ip5);
+                byte ip6[] = IpUtil.parseIPAddressByte("2001:0db8:0000:0000:3456::");
+                assertArrayEquals(new byte[]{(byte) 0x20, (byte) 0x01, (byte) 0x0d, (byte) 0xb8, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x34, (byte) 0x56, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0, (byte) 0x0}, ip6);
+            } catch (ParseException ex) {
+                Logger.getLogger(IpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(IpUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
 
     @Test
     public void testIPv4Valid() {

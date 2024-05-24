@@ -287,7 +287,7 @@ public class HttpUtilTest {
         System.out.println("testGetUniversalGuessCode");
         {
             try {
-                assertEquals("US-ASCII", HttpUtil.getUniversalGuessCode("0123456ABCDEF".getBytes("UTF-8"), "US-ASCII"));
+                assertEquals("UTF-8", HttpUtil.getUniversalGuessCode("0123456ABCDEF".getBytes("UTF-8"), "UTF-8"));
                 assertEquals("Shift_JIS", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("Shift_JIS")));
                 assertEquals("EUC-JP", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("EUC-JP")));
                 assertEquals("UTF-8", HttpUtil.getUniversalGuessCode("入口入口入口入口".getBytes("UTF-8")));

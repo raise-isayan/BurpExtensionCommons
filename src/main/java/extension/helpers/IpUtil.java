@@ -66,6 +66,17 @@ public class IpUtil {
         return ip_addr != null && IPv6_ADDR.matcher(ip_addr).matches();
     }
 
+    public static byte[] parseIPAddressByte(String ipvAddr) throws ParseException {
+        if (isIPv4Address(ipvAddr)) {
+            return parseIPv4AddressByte(ipvAddr);
+        }
+        else if (isIPv6Address(ipvAddr)) {
+            return parseIPv6AddressByte(ipvAddr);
+        }
+        throw new ParseException("Unknoun format Error:", 0);
+    }
+
+
     /**
      * IPv4アドレスのパース IPv4 address は厳密には以下の形式も解釈するがこの関数では考慮しない 192.168.1
      * 192.11010049 3232235521
