@@ -20,9 +20,12 @@ import java.util.regex.Pattern;
  */
 public class HttpMessageWapper implements HttpMessage {
 
-    public final String PROTOCOL_HTTP_1_0 = "HTTP/1.0";
-    public final String PROTOCOL_HTTP_1_1 = "HTTP/1.1";
-    public final String PROTOCOL_HTTP_2 = "HTTP/2";
+    public final static String PROTOCOL_HTTP_1_0 = "HTTP/1.0";
+    public final static String PROTOCOL_HTTP_1_1 = "HTTP/1.1";
+    public final static String PROTOCOL_HTTP_2 = "HTTP/2";
+
+    public final static String CONTENT_TYPE = "Content-Type";
+    public final static String CONTENT_LENGTH = "Content-Length";
 
     public enum ContentMimeType {
         JAVA_SCRIPT, JSON, XML, HTML
@@ -79,7 +82,7 @@ public class HttpMessageWapper implements HttpMessage {
      */
     public final static String LINE_TERMINATE = "\r\n";
     public final static Pattern HTTP_LINESEP = Pattern.compile("\\r\\n\\r\\n");
-    private final Pattern CONTENT_TYPE = Pattern.compile("^Content-Type:\\s*([^;]+?)(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
+    private final static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("^Content-Type:\\s*([^;]+?)(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
     private final static Pattern CONTENT_TYPE_MIME = Pattern.compile("\\s*([^\\s;]+);?", Pattern.MULTILINE);
     protected final static Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);
 
@@ -162,7 +165,7 @@ public class HttpMessageWapper implements HttpMessage {
     }
 
     public static HttpHeader getContentTypeHeader(HttpRequest httpRequest) {
-        return findHeader(httpRequest.headers(), "Content-Type");
+        return findHeader(httpRequest.headers(), CONTENT_TYPE);
     }
 
     public static boolean isSecue(HttpRequest httpRequest) {

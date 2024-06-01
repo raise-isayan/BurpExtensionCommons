@@ -313,14 +313,9 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return HttpUtil.normalizeCharset(charset);
     }
 
-    public HttpRequest withUpdateContentLength() {
+    public HttpRequest withAjustContentLength() {
         int contentLength = request.body().length();
-        if (request.hasHeader("Content-Length")) {
-            return request.withUpdatedHeader("Content-Length", String.valueOf(contentLength));
-        }
-        else {
-            return request.withAddedHeader("Content-Length", String.valueOf(contentLength));
-        }
+        return request.withHeader(CONTENT_LENGTH, String.valueOf(contentLength));
     }
 
     @Override

@@ -91,8 +91,14 @@ public class BurpUtil {
     }
 
     public static BurpVersion suiteVersion() {
-        Frame frame = suiteFrame();
-        return new BurpVersion(frame.getTitle());
+        Frame suiteFrame = suiteFrame();
+        return new BurpVersion(suiteFrame.getTitle());
+    }
+
+    public static boolean isTemporaryProject() {
+        Frame suiteFrame = BurpUtil.suiteFrame();
+        String title = suiteFrame.getTitle();
+        return (title.contains(" - Temporary Project"));
     }
 
     public static String[] splitFilterPattern(String pattern) {

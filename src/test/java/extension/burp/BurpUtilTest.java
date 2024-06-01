@@ -148,15 +148,15 @@ public class BurpUtilTest {
             assertEquals(1, suite.compareTo(SUPPORT_MIN_VERSION));
         }
         {
-            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.1- ");
+            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.1 - ");
             assertEquals(-1, suite.compareTo(SUPPORT_MIN_VERSION));
         }
         {
-            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.2- ");
+            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.2 - ");
             assertEquals(0, suite.compareTo(SUPPORT_MIN_VERSION));
         }
         {
-            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.3- ");
+            BurpVersion suite = new BurpVersion("Burp Suite Professional v2023.1.3 - ");
             assertEquals(1, suite.compareTo(SUPPORT_MIN_VERSION));
         }
         {
