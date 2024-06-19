@@ -53,7 +53,7 @@ public class HttpRequestResponseWapper implements HttpRequestResponse {
     @Override
     @Deprecated(forRemoval = true)
     public String url() {
-        return this.httpRequestResponse.url();
+        return this.httpRequestResponse.request().url();
     }
 
     @Override
@@ -64,13 +64,13 @@ public class HttpRequestResponseWapper implements HttpRequestResponse {
     @Override
     @Deprecated(forRemoval = true)
     public ContentType contentType() {
-        return this.httpRequestResponse.contentType();
+        return this.httpRequestResponse.request().contentType();
     }
 
     @Override
     @Deprecated(forRemoval = true)
     public short statusCode() {
-        return this.httpRequestResponse.statusCode();
+        return this.httpRequestResponse.response().statusCode();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class HttpRequestResponseWapper implements HttpRequestResponse {
     }
 
     public HttpRequestResponse valueOf(ProxyHttpRequestResponse proxyHttpRequestResponse) {
-        final HttpRequestResponse httpRequestResponse = new HttpRequestResponse() {
+        final HttpRequestResponse requestResponse = new HttpRequestResponse() {
             @Override
             public HttpRequest request() {
                 return proxyHttpRequestResponse.request();
@@ -153,7 +153,7 @@ public class HttpRequestResponseWapper implements HttpRequestResponse {
             @Override
             @Deprecated(forRemoval = true)
             public String url() {
-                return proxyHttpRequestResponse.url();
+                return proxyHttpRequestResponse.request().url();
             }
 
             @Override
@@ -230,7 +230,7 @@ public class HttpRequestResponseWapper implements HttpRequestResponse {
             }
 
         };
-        return httpRequestResponse;
+        return requestResponse;
     }
 
 

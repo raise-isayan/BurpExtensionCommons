@@ -1,7 +1,10 @@
 package extension.helpers;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +37,120 @@ public class FileUtilTest {
     public void tearDown() {
     }
 
+    @Test
+    public void testCreateEmptyZip() {
+        try {
+            System.out.println("createEmptyZip");
+            File zipFile = FileUtil.createEmptyZip(new File(System.getProperty("java.io.tmpdir"), StringUtil.randomIdent(12) + ".zip"));
+            assertTrue(zipFile.exists());
+            zipFile.deleteOnExit();
+        } catch (IOException ex) {
+            Logger.getLogger(FileUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+    /**
+     * Test of extractFileExtension method, of class FileUtil.
+     */
+    @Test
+    public void testExtractFileExtension() {
+        System.out.println("extractFileExtension");
+        {
+            String value = "test.png";
+            String expResult = ".png";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.png.gif";
+            String expResult = ".gif";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.x";
+            String expResult = ".x";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test";
+            String expResult = "";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.";
+            String expResult = "";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = ".test";
+            String expResult = "";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "";
+            String expResult = "";
+            String result = FileUtil.extractFileExtension(value);
+            assertEquals(expResult, result);
+        }
+    }
+
+    /**
+     * Test of extractFileBaseName method, of class FileUtil.
+     */
+    @Test
+    public void testExtractFileBaseName() {
+        System.out.println("extractFileBaseName");
+        {
+            String value = "test.png";
+            String expResult = "test";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.png.gif";
+            String expResult = "test.png";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.x";
+            String expResult = "test";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test";
+            String expResult = "test";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "test.";
+            String expResult = "test.";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = ".test";
+            String expResult = ".test";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+        {
+            String value = "";
+            String expResult = "";
+            String result = FileUtil.extractFileBaseName(value);
+            assertEquals(expResult, result);
+        }
+    }
+
+
     /**
      * Test of existsStartsDir method, of class FileUtil.
      */
@@ -57,7 +174,7 @@ public class FileUtilTest {
         String resourcesPath = FileUtilTest.class.getResource("/resources/").getPath();
         File dir = new File(resourcesPath);
         String value = "burpextender";
-        File expResult = new File(resourcesPath, "burpextender.1");
+        File expResult = new File(resourcesPath, "burpextender-1");
         File result = FileUtil.rotateFile(dir, value);
         assertEquals(expResult, result);
     }

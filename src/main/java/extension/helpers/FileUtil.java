@@ -4,12 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipOutputStream;
 
 /**
  *
@@ -18,6 +20,30 @@ import java.util.logging.Logger;
 public class FileUtil {
 
     private final static Logger logger = Logger.getLogger(FileUtil.class.getName());
+
+    public static String extractFileExtension(String filename) {
+        int ext = filename.lastIndexOf('.');
+        if (0 < ext  && ext < filename.length() - 1) {
+            return filename.substring(ext);
+        }
+        return "";
+    }
+
+    public static String extractFileBaseName(String filename) {
+        int ext = filename.lastIndexOf('.');
+        if (0 < ext  && ext < filename.length() - 1) {
+            return filename.substring(0, ext);
+        }
+        return filename;
+    }
+
+    /* 空のZIPファイルを作成する */
+    public static File createEmptyZip(File zipFile) throws IOException {
+        try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile))) {
+
+        }
+        return zipFile;
+    }
 
     /**
      * ローテーション可能なファイル名を探す
@@ -41,18 +67,22 @@ public class FileUtil {
      * ローテーション可能なファイル名を探す
      *
      * @param dir ディレクトリ
-     * @param pattern パターン
+     * @param filename パターン
      * @return ローテーションファイル名
      */
-    public static File rotateFile(File dir, String pattern) {
+    public static File rotateFile(File dir, String filename) {
         int count = 1;
-        pattern = pattern.replace("%", "%%");
-        pattern += ".%d";
+        String baseName = extractFileBaseName(filename);
+        String ext = extractFileExtension(filename);
+
+        String pattern = baseName.replace("%", "%%");
+
+        pattern += "-%d";
         // 存在しないファイルを探す
         File file = new File(dir, String.format(pattern, count));
         while (file.exists()) {
             count++;
-            file = new File(dir, String.format(pattern, count));
+            file = new File(dir, String.format(pattern + ext, count));
         }
         return file;
     }
