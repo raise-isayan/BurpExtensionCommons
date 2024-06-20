@@ -51,6 +51,14 @@ public class HttpMessageWapper implements HttpMessage {
         return message.headers();
     }
 
+    public ByteArray header() {
+        return ByteArray.byteArray(Arrays.copyOfRange(this.toByteArray().getBytes(), 0, this.bodyOffset()));
+    }
+
+    public String headerToString() {
+        return ByteArray.byteArray(Arrays.copyOfRange(this.toByteArray().getBytes(), 0, this.bodyOffset())).toString();
+    }
+
     @Override
     public ByteArray body() {
         return message.body();
@@ -80,8 +88,8 @@ public class HttpMessageWapper implements HttpMessage {
      *
      *
      */
-    public final static String LINE_TERMINATE = "\r\n";
-    public final static Pattern HTTP_LINESEP = Pattern.compile("\\r\\n\\r\\n");
+    public final static String LINE_TERMINATE = HttpUtil.LINE_TERMINATE;
+    public final static Pattern HTTP_LINESEP = HttpUtil.HTTP_LINESEP;
     private final static Pattern CONTENT_TYPE_PATTERN = Pattern.compile("^Content-Type:\\s*([^;]+?)(?:;\\s*charset=[\"\']?([\\w_-]+)[\"\']?)?\\s*$", Pattern.MULTILINE);
     private final static Pattern CONTENT_TYPE_MIME = Pattern.compile("\\s*([^\\s;]+);?", Pattern.MULTILINE);
     protected final static Pattern CONTENT_CHARSET = Pattern.compile("(\\s*charset=[\"\']?([\\w_-]+)[\"\']?)", Pattern.MULTILINE);

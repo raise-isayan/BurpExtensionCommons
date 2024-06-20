@@ -46,6 +46,8 @@ public final class HttpUtil {
 
     private final static Logger logger = Logger.getLogger(HttpUtil.class.getName());
 
+    public final static Pattern HTTP_LINESEP = Pattern.compile("\\r\\n\\r\\n");
+
     public static String LINE_TERMINATE = "\r\n";
 
     private HttpUtil() {
