@@ -3,6 +3,9 @@ package extension.helpers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
@@ -38,6 +41,19 @@ public class FileUtilTest {
     }
 
     @Test
+    public void testFileSize() throws IOException {
+        System.out.println("testFileSize");
+        File tmpPath = File.createTempFile("prefix", ".suffix");
+        System.out.println("testFileSize:" + FileUtil.totalFileSize(tmpPath, false));
+        assertEquals(0, FileUtil.totalFileSize(tmpPath, false));
+        tmpPath.deleteOnExit();
+        File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        System.out.println("tmpDir:" + tmpDir);
+        System.out.println("tmpFileSize:" + FileUtil.totalFileSize(tmpDir, false));
+        System.out.println("tmpFileSize(r):" + FileUtil.totalFileSize(tmpDir, true));
+    }
+
+    @Test
     public void testCreateEmptyZip() {
         try {
             System.out.println("createEmptyZip");
@@ -48,7 +64,6 @@ public class FileUtilTest {
             Logger.getLogger(FileUtilTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     /**
      * Test of extractFileExtension method, of class FileUtil.

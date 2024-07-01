@@ -4,11 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
@@ -20,6 +21,27 @@ import java.util.zip.ZipOutputStream;
 public class FileUtil {
 
     private final static Logger logger = Logger.getLogger(FileUtil.class.getName());
+
+    public static long totalFileSize(File filedir, boolean recursive) throws IOException {
+        long filesize = 0;
+        if (filedir.isDirectory()) {
+            File [] list = filedir.listFiles();
+            if (list != null) {
+                for (File file : list) {
+                    if (file.isDirectory() && recursive) {
+                        filesize += totalFileSize(file, recursive);
+                    }
+                    else {
+                        filesize += Files.size(file.toPath());
+                    }
+                }
+            }
+        }
+        else {
+            filesize += Files.size(filedir.toPath());
+        }
+        return filesize;
+    }
 
     public static String extractFileExtension(String filename) {
         int ext = filename.lastIndexOf('.');
