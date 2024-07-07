@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
  */
 public class DateUtil {
 
+    public final static long TOTAL_DAY_TIME_MILLIS = (long) (24L * 60L * 60L * 1000L);
+
     /**
      * 文字列をZonedDateTime型に変換
      *

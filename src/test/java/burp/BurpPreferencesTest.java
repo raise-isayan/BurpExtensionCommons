@@ -2,6 +2,7 @@ package burp;
 
 import extension.helpers.CertUtil;
 import java.security.Key;
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -46,9 +47,17 @@ public class BurpPreferencesTest {
 
     @Test
     public void testloadBurpCa() throws Exception {
+        System.out.println("testloadBurpCa");
         KeyStore ks = BurpPreferences.loadCACeart();
         HashMap<String, Map.Entry<Key, X509Certificate>> mapCert = CertUtil.loadFromKeyStore(ks, BurpPreferences.getCAPassword());
         assertFalse(mapCert.isEmpty());
+    }
+
+    @Test
+    public void testloadBurpKeyPair() throws Exception {
+        System.out.println("testloadBurpKeyPair");
+        KeyPair caKey = BurpPreferences.loadCAKeyPair();
+        assertNotNull(caKey);
     }
 
 }
