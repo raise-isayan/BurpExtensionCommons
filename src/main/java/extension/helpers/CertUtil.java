@@ -4,8 +4,10 @@ import static burp.BurpPreferences.loadCACeart;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -18,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -132,6 +135,43 @@ public class CertUtil {
             return false;
         }
         return true;
+    }
+
+    protected static void storeToKeyStore(OutputStream ostm, String keyPassword, StoreType storeType, HashMap<String, Map.Entry<Key, X509Certificate>> certMap) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        KeyStore ks = KeyStore.getInstance(storeType.name());
+        ks.load(null, null);
+        for (String alias : certMap.keySet()) {
+            ks.setKeyEntry(alias, certMap.get(alias).getKey(), keyPassword.toCharArray(), new Certificate[] { certMap.get(alias).getValue() });
+        }
+        ks.store(ostm, keyPassword.toCharArray());
+    }
+
+    public static void storeToPKCS12(OutputStream ostm, String keyPassword, HashMap<String, Map.Entry<Key, X509Certificate>> certMap) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        storeToKeyStore(ostm, keyPassword, StoreType.PKCS12, certMap);
+    }
+
+    public static void storeToJKS(OutputStream ostm, String keyPassword, HashMap<String, Map.Entry<Key, X509Certificate>> certMap) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        storeToKeyStore(ostm, keyPassword, StoreType.JKS, certMap);
+    }
+
+    public static void storeToPKCS12(File storeFile, String keyPassword, String alias, Key key, X509Certificate cert) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        storeToPKCS12(new FileOutputStream(storeFile), keyPassword, alias, key, cert);
+    }
+
+    public static void storeToPKCS12(OutputStream ostm, String keyPassword, String alias, Key key, X509Certificate cert) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        HashMap<String, Map.Entry<Key, X509Certificate>> certMap = new HashMap();
+        certMap.put(alias, new AbstractMap.SimpleEntry<>(key, cert));
+        storeToKeyStore(ostm, keyPassword, StoreType.PKCS12, certMap);
+    }
+
+    public static void storeToJSK(File storeFile, String keyPassword, String alias, Key key, X509Certificate cert) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        storeToJKS(new FileOutputStream(storeFile), keyPassword, alias, key, cert);
+    }
+
+    public static void storeToJKS(OutputStream ostm, String keyPassword, String alias, Key key, X509Certificate cert) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        HashMap<String, Map.Entry<Key, X509Certificate>> certMap = new HashMap();
+        certMap.put(alias, new AbstractMap.SimpleEntry<>(key, cert));
+        storeToKeyStore(ostm, keyPassword, StoreType.JKS, certMap);
     }
 
     public static HashMap<String, Map.Entry<Key, X509Certificate>> loadFromKeyStore(byte[] storeData, String keyPassword, StoreType storeType) throws CertificateEncodingException, IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException {

@@ -240,4 +240,34 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
         return response.mimeType();
     }
 
+    @Override
+    public HttpResponse withAddedHeaders(List<? extends HttpHeader> list) {
+        return response.withAddedHeaders(list);
+    }
+
+    @Override
+    public HttpResponse withAddedHeaders(HttpHeader... httpHeader) {
+        return response.withAddedHeaders(httpHeader);
+    }
+
+    @Override
+    public HttpResponse withUpdatedHeaders(List<? extends HttpHeader> list) {
+        return response.withUpdatedHeaders(list);
+    }
+
+    @Override
+    public HttpResponse withUpdatedHeaders(HttpHeader... httpHeader) {
+        return response.withUpdatedHeaders(httpHeader);
+    }
+
+    @Override
+    public HttpResponse withRemovedHeaders(List<? extends HttpHeader> list) {
+        return response.withRemovedHeaders(list);
+    }
+
+    @Override
+    public HttpResponse withRemovedHeaders(HttpHeader... httpHeader) {
+        return response.withRemovedHeaders(httpHeader);
+    }
+
 }

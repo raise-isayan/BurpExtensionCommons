@@ -403,4 +403,34 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.fileExtension();
     }
 
+    @Override
+    public HttpRequest withAddedHeaders(List<? extends HttpHeader> list) {
+        return request.withAddedHeaders(list);
+    }
+
+    @Override
+    public HttpRequest withAddedHeaders(HttpHeader... httpHeader) {
+        return request.withAddedHeaders(httpHeader);
+    }
+
+    @Override
+    public HttpRequest withUpdatedHeaders(List<? extends HttpHeader> list) {
+        return request.withUpdatedHeaders(list);
+    }
+
+    @Override
+    public HttpRequest withUpdatedHeaders(HttpHeader... httpHeader) {
+        return request.withUpdatedHeaders(httpHeader);
+    }
+
+    @Override
+    public HttpRequest withRemovedHeaders(List<? extends HttpHeader> list) {
+        return request.withRemovedHeaders(list);
+    }
+
+    @Override
+    public HttpRequest withRemovedHeaders(HttpHeader... httpHeader) {
+        return request.withRemovedHeaders(httpHeader);
+    }
+
 }
