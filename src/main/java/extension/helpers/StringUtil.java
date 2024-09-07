@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.SortedMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -193,6 +195,13 @@ public class StringUtil {
         return !(value != null && !"".equals(value));
     }
 
+    private final static Pattern PRINTERBLE_MATCH = Pattern.compile("[\\p{Graph}\\s]*", Pattern.DOTALL);
+
+    public static boolean isPrinterble(String value) {
+        Matcher m = PRINTERBLE_MATCH.matcher(value);
+        return m.matches();
+    }
+    
     public static boolean equalsString(String a1, String a2) {
         if (a1 == null || a2 == null) {
             return false;

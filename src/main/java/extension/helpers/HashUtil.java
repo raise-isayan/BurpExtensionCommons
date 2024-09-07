@@ -51,12 +51,8 @@ public final class HashUtil {
         MessageDigest md = MessageDigest.getInstance(algorithm);
         md.reset();
         md.update(binary);
-        digeststr = ConvertUtil.toHexString(md.digest());
-        if (upperCase) {
-            return digeststr;
-        } else {
-            return digeststr.toLowerCase();
-        }
+        digeststr = ConvertUtil.toHexString(md.digest(), upperCase);
+        return digeststr;
     }
 
     /**

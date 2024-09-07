@@ -352,21 +352,21 @@ public class ConvertUtil {
         return value;
     }
 
-    public static String toHexString(byte input) {
-        return toHexString(new byte[]{input});
+    public static String toHexString(byte data, boolean upperCase) {
+        return String.valueOf(encodeHex(data, upperCase));
     }
 
-    public static String toHexString(int input) {
+    public static String toHexString(int input, boolean upperCase) {
         byte[] hex = BigInteger.valueOf(input).toByteArray();
         int i = 0;
         while (i < hex.length - 1 && hex[i] == 0) {
             i++;
         }
-        return toHexString(Arrays.copyOfRange(hex, i, hex.length));
+        return toHexString(Arrays.copyOfRange(hex, i, hex.length), upperCase);
     }
 
-    public static String toHexString(byte[] data) {
-        return String.valueOf(encodeHex(data));
+    public static String toHexString(byte[] data, boolean upperCase) {
+        return String.valueOf(encodeHex(data, upperCase));
     }
 
     public static byte[] fromHexString(String data) {
@@ -391,11 +391,22 @@ public class ConvertUtil {
 
     private static final char[] HEX_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private static char[] encodeHex(final byte[] data) {
+    private static final char[] HEX_LOWER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    private static char[] encodeHex(final byte data, boolean upperCase) {
+        char[] out = new char[2];
+        final char[] HEX_CONVERT = (upperCase) ? HEX_UPPER : HEX_LOWER;
+        out[0] = HEX_CONVERT[(0xF0 & data) >>> 4];
+        out[1] = HEX_CONVERT[0x0F & data];
+        return out;
+    }
+
+    private static char[] encodeHex(final byte[] data, boolean upperCase) {
         char[] out = new char[data.length * 2];
         for (int i = 0; i < data.length; i++) {
-            out[i * 2 + 0] = HEX_UPPER[(0xF0 & data[i]) >>> 4];
-            out[i * 2 + 1] = HEX_UPPER[0x0F & data[i]];
+            char hex[] = encodeHex(data[i], upperCase);
+            out[i * 2 + 0] = hex[0];
+            out[i * 2 + 1] = hex[1];
         }
         return out;
     }
@@ -994,6 +1005,17 @@ public class ConvertUtil {
         return buff.toString();
     }
 
+    public static String toRegexEncode(String value) {
+        return toRegexEncode(value, false);
+    }
+
+    /**
+     * 正規表現のリテラルエンコード(エスケープ)
+     *
+     * @param value
+     * @param metachar
+     * @return エンコードされた値
+     */
     public static String toRegexEncode(String value, boolean metachar) {
         String encode = value;
         if (metachar) {
@@ -1008,12 +1030,20 @@ public class ConvertUtil {
         return buff.toString();
     }
 
+    public static String toRegexDecode(String value) {
+        return toRegexDecode(value, false);
+    }
+
     public static String toRegexDecode(String value, boolean metachar) {
         String decode = value.replaceAll("\\\\([\\\\\\.\\+\\*\\?\\[\\^\\]\\$\\(\\)\\{\\}\\=\\!\\<\\>\\|\\:\\-])", "$1");
         if (metachar) {
             decode = decodeStandardLangMeta(decode);
         }
         return decode;
+    }
+
+    public static String encodeJsLangQuote(String value) {
+        return encodeJsLangQuote(value, false);
     }
 
     /**
@@ -1031,6 +1061,10 @@ public class ConvertUtil {
         return encode;
     }
 
+    public static String decodeJsLangQuote(String value) {
+        return decodeJsLangQuote(value, false);
+    }
+
     /**
      * JavaScript言語形式のリテラルデコード(エスケープされたものを戻す)
      *
@@ -1044,6 +1078,10 @@ public class ConvertUtil {
             decode = decodeStandardLangMeta(decode);
         }
         return decode.replaceAll("\\\\([\\\\\"'])", "$1");
+    }
+
+    public static String encodeCLangQuote(String value) {
+        return encodeCLangQuote(value, false);
     }
 
     /**
@@ -1061,6 +1099,10 @@ public class ConvertUtil {
         return encode;
     }
 
+    public static String decodeCLangQuote(String value) {
+        return decodeCLangQuote(value, false);
+    }
+
     /**
      * C言語形式のデコード(エスケープされたものを戻す)
      *
@@ -1074,6 +1116,10 @@ public class ConvertUtil {
             decode = decodeStandardLangMeta(decode);
         }
         return decode.replaceAll("\\\\([\\\\\"])", "$1");
+    }
+
+    public static String encodeJsonLiteral(String value) {
+        return encodeJsonLiteral(value, false);
     }
 
     /**
@@ -1091,6 +1137,10 @@ public class ConvertUtil {
         return encode;
     }
 
+    public static String decodeJsonLiteral(String value) {
+        return decodeJsonLiteral(value, false);
+    }
+
     /**
      * JSON形式のリテラルデコード(エスケープされたものを戻す)
      *
@@ -1106,6 +1156,10 @@ public class ConvertUtil {
         return decode.replaceAll("\\\\([\\\\\"/])", "$1");
     }
 
+    public static String encodeSQLLangQuote(String value) {
+        return encodeSQLLangQuote(value, false);
+    }
+
     /**
      * PL/SQL言語形式のエンコード(エスケープ)
      *
@@ -1119,6 +1173,10 @@ public class ConvertUtil {
             encode = encodeStandardLangMeta(encode);
         }
         return encode;
+    }
+
+    public static String decodeSQLangQuote(String value) {
+        return decodeSQLangQuote(value, false);
     }
 
     /**

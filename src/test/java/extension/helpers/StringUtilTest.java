@@ -85,6 +85,15 @@ public class StringUtilTest {
     }
 
     @Test
+    public void testPrinterble() {
+        System.out.println("isPrinterble");
+        assertTrue(StringUtil.isPrinterble("abcdef0123456789"));
+        assertTrue(StringUtil.isPrinterble(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n", true)));
+        assertTrue(StringUtil.isPrinterble(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n0123456789", true)));
+        assertFalse(StringUtil.isPrinterble("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u001a"));
+    }
+
+    @Test
     public void testString_0() {
         System.out.println("testString_0");
         String rep0 = StringUtil.stringReplace("1234567890", 0, 0, "abc");

@@ -183,17 +183,30 @@ public class ConvertUtilTest {
         System.out.println("toHexString");
         byte[] hex = BigInteger.valueOf(0).toByteArray();
         assertEquals(hex.length, 1);
-
-        assertEquals("00", ConvertUtil.toHexString(0x00));
-        assertEquals("0F", ConvertUtil.toHexString(0x0f));
-        assertEquals("7F", ConvertUtil.toHexString(0x7f));
-        assertEquals("FF", ConvertUtil.toHexString(0xff));
-        assertEquals("7FFF", ConvertUtil.toHexString(0x7fff));
-        assertEquals("FF7F", ConvertUtil.toHexString(0xff7f));
-        assertEquals("0FF0", ConvertUtil.toHexString(new byte[]{(byte) 0x0f, (byte) 0xf0}));
-        assertEquals("7FFF", ConvertUtil.toHexString(new byte[]{(byte) 0x7f, (byte) 0xff}));
-        assertEquals("FF7F", ConvertUtil.toHexString(new byte[]{(byte) 0xff, (byte) 0x7f}));
-        assertEquals("8080", ConvertUtil.toHexString(new byte[]{(byte) 0x80, (byte) 0x80}));
+        {
+            assertEquals("00", ConvertUtil.toHexString(0x00, true));
+            assertEquals("0F", ConvertUtil.toHexString(0x0f, true));
+            assertEquals("7F", ConvertUtil.toHexString(0x7f, true));
+            assertEquals("FF", ConvertUtil.toHexString(0xff, true));
+            assertEquals("7FFF", ConvertUtil.toHexString(0x7fff, true));
+            assertEquals("FF7F", ConvertUtil.toHexString(0xff7f, true));
+            assertEquals("0FF0", ConvertUtil.toHexString(new byte[]{(byte) 0x0f, (byte) 0xf0}, true));
+            assertEquals("7FFF", ConvertUtil.toHexString(new byte[]{(byte) 0x7f, (byte) 0xff}, true));
+            assertEquals("FF7F", ConvertUtil.toHexString(new byte[]{(byte) 0xff, (byte) 0x7f}, true));
+            assertEquals("8080", ConvertUtil.toHexString(new byte[]{(byte) 0x80, (byte) 0x80}, true));
+        }
+        {
+            assertEquals("00", ConvertUtil.toHexString(0x00, false));
+            assertEquals("0f", ConvertUtil.toHexString(0x0f, false));
+            assertEquals("7f", ConvertUtil.toHexString(0x7f, false));
+            assertEquals("ff", ConvertUtil.toHexString(0xff, false));
+            assertEquals("7fff", ConvertUtil.toHexString(0x7fff, false));
+            assertEquals("ff7f", ConvertUtil.toHexString(0xff7f, false));
+            assertEquals("0ff0", ConvertUtil.toHexString(new byte[]{(byte) 0x0f, (byte) 0xf0}, false));
+            assertEquals("7fff", ConvertUtil.toHexString(new byte[]{(byte) 0x7f, (byte) 0xff}, false));
+            assertEquals("ff7f", ConvertUtil.toHexString(new byte[]{(byte) 0xff, (byte) 0x7f}, false));
+            assertEquals("8080", ConvertUtil.toHexString(new byte[]{(byte) 0x80, (byte) 0x80}, false));
+        }
     }
 
     @Test
