@@ -24,19 +24,17 @@ public class FileUtil {
     public static long totalFileSize(File filedir, boolean recursive) throws IOException {
         long filesize = 0;
         if (filedir.isDirectory()) {
-            File [] list = filedir.listFiles();
+            File[] list = filedir.listFiles();
             if (list != null) {
                 for (File file : list) {
                     if (file.isDirectory() && recursive) {
                         filesize += totalFileSize(file, recursive);
-                    }
-                    else {
+                    } else {
                         filesize += Files.size(file.toPath());
                     }
                 }
             }
-        }
-        else {
+        } else {
             filesize += Files.size(filedir.toPath());
         }
         return filesize;
@@ -44,7 +42,7 @@ public class FileUtil {
 
     public static String extractFileExtension(String filename) {
         int ext = filename.lastIndexOf('.');
-        if (0 < ext  && ext < filename.length() - 1) {
+        if (0 < ext && ext < filename.length() - 1) {
             return filename.substring(ext);
         }
         return "";
@@ -52,7 +50,7 @@ public class FileUtil {
 
     public static String extractFileBaseName(String filename) {
         int ext = filename.lastIndexOf('.');
-        if (0 < ext  && ext < filename.length() - 1) {
+        if (0 < ext && ext < filename.length() - 1) {
             return filename.substring(0, ext);
         }
         return filename;

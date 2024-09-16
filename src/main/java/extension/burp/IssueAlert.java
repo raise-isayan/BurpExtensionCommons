@@ -9,6 +9,7 @@ import java.util.logging.Logger;
  * @author isayan
  */
 public class IssueAlert implements IssueAlertListener {
+
     private final static Logger logger = Logger.getLogger(IssueAlert.class.getName());
 
     private final MontoyaApi api;

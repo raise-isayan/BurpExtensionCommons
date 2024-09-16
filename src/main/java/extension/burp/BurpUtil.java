@@ -75,8 +75,7 @@ public class BurpUtil {
             if ("burpTabBar".equals(jTabbedPane.getName())) {
                 return jTabbedPane;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < container.getComponentCount(); i++) {
                 Component c = container.getComponent(i);
                 if (c instanceof Container inner) {

@@ -76,10 +76,10 @@ public class FilterPropertyTest {
             instance.setStat4xx(false);
             instance.setStat5xx(false);
             String result = instance.build();
-            assertEquals("return !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_2XX_SUCCESS))\n" +
-                " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_3XX_REDIRECTION))\n" +
-                " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))\n" +
-                " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_5XX_SERVER_ERRORS));", result);
+            assertEquals("return !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_2XX_SUCCESS))\n"
+                    + " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_3XX_REDIRECTION))\n"
+                    + " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))\n"
+                    + " && !(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_5XX_SERVER_ERRORS));", result);
         }
         {
             FilterProperty instance = new FilterProperty();
@@ -87,16 +87,16 @@ public class FilterPropertyTest {
             instance.setShowOnlyHighlightColors(true);
             instance.setHighlightColors(colors);
             String result = instance.build();
-            assertEquals("return ((Predicate<HighlightColor>)((color)->{ return color.equals(HighlightColor.NONE)\n" +
-                " || color.equals(HighlightColor.RED)\n" +
-                " || color.equals(HighlightColor.ORANGE)\n" +
-                " || color.equals(HighlightColor.YELLOW)\n" +
-                " || color.equals(HighlightColor.GREEN)\n" +
-                " || color.equals(HighlightColor.CYAN)\n" +
-                " || color.equals(HighlightColor.BLUE)\n" +
-                " || color.equals(HighlightColor.PINK)\n" +
-                " || color.equals(HighlightColor.MAGENTA)\n" +
-                " || color.equals(HighlightColor.GRAY); })).test(requestResponse.annotations().highlightColor());", result);
+            assertEquals("return ((Predicate<HighlightColor>)((color)->{ return color.equals(HighlightColor.NONE)\n"
+                    + " || color.equals(HighlightColor.RED)\n"
+                    + " || color.equals(HighlightColor.ORANGE)\n"
+                    + " || color.equals(HighlightColor.YELLOW)\n"
+                    + " || color.equals(HighlightColor.GREEN)\n"
+                    + " || color.equals(HighlightColor.CYAN)\n"
+                    + " || color.equals(HighlightColor.BLUE)\n"
+                    + " || color.equals(HighlightColor.PINK)\n"
+                    + " || color.equals(HighlightColor.MAGENTA)\n"
+                    + " || color.equals(HighlightColor.GRAY); })).test(requestResponse.annotations().highlightColor());", result);
         }
         {
             FilterProperty instance = new FilterProperty();
@@ -128,20 +128,20 @@ public class FilterPropertyTest {
             FilterProperty instance = new FilterProperty();
             instance.setShowOnly(true);
             String result = instance.build();
-            assertEquals("return ((Predicate<String>)((path)->{ return path.endsWith(\".asp\")\n" +
-                " || path.endsWith(\".aspx\")\n" +
-                " || path.endsWith(\".jsp\")\n" +
-                " || path.endsWith(\".php\"); })).test(requestResponse.request().pathWithoutQuery().toLowerCase());", result);
+            assertEquals("return ((Predicate<String>)((path)->{ return path.endsWith(\".asp\")\n"
+                    + " || path.endsWith(\".aspx\")\n"
+                    + " || path.endsWith(\".jsp\")\n"
+                    + " || path.endsWith(\".php\"); })).test(requestResponse.request().pathWithoutQuery().toLowerCase());", result);
         }
         {
             FilterProperty instance = new FilterProperty();
             instance.setHide(true);
             String result = instance.build();
-            assertEquals("return ((Predicate<String>)((path)->{ return !path.endsWith(\".js\")\n" +
-                " && !path.endsWith(\".gif\")\n" +
-                " && !path.endsWith(\".jpg\")\n" +
-                " && !path.endsWith(\".png\")\n" +
-                " && !path.endsWith(\".css\"); })).test(requestResponse.request().pathWithoutQuery().toLowerCase());", result);
+            assertEquals("return ((Predicate<String>)((path)->{ return !path.endsWith(\".js\")\n"
+                    + " && !path.endsWith(\".gif\")\n"
+                    + " && !path.endsWith(\".jpg\")\n"
+                    + " && !path.endsWith(\".png\")\n"
+                    + " && !path.endsWith(\".css\"); })).test(requestResponse.request().pathWithoutQuery().toLowerCase());", result);
         }
         {
             FilterProperty instance = new FilterProperty();

@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
  * @author isayan
  */
 public class HttpMessage {
+
     private String header = "";
     private String body = "";
 

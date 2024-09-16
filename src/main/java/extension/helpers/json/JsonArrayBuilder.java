@@ -2,7 +2,6 @@ package extension.helpers.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 
 /**
  *

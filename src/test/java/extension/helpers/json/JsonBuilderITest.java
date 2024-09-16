@@ -31,7 +31,6 @@ public class JsonBuilderITest {
     public void tearDown() {
     }
 
-
     /**
      * Test of createObjectBuilder method, of class JsonBuilder.
      */
@@ -60,7 +59,6 @@ public class JsonBuilderITest {
             System.out.println(result.build());
         }
     }
-
 
     /**
      * Test of JsonBuilder method, of class JsonBuilder.

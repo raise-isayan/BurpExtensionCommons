@@ -288,8 +288,7 @@ public class MatchUtilTest {
                 "'4111111111111111'",
                 " 4242424242424242 ",
                 "-4012888888881881-",
-                "_4222222222222_",
-            };
+                "_4222222222222_",};
             for (String word : words) {
                 boolean expResult = true;
                 boolean result = MatchUtil.containsCreditCard(word);

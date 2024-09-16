@@ -600,7 +600,7 @@ public class ConvertUtilTest {
         assertEquals("\\123\"456\\", ConvertUtil.decodeSQLangQuote("\\123\"456\\", true));
     }
 
-        @Test
+    @Test
     public void testToRegexEncodeDecode() {
         System.out.println("testToRegexEncode");
         String expValue = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

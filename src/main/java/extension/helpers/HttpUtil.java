@@ -48,6 +48,10 @@ public final class HttpUtil {
 
     public final static Pattern HTTP_LINESEP = Pattern.compile("\\r\\n\\r\\n");
 
+    public static String URL_ENCODED = "application/x-www-form-urlencoded";
+
+    public static String MULTIPART_FORM_DATA = "multipart/form-data";
+
     public static String LINE_TERMINATE = "\r\n";
 
     private HttpUtil() {
@@ -258,10 +262,11 @@ public final class HttpUtil {
         if (matcher.find()) {
             title = matcher.group(1);
         }
-        if (title != null)
+        if (title != null) {
             return title.trim();
-        else
+        } else {
             return null;
+        }
     }
 
     public static String[] extractHTMLComments(String message) {
@@ -324,8 +329,7 @@ public final class HttpUtil {
         if (url.getDefaultPort() == url.getPort()) {
             //     public URL(String protocol, String host, int port, String file)
             return (new URL(url.getProtocol(), url.getHost(), -1, url.getFile())).toExternalForm();
-        }
-        else {
+        } else {
             return (new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile())).toExternalForm();
         }
     }
@@ -365,7 +369,7 @@ public final class HttpUtil {
 
     public static String toURL(String schema, String host, int port) {
         String url = String.format("%s://%s", schema, host);
-        if (port != getDefaultPort(false) && port != getDefaultPort(true) &&  port != -1) {
+        if (port != getDefaultPort(false) && port != getDefaultPort(true) && port != -1) {
             url += ":" + port;
         }
         return url;
@@ -605,7 +609,7 @@ public final class HttpUtil {
         return saveAuthenticator;
     }
 
-    public static String [] parseMultiLineURL(String multilineURL, boolean includeIgnoreURL) {
+    public static String[] parseMultiLineURL(String multilineURL, boolean includeIgnoreURL) {
         List<String> urls = new java.util.ArrayList<>();
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
@@ -615,13 +619,15 @@ public final class HttpUtil {
                 URL url = new URL(line);
                 urls.add(HttpUtil.normalizeURL(url.toExternalForm()));
             } catch (MalformedURLException ex) {
-                if (includeIgnoreURL) urls.add(line);
+                if (includeIgnoreURL) {
+                    urls.add(line);
+                }
             }
         }
         return urls.toArray(String[]::new);
     }
 
-    public static String [] parseMultiLineTopURL(String multilineURL, boolean includeIgnoreURL) {
+    public static String[] parseMultiLineTopURL(String multilineURL, boolean includeIgnoreURL) {
         List<String> urls = new java.util.ArrayList<>();
         Scanner scanner = new Scanner(multilineURL);
         scanner.useDelimiter("\\r\\n|\\n|\\r|\\s");
@@ -631,7 +637,9 @@ public final class HttpUtil {
                 URL url = new URL(line);
                 urls.add(String.format("%s://%s/", url.getProtocol(), HttpUtil.buildHost(url.getHost(), url.getPort(), url.getProtocol())));
             } catch (MalformedURLException ex) {
-                if (includeIgnoreURL) urls.add(line);
+                if (includeIgnoreURL) {
+                    urls.add(line);
+                }
             }
         }
         return urls.toArray(String[]::new);

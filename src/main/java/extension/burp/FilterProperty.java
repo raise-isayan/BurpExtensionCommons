@@ -10,7 +10,9 @@ import java.util.EnumSet;
  */
 public class FilterProperty {
 
-    public enum FilterMode { SETTING, BAMBDA };
+    public enum FilterMode {
+        SETTING, BAMBDA
+    };
 
     @Expose
     private int listenerPort = -1;
@@ -67,7 +69,8 @@ public class FilterProperty {
     }
 
     /**
-     * @param showOnlyParameterizedRequests the showOnlyParameterizedRequests to set
+     * @param showOnlyParameterizedRequests the showOnlyParameterizedRequests to
+     * set
      */
     public void setShowOnlyParameterizedRequests(boolean showOnlyParameterizedRequests) {
         this.showOnlyParameterizedRequests = showOnlyParameterizedRequests;
@@ -349,115 +352,154 @@ public class FilterProperty {
     public String build() {
         StringBuilder sb = new StringBuilder();
         if (this.listenerPort > 0) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("requestResponse.listenerPort()").append(" == ").append(this.listenerPort);
         }
         if (this.showOnlyScopeItems) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("requestResponse.request().isInScope()");
         }
         if (this.hideItemsWithoutResponses) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("requestResponse.hasResponse()");
         }
         if (this.showOnlyParameterizedRequests) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("(requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY))");
         }
         if (this.showOnlyEditedMessage) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("requestResponse.edited()");
         }
 
         if (this.showOnly) {
-            String [] extensions = BurpUtil.splitFilterPattern(this.showOnlyExtension);
+            String[] extensions = BurpUtil.splitFilterPattern(this.showOnlyExtension);
             StringBuilder sub = new StringBuilder();
             for (String ext : extensions) {
-                if (sub.length() > 0) sub.append( "\n || ");
-                sub.append("path.endsWith(\"").append(".").append( StringUtil.literalEscape(ext)).append("\")");
+                if (sub.length() > 0) {
+                    sub.append("\n || ");
+                }
+                sub.append("path.endsWith(\"").append(".").append(StringUtil.literalEscape(ext)).append("\")");
             }
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("((Predicate<String>)((path)->{ return ").append(sub).append("; })).test(requestResponse.request().pathWithoutQuery().toLowerCase())");
         }
         if (this.hide) {
-            String [] extensions = BurpUtil.splitFilterPattern(this.hideExtension);
+            String[] extensions = BurpUtil.splitFilterPattern(this.hideExtension);
             StringBuilder sub = new StringBuilder();
             for (String ext : extensions) {
-                if (sub.length() > 0) sub.append( "\n && ");
-                sub.append("!path.endsWith(\"").append(".").append( StringUtil.literalEscape(ext)).append("\")");
+                if (sub.length() > 0) {
+                    sub.append("\n && ");
+                }
+                sub.append("!path.endsWith(\"").append(".").append(StringUtil.literalEscape(ext)).append("\")");
             }
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("((Predicate<String>)((path)->{ return ").append(sub).append("; })).test(requestResponse.request().pathWithoutQuery().toLowerCase())");
         }
         // HighlightColor
         if (this.showOnlyHighlightColors) {
             StringBuilder sub = new StringBuilder();
             for (MessageHighlightColor color : this.colors) {
-                if (sub.length() > 0) sub.append( "\n || ");
-                if (color == MessageHighlightColor.WHITE) {
-                    sub.append( "color.equals(HighlightColor.").append("NONE").append(")");
+                if (sub.length() > 0) {
+                    sub.append("\n || ");
                 }
-                else {
-                    sub.append( "color.equals(HighlightColor.").append(color.name()).append(")");
+                if (color == MessageHighlightColor.WHITE) {
+                    sub.append("color.equals(HighlightColor.").append("NONE").append(")");
+                } else {
+                    sub.append("color.equals(HighlightColor.").append(color.name()).append(")");
                 }
             }
             if (!sub.isEmpty()) {
-                if (sb.length() > 0) sb.append( "\n && ");
+                if (sb.length() > 0) {
+                    sb.append("\n && ");
+                }
                 sb.append("((Predicate<HighlightColor>)((color)->{ return ").append(sub).append("; })).test(requestResponse.annotations().highlightColor())");
             }
         }
         // Comments
         if (this.showOnlyComment) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "requestResponse.annotations().hasNotes()");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("requestResponse.annotations().hasNotes()");
         }
         // Status(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))
         if (!this.stat2xx) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_2XX_SUCCESS))");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_2XX_SUCCESS))");
         }
         if (!this.stat3xx) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_3XX_REDIRECTION))");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_3XX_REDIRECTION))");
         }
         if (!this.stat4xx) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_4XX_CLIENT_ERRORS))");
         }
         if (!this.stat5xx) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_5XX_SERVER_ERRORS))");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("!(requestResponse.hasResponse() && requestResponse.response().isStatusCodeClass(StatusCodeClass.CLASS_5XX_SERVER_ERRORS))");
         }
         // Filter by Search Item
         if (!this.method.isEmpty()) {
-            if (sb.length() > 0) sb.append( "\n && ");
-            sb.append( "requestResponse.request().method().toUpperCase().equals(\"").append(StringUtil.literalEscape(this.method)).append("\")");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
+            sb.append("requestResponse.request().method().toUpperCase().equals(\"").append(StringUtil.literalEscape(this.method)).append("\")");
         }
         if (!this.path.isEmpty()) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             sb.append("requestResponse.request().path().contains(\"").append(StringUtil.literalEscape(this.path)).append("\")");
         }
         if (!this.request.isEmpty()) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             if (this.requestRegex) {
                 sb.append("requestResponse.request().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.request)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
-            }
-            else {
+            } else {
                 sb.append("requestResponse.request().contains(\"").append(StringUtil.literalEscape(this.request)).append("\", ").append(this.requestIgnoreCase).append(")");
             }
         }
         if (!this.response.isEmpty()) {
-            if (sb.length() > 0) sb.append( "\n && ");
+            if (sb.length() > 0) {
+                sb.append("\n && ");
+            }
             if (this.responseRegex) {
                 sb.append("requestResponse.response().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.response)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
-            }
-            else {
+            } else {
                 sb.append("requestResponse.response().contains(\"").append(StringUtil.literalEscape(this.response)).append("\", ").append(this.responseIgnoreCase).append(")");
             }
         }
         StringBuilder build = new StringBuilder();
-        if (sb.isEmpty()) sb.append( "true");
-        build.append( "return").append(" ").append(sb).append(";");
+        if (sb.isEmpty()) {
+            sb.append("true");
+        }
+        build.append("return").append(" ").append(sb).append(";");
         return build.toString();
     }
 
@@ -530,8 +572,7 @@ public class FilterProperty {
     public String getBambdaQuery() {
         if (this.filterMode == FilterMode.SETTING) {
             return this.build();
-        }
-        else {
+        } else {
             return this.getBambda();
         }
     }

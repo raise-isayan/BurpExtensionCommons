@@ -102,6 +102,7 @@ import org.mockito.Mockito;
  * https://github.com/PortSwigger/burp-extensions-montoya-api/blob/30b377428a332aed568c22af17cb08b891450027/api/src/test/java/burp/api/montoya/TestExtension.java
  */
 public class MockMontoya {
+
     private final static Logger logger = Logger.getLogger(MockMontoya.class.getName());
 
     private Map<Class, Object> instanceMap = new HashMap<>();
@@ -574,7 +575,7 @@ public class MockMontoya {
                 }
 
                 @Override
-                public boolean contains(int index){
+                public boolean contains(int index) {
                     return startIndexInclusive <= index && index <= endIndexExclusive;
                 }
 

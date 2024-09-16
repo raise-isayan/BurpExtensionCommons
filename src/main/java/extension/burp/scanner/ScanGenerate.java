@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 /**
  * https://forum.portswigger.net/thread/reference-for-issue-details-a39a1e3a
+ *
  * @author isayan
  */
 public class ScanGenerate {
@@ -100,7 +101,7 @@ public class ScanGenerate {
         return regions;
     }
 
-    public static HttpRequestResponse applyMarkers(HttpRequestResponse baseRequestResponse, Pattern pattern, int group,boolean isMessageIsRequest) {
+    public static HttpRequestResponse applyMarkers(HttpRequestResponse baseRequestResponse, Pattern pattern, int group, boolean isMessageIsRequest) {
         List<Marker> requestMarkers = new ArrayList<>();
         List<Marker> responseMarkers = new ArrayList<>();
 

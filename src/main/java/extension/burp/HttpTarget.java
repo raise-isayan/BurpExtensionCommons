@@ -88,8 +88,7 @@ public class HttpTarget implements burp.api.montoya.http.HttpService {
     public String ipAddress() {
         if (this.ipAddress != null) {
             return this.ipAddress;
-        }
-        else {
+        } else {
             try {
                 return InetAddress.getByName(this.host).getHostAddress();
             } catch (UnknownHostException ex) {

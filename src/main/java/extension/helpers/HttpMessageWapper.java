@@ -225,7 +225,7 @@ public class HttpMessageWapper implements HttpMessage {
         boolean result = false;
         switch (contentMimeType) {
             case JAVA_SCRIPT:
-                result = mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("text/javascript")  || mimeType.equalsIgnoreCase("text/x-javascript") || mimeType.equalsIgnoreCase("application/x-javascript");
+                result = mimeType.equalsIgnoreCase("application/javascript") || mimeType.equalsIgnoreCase("text/javascript") || mimeType.equalsIgnoreCase("text/x-javascript") || mimeType.equalsIgnoreCase("application/x-javascript");
                 break;
             case JSON:
                 result = mimeType.equalsIgnoreCase("application/json") || mimeType.equalsIgnoreCase("text/json");
@@ -250,8 +250,8 @@ public class HttpMessageWapper implements HttpMessage {
         return messageString;
     }
 
-    public byte [] getMessageByte() {
-        byte [] messageByte = this.toByteArray().getBytes();
+    public byte[] getMessageByte() {
+        byte[] messageByte = this.toByteArray().getBytes();
         return messageByte;
     }
 
@@ -273,7 +273,7 @@ public class HttpMessageWapper implements HttpMessage {
         return body;
     }
 
-    public byte [] getBodyByte() {
+    public byte[] getBodyByte() {
         return this.body().getBytes();
     }
 

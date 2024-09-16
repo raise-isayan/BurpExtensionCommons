@@ -102,7 +102,7 @@ public class IpUtilTest {
         }
     }
 
-        @Test
+    @Test
     public void testParseIPvAdress() {
         System.out.println("parseIPvAdress");
         {
@@ -153,7 +153,6 @@ public class IpUtilTest {
             }
         }
     }
-
 
     @Test
     public void testIPv4Valid() {

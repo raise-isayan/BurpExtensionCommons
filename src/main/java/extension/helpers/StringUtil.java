@@ -201,7 +201,7 @@ public class StringUtil {
         Matcher m = PRINTERBLE_MATCH.matcher(value);
         return m.matches();
     }
-    
+
     public static boolean equalsString(String a1, String a2) {
         if (a1 == null || a2 == null) {
             return false;

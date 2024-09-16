@@ -130,7 +130,6 @@ public class BurpVersionTest {
             BurpSuiteEdition.PROFESSIONAL
     );
 
-
     @BeforeAll
     public static void setUpClass() {
     }

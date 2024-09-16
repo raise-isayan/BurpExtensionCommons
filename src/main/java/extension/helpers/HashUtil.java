@@ -36,6 +36,7 @@ public final class HashUtil {
      * @param algorithm
      * @param str 対象文字列
      * @param charset エンコーディング
+     * @param upperCase
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      * @throws java.security.NoSuchAlgorithmException
@@ -96,11 +97,7 @@ public final class HashUtil {
      */
     public static String toMd2Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("MD2", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toMd2Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -144,11 +141,7 @@ public final class HashUtil {
      */
     public static String toMd5Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("MD5", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toMd5Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -192,11 +185,7 @@ public final class HashUtil {
      */
     public static String toSHA1Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("SHA-1", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toSHA1Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -240,11 +229,7 @@ public final class HashUtil {
      */
     public static String toSHA256Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("SHA-256", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toSHA256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -288,11 +273,7 @@ public final class HashUtil {
      */
     public static String toSHA384Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("SHA-384", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toSHA384Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -336,11 +317,7 @@ public final class HashUtil {
      */
     public static String toSHA512Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        try {
-            return toMessageDigest("SHA-512", str, charset, upperCase);
-        } catch (NoSuchAlgorithmException ex) {
-            return null;
-        }
+        return toSHA512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**

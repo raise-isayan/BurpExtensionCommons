@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @author isayan
  */
 public class BurpConfigTest {
+
     private final static Logger logger = Logger.getLogger(BurpConfigTest.class.getName());
 
     public BurpConfigTest() {
@@ -397,18 +398,18 @@ public class BurpConfigTest {
             filter.setFilterMode(FilterProperty.FilterMode.BAMBDA);
             filter.setBambda("return false;");
             String update_filter = BurpConfig.updateBambda(config, filter, true);
-            String except = "{\n" +
-                "  \"bambda\": {\n" +
-                "    \"http_history_display_filter\": {\n" +
-                "      \"bambda\": \"return false;\"\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"proxy\": {\n" +
-                "    \"http_history_display_filter\": {\n" +
-                "      \"filter_mode\": \"BAMBDA\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+            String except = "{\n"
+                    + "  \"bambda\": {\n"
+                    + "    \"http_history_display_filter\": {\n"
+                    + "      \"bambda\": \"return false;\"\n"
+                    + "    }\n"
+                    + "  },\n"
+                    + "  \"proxy\": {\n"
+                    + "    \"http_history_display_filter\": {\n"
+                    + "      \"filter_mode\": \"BAMBDA\"\n"
+                    + "    }\n"
+                    + "  }\n"
+                    + "}";
             assertEquals(except, update_filter);
             System.out.println("updateFilter:" + update_filter);
         } catch (Exception e) {

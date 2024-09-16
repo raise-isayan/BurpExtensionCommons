@@ -57,7 +57,6 @@ public class SmartCodecTest {
         assertEquals("!\"#$%&'()=~|`{}*+<>?_\\\r\nabcedf", SmartCodec.toHtmlDecode("!&quot;#$%&amp;'()=~|`{}*+&lt;&gt;?_\\\r\nabcedf"));
     }
 
-
     /**
      * Test of toHtmlDecode method, of class TransUtil.
      */
@@ -372,7 +371,6 @@ public class SmartCodecTest {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
-
 
     @Test
     public void testSmartDecode() {

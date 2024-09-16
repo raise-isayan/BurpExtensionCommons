@@ -264,6 +264,7 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
 
     /**
      * httpRequest static method
+     *
      * @param url
      * @return
      */

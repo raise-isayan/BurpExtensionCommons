@@ -1,6 +1,5 @@
 package extension.helpers;
 
-import static burp.BurpPreferences.loadCACeart;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyFactory;
-import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -141,7 +139,7 @@ public class CertUtil {
         KeyStore ks = KeyStore.getInstance(storeType.name());
         ks.load(null, null);
         for (String alias : certMap.keySet()) {
-            ks.setKeyEntry(alias, certMap.get(alias).getKey(), keyPassword.toCharArray(), new Certificate[] { certMap.get(alias).getValue() });
+            ks.setKeyEntry(alias, certMap.get(alias).getKey(), keyPassword.toCharArray(), new Certificate[]{certMap.get(alias).getValue()});
         }
         ks.store(ostm, keyPassword.toCharArray());
     }

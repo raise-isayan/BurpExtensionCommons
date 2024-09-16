@@ -44,13 +44,12 @@ public class BurpPreferences {
             Enumeration<String> emu = caKeyStore.aliases();
             while (emu.hasMoreElements()) {
                 String alias = emu.nextElement();
-                KeyPair keyPair = new KeyPair(caKeyStore.getCertificate(alias).getPublicKey(), (PrivateKey)caKeyStore.getKey(alias, CA_PASSWORD.toCharArray()));
+                KeyPair keyPair = new KeyPair(caKeyStore.getCertificate(alias).getPublicKey(), (PrivateKey) caKeyStore.getKey(alias, CA_PASSWORD.toCharArray()));
                 return keyPair;
             }
         } catch (NoSuchAlgorithmException | UnrecoverableKeyException ex) {
         }
         return null;
     }
-
 
 }

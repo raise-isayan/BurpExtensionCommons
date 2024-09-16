@@ -24,15 +24,15 @@ public class JsonBuilder {
 
     public static <T> JsonArray toJsonArray(Collection<T> list, Function<T, JsonElement> toJson) {
         return list.stream()
-            .map(toJson)
-            .collect(toJsonArray());
+                .map(toJson)
+                .collect(toJsonArray());
     }
 
     public static Collector<JsonElement, JsonArrayBuilder, JsonArray> toJsonArray() {
         return Collector.of(
-            JsonBuilder::createArrayBuilder,
-            JsonArrayBuilder::add,
-            JsonArrayBuilder::addAll,
-            JsonArrayBuilder::build);
+                JsonBuilder::createArrayBuilder,
+                JsonArrayBuilder::add,
+                JsonArrayBuilder::addAll,
+                JsonArrayBuilder::build);
     }
 }

@@ -300,7 +300,6 @@ public class ExtensionHelper {
         BurpConfig.configTargetScope(this.api, targetScope);
     }
 
-
     /**
      * Message Info Copy
      *
