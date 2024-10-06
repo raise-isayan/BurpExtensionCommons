@@ -5,6 +5,7 @@ import burp.MockMontoya;
 import burp.api.montoya.MontoyaApi;
 import extension.burp.BurpConfig.CharacterSetMode;
 import extension.burp.BurpConfig.TargetScope;
+import extension.burp.FilterProperty.FilterCategory;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
 import extension.helpers.json.JsonUtil;
@@ -383,7 +384,7 @@ public class BurpConfigTest {
     @Test
     public void testGetBambda() {
         System.out.println("testGetBambda");
-        String bambda = BurpConfig.getBambda(api);
+        String bambda = BurpConfig.getBambda(api, FilterCategory.HTTP);
         assertEquals("return true;", bambda);
         System.out.println("getBambda:" + bambda);
     }
@@ -394,7 +395,7 @@ public class BurpConfigTest {
         String configFile = BurpConfigTest.class.getResource("/resources/http_history_display_filter.json").getPath();
         try {
             String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
-            FilterProperty filter = new FilterProperty();
+            FilterProperty filter = new FilterProperty(FilterCategory.HTTP);
             filter.setFilterMode(FilterProperty.FilterMode.BAMBDA);
             filter.setBambda("return false;");
             String update_filter = BurpConfig.updateBambda(config, filter, true);

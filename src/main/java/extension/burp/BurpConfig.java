@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.reflect.TypeToken;
+import extension.burp.FilterProperty.FilterCategory;
 import extension.helpers.HttpUtil;
 import extension.helpers.json.JsonBuilder;
 import extension.helpers.json.JsonObjectBuilder;
@@ -986,39 +987,59 @@ public class BurpConfig {
         }
     }
 
+    private static String getFilterCategoryProperty(FilterCategory filterCategory) {
+        String property = "http_history_display_filter";
+        switch (filterCategory) {
+            case HTTP:
+                property = "http_history_display_filter";
+                break;
+            case WEBSOCKET:
+                property = "web_sockets_history_display_filter";
+                break;
+            case LOGGER_CAPTURE:
+                property = "logger_capture_filter";
+                break;
+            case LOGGER_DISPLAY:
+                property = "logger_display_filter";
+                break;
+        }
+        return property;
+    }
+
     /**
      *
      * @param api
+     * @param filterCategory
      * @return
      */
-    public static String getBambda(MontoyaApi api) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
+    public static String getBambda(MontoyaApi api, FilterCategory filterCategory) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + getFilterCategoryProperty(filterCategory) + ".bambda");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
+        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject(getFilterCategoryProperty(filterCategory));
         return bambda.getAsJsonPrimitive("bambda").getAsString();
     }
 
     /**
      *
      * @param api
+     * @param filterCategory
      * @param filter
      * @param changeFilterMode
      */
     public static void configBambda(MontoyaApi api, FilterProperty filter, boolean changeFilterMode) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("bambda.http_history_display_filter.bambda");
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + getFilterCategoryProperty(filter.getFilterCategory()) + ".bambda");
         String updateConfig = updateBambda(config, filter, changeFilterMode);
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
 
     static String updateBambda(String config, FilterProperty filter, boolean changeFilterMode) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject("http_history_display_filter");
+        JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject(getFilterCategoryProperty(filter.getFilterCategory()));
         history_filter.addProperty("bambda", filter.getBambdaQuery());
         if (changeFilterMode) {
-            JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add("http_history_display_filter",
+            JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add(getFilterCategoryProperty(filter.getFilterCategory()),
                 JsonBuilder.createObjectBuilder().add("filter_mode", "BAMBDA").build());
             root_json.add("proxy", jsonBuilder.build());
-            //root_json.getAsJsonObject("proxy").getAsJsonObject("http_history_display_filter").addProperty("filter_mode", "BAMBDA");
         }
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
