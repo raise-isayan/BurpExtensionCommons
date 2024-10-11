@@ -6,6 +6,10 @@ package extension.burp;
  */
 public interface FilterWebSocketProperty extends FilterAnnotationProperty {
 
+    public FilterProperty.FilterMode getFilterMode();
+
+    public void setFilterMode(FilterProperty.FilterMode filterMode);
+
     public boolean isShowOnlyScopeItems();
 
     public void setShowOnlyScopeItems(boolean value);
@@ -29,5 +33,7 @@ public interface FilterWebSocketProperty extends FilterAnnotationProperty {
     public String getMessage();
 
     public void setMessage(String message);
+
+    public String getBambdaQuery();
 
 }

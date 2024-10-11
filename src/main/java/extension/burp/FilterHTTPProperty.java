@@ -6,6 +6,10 @@ package extension.burp;
  */
 public interface FilterHTTPProperty extends FilterAnnotationProperty {
 
+    public FilterProperty.FilterMode getFilterMode();
+
+    public void setFilterMode(FilterProperty.FilterMode filterMode);
+
     public boolean isShowOnlyScopeItems();
 
     public void setShowOnlyScopeItems(boolean value);
@@ -88,5 +92,7 @@ public interface FilterHTTPProperty extends FilterAnnotationProperty {
     public String getResponse();
 
     public void setResponse(String response);
+
+    public String getBambdaQuery();
 
 }

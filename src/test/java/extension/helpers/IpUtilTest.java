@@ -47,22 +47,25 @@ public class IpUtilTest {
         try {
             {
                 // class A Private IP
-                byte ip0[] = IpUtil.parseIPv4AddressByte("10.168.2.1");
-                assertArrayEquals(new byte[]{(byte) 10, (byte) 168, (byte) 2, (byte) 1}, ip0);
+                byte ipv4_0[] = IpUtil.parseIPv4AddressByte("10.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 10, (byte) 168, (byte) 2, (byte) 1}, ipv4_0);
                 // class B Private IP
-                byte ip1[] = IpUtil.parseIPv4AddressByte("172.16.2.1");
-                assertArrayEquals(new byte[]{(byte) 172, (byte) 16, (byte) 2, (byte) 1}, ip1);
+                byte ipv4_1[] = IpUtil.parseIPv4AddressByte("172.16.2.1");
+                assertArrayEquals(new byte[]{(byte) 172, (byte) 16, (byte) 2, (byte) 1}, ipv4_1);
                 // class C Private IP
-                byte ip2[] = IpUtil.parseIPv4AddressByte("192.168.2.1");
-                assertArrayEquals(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}, ip2);
-                byte ip3[] = IpUtil.parseIPv4AddressByte("8.8.8.8");
-                assertArrayEquals(new byte[]{(byte) 8, (byte) 8, (byte) 8, (byte) 8}, ip3);
-                byte ip4[] = IpUtil.parseIPv4AddressByte("1.1.1.1");
-                assertArrayEquals(new byte[]{(byte) 1, (byte) 1, (byte) 1, (byte) 1}, ip4);
-                byte ip5[] = IpUtil.parseIPv4AddressByte("255.255.255.1");
-                assertArrayEquals(new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 1}, ip5);
-                byte ip6[] = IpUtil.parseIPv4AddressByte("169.254.0.1");
-                assertArrayEquals(new byte[]{(byte) 169, (byte) 254, (byte) 0, (byte) 1}, ip6);
+                byte ipv4_2[] = IpUtil.parseIPv4AddressByte("192.168.2.1");
+                assertArrayEquals(new byte[]{(byte) 192, (byte) 168, (byte) 2, (byte) 1}, ipv4_2);
+                // class C Private IP
+                byte ipv4_3[] = IpUtil.parseIPv4AddressByte("192.0.11.22");
+                assertArrayEquals(new byte[]{(byte) 192, (byte) 0, (byte) 11, (byte) 22}, ipv4_3);
+                byte ipv6_3[] = IpUtil.parseIPv4AddressByte("8.8.8.8");
+                assertArrayEquals(new byte[]{(byte) 8, (byte) 8, (byte) 8, (byte) 8}, ipv6_3);
+                byte ipv6_4[] = IpUtil.parseIPv4AddressByte("1.1.1.1");
+                assertArrayEquals(new byte[]{(byte) 1, (byte) 1, (byte) 1, (byte) 1}, ipv6_4);
+                byte ipv6_5[] = IpUtil.parseIPv4AddressByte("255.255.255.1");
+                assertArrayEquals(new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 1}, ipv6_5);
+                byte ipv6_6[] = IpUtil.parseIPv4AddressByte("169.254.0.1");
+                assertArrayEquals(new byte[]{(byte) 169, (byte) 254, (byte) 0, (byte) 1}, ipv6_6);
             }
         } catch (ParseException ex) {
             fail(ex.getMessage());

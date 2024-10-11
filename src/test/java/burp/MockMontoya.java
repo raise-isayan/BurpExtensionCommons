@@ -85,7 +85,6 @@ import extension.burp.MessageHighlightColor;
 import extension.helpers.ConvertUtil;
 import extension.helpers.FileUtil;
 import extension.helpers.StringUtil;
-import extension.view.base.TableRowTransferHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

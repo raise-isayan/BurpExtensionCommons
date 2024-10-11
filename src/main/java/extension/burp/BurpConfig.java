@@ -1013,16 +1013,21 @@ public class BurpConfig {
      * @return
      */
     public static String getBambda(MontoyaApi api, FilterCategory filterCategory) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + getFilterCategoryProperty(filterCategory) + ".bambda");
+        String filter = getFilterCategoryProperty(filterCategory);
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + filter + ".bambda");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject(getFilterCategoryProperty(filterCategory));
-        return bambda.getAsJsonPrimitive("bambda").getAsString();
+        if (root_json.getAsJsonObject("bambda").has(filter)) {
+            JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject(filter);
+            return bambda.getAsJsonPrimitive("bambda").getAsString();
+        }
+        else {
+            return "return true;";
+        }
     }
 
     /**
      *
      * @param api
-     * @param filterCategory
      * @param filter
      * @param changeFilterMode
      */

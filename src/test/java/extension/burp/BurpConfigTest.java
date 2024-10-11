@@ -382,11 +382,32 @@ public class BurpConfigTest {
     }
 
     @Test
-    public void testGetBambda() {
-        System.out.println("testGetBambda");
+    public void testGetHttpBambda() {
+        System.out.println("testGetHttpBambda");
         String bambda = BurpConfig.getBambda(api, FilterCategory.HTTP);
-        assertEquals("return true;", bambda);
+        assertEquals("return requestResponse.request().isInScope()\r\n && requestResponse.hasResponse()\r\n && (requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY));", bambda);
         System.out.println("getBambda:" + bambda);
+    }
+
+    @Test
+    public void testGetWebSocketBambda() {
+        System.out.println("testGetWebSocetBambda");
+        String bambda = BurpConfig.getBambda(api, FilterCategory.WEBSOCKET);
+        assertEquals("return message.upgradeRequest().isInScope()\r\n && message.direction() != Direction.CLIENT_TO_SERVER\r\n && message.direction() != Direction.SERVER_TO_CLIENT\r\n && !message.contains(Pattern.compile(\"aaa\", Pattern.DOTALL))\r\n && message.annotations().hasNotes()\r\n && message.annotations().hasHighlightColor()\r\n && message.listenerPort() == 8080;", bambda);
+        System.out.println("getBambda:" + bambda);
+    }
+
+    @Test
+    public void testGetNullBambda() {
+        System.out.println("testGetNullBambda");
+        {
+            String bambda = BurpConfig.getBambda(api, FilterCategory.LOGGER_CAPTURE);
+            assertEquals("return true;", bambda);
+        }
+        {
+            String bambda = BurpConfig.getBambda(api, FilterCategory.LOGGER_DISPLAY);
+            assertEquals("return true;", bambda);
+        }
     }
 
     @Test

@@ -1,7 +1,10 @@
 {
     "bambda":{
         "http_history_display_filter":{
-            "bambda":"return true;"
+            "bambda":"return requestResponse.request().isInScope()\r\n && requestResponse.hasResponse()\r\n && (requestResponse.request().hasParameters(HttpParameterType.URL) || requestResponse.request().hasParameters(HttpParameterType.BODY));"
+        },
+        "web_sockets_history_display_filter":{
+            "bambda":"return message.upgradeRequest().isInScope()\r\n && message.direction() != Direction.CLIENT_TO_SERVER\r\n && message.direction() != Direction.SERVER_TO_CLIENT\r\n && !message.contains(Pattern.compile(\"aaa\", Pattern.DOTALL))\r\n && message.annotations().hasNotes()\r\n && message.annotations().hasHighlightColor()\r\n && message.listenerPort() == 8080;"
         }
     },
     "logger":{
