@@ -226,26 +226,84 @@ public class IpUtil {
         }
     }
 
-    public static String ipv4ToHex(int dec1, int dec2, int dec3, int dec4) {
+    public static String IPv4ToDotCDec(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("%d.%d.%d.%d", dec1, dec2, dec3, dec4);
+    }
+
+    public static String IPv4ToDotBDec(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("%d.%d.%d", dec1, dec2, (dec3 * 0x100L) + dec4);
+    }
+
+    public static String IPv4ToDotADec(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("%d.%d", dec1, (dec2 * 0x10000L) + (dec3 * 0x100L) + dec4);
+    }
+
+    public static String IPv4ToInt(int dec1, int dec2, int dec3, int dec4) {
+        String hexIP = String.format("%02x%02x%02x%02x", dec1, dec2, dec3, dec4);
+        return Long.toString(Long.parseLong(hexIP, 16));
+    }
+
+    public static String IPv4ToHex(int dec1, int dec2, int dec3, int dec4) {
         return String.format("0x%02x%02x%02x%02x", dec1, dec2, dec3, dec4);
     }
 
-    public static String ipv4ToDotHex(int dec1, int dec2, int dec3, int dec4) {
+    public static String IPv4ToDotCHex(int dec1, int dec2, int dec3, int dec4) {
         return String.format("0x%02x.0x%02x.0x%02x.0x%02x", dec1, dec2, dec3, dec4);
     }
 
-    public static String ipv4ToOct(int dec1, int dec2, int dec3, int dec4) {
+    public static String IPv4ToDotBHex(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0x%02x.0x%02x.0x%02x%02x", dec1, dec2, dec3, dec4);
+    }
+
+    public static String IPv4ToDotAHex(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0x%02x.0x%02x%02x%02x", dec1, dec2, dec3, dec4);
+    }
+
+    public static String IPv4ToOct(int dec1, int dec2, int dec3, int dec4) {
         String hexIP = String.format("%02x%02x%02x%02x", dec1, dec2, dec3, dec4);
         return String.format("0%o", Long.parseLong(hexIP, 16));
     }
 
-    public static String ipv4ToDotOct(int dec1, int dec2, int dec3, int dec4) {
+    public static String IPv4ToDotCOct(int dec1, int dec2, int dec3, int dec4) {
         return String.format("0%03o.0%03o.0%03o.0%03o", dec1, dec2, dec3, dec4);
     }
 
-    public static String ipv4ToInt(int dec1, int dec2, int dec3, int dec4) {
-        String hexIP = String.format("%02x%02x%02x%02x", dec1, dec2, dec3, dec4);
-        return Long.toString(Long.parseLong(hexIP, 16));
+    public static String IPv4ToDotBOct(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0%03o.0%03o.0%03o", dec1, dec2, (dec3 * 0x100L) + dec4);
+    }
+
+    public static String IPv4ToDotAOct(int dec1, int dec2, int dec3, int dec4) {
+        return String.format("0%03o.0%03o", dec1, (dec2 * 0x10000L) + (dec3 * 0x100L) + dec4);
+    }
+
+    public static String IPv4MappedIPv6(String value) {
+        if (!IpUtil.isIPv4Valid(value)) {
+            new IllegalArgumentException("IllegalA IPv4 Format");
+        }
+        StringBuilder buff = new StringBuilder();
+        buff.append("[");
+        buff.append("::ffff:");
+        buff.append(value);
+        buff.append("]");
+        return buff.toString();
+    }
+
+    private final static String HARF_UNICODE_DIGIT = "0123456789.";
+
+    private final static String FULL_UNICODE_DIGIT = "⓪①②③④⑤⑥⑦⑧⑨。";
+
+    public static String IPv4ToUnicodeDigit(String value) {
+        if (!IpUtil.isIPv4Valid(value)) {
+            new IllegalArgumentException("IllegalA IPv4 Format");
+        }
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < value.length(); i++) {
+            int idx = HARF_UNICODE_DIGIT.indexOf(value.charAt(i));
+            if (idx > -1) {
+                buff.append(FULL_UNICODE_DIGIT.charAt(idx));
+            }
+        }
+        return buff.toString();
     }
 
 }
