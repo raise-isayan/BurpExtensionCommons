@@ -2,6 +2,8 @@ package extension.helpers;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.text.ParseException;
@@ -366,6 +368,51 @@ public class IpUtilTest {
     }
 
     /**
+     * Test of ipv4ToDec method, of class IpUtil.
+     */
+    @Test
+    public void testIpv4ToDec() {
+        System.out.println("ipv4ToDec");
+        // 192.0,2.11
+        assertEquals("192.0.2.11", IpUtil.IPv4ToDotCDec(192, 0, 2, 11));
+        assertEquals("192.0.523", IpUtil.IPv4ToDotBDec(192, 0, 2, 11));
+        assertEquals("192.523", IpUtil.IPv4ToDotADec(192, 0, 2, 11));
+        assertEquals("3221225995", IpUtil.IPv4ToInt(192, 0, 2, 11));
+
+        // 127.0.0.1
+        assertEquals("127.0.0.1", IpUtil.IPv4ToDotCDec(127, 0, 0, 1));
+        assertEquals("127.0.1", IpUtil.IPv4ToDotBDec(127, 0, 0, 1));
+        assertEquals("127.1", IpUtil.IPv4ToDotADec(127, 0, 0, 1));
+        assertEquals("2130706433", IpUtil.IPv4ToInt(127, 0, 0, 1));
+    }
+
+    /**
+     * Test of ipv4ToDec method, of class IpUtil.
+     */
+    @Test
+    public void testIpv4ToOct() {
+        System.out.println("ipv4ToOct");
+        // 192.0,2.11
+        assertEquals("0300.0000.0002.0013", IpUtil.IPv4ToDotCOct(192, 0, 2, 11));
+        assertEquals("0300.0000.01013", IpUtil.IPv4ToDotBOct(192, 0, 2, 11));
+        assertEquals("0300.01013", IpUtil.IPv4ToDotAOct(192, 0, 2, 11));
+        assertEquals("030000001013", IpUtil.IPv4ToOct(192, 0, 2, 11));
+
+        // 127.0.0.1
+        assertEquals("0177.0000.0000.0001", IpUtil.IPv4ToDotCOct(127, 0, 0, 1));
+        assertEquals("0177.0000.0001", IpUtil.IPv4ToDotBOct(127, 0, 0, 1));
+        assertEquals("0177.0001", IpUtil.IPv4ToDotAOct(127, 0, 0, 1));
+        assertEquals("017700000001", IpUtil.IPv4ToOct(127, 0, 0, 1));
+
+        // 127.10.172.192
+        assertEquals("0177.0012.0254.0300", IpUtil.IPv4ToDotCOct(127, 10, 172, 192));
+        assertEquals("0177.0012.0126300", IpUtil.IPv4ToDotBOct(127, 10, 172, 192));
+        assertEquals("0177.02526300", IpUtil.IPv4ToDotAOct(127, 10, 172, 192));
+        assertEquals("017702526300", IpUtil.IPv4ToOct(127, 10, 172, 192));
+
+    }
+
+    /**
      * Test of testIpv4ToHex method, of class IpUtil.
      */
     @Test
@@ -377,29 +424,11 @@ public class IpUtilTest {
         assertEquals("0xc0.0x00020b", IpUtil.IPv4ToDotAHex(192, 0, 2, 11));
         assertEquals("0xc000020b", IpUtil.IPv4ToHex(192, 0, 2, 11));
 
-        assertEquals("0300.0000.0002.0013", IpUtil.IPv4ToDotCOct(192, 0, 2, 11));
-        assertEquals("0300.0000.01013", IpUtil.IPv4ToDotBOct(192, 0, 2, 11));
-        assertEquals("0300.01013", IpUtil.IPv4ToDotAOct(192, 0, 2, 11));
-        assertEquals("030000001013", IpUtil.IPv4ToOct(192, 0, 2, 11));
-
-        assertEquals("192.0.523", IpUtil.IPv4ToDotBDec(192, 0, 2, 11));
-        assertEquals("192.523", IpUtil.IPv4ToDotADec(192, 0, 2, 11));
-        assertEquals("3221225995", IpUtil.IPv4ToInt(192, 0, 2, 11));
-
         // 127.0.0.1
         assertEquals("0x7f000001", IpUtil.IPv4ToHex(127, 0, 0, 1));
         assertEquals("0x7f.0x00.0x00.0x01", IpUtil.IPv4ToDotCHex(127, 0, 0, 1));
         assertEquals("0x7f.0x00.0x0001", IpUtil.IPv4ToDotBHex(127, 0, 0, 1));
         assertEquals("0x7f.0x000001", IpUtil.IPv4ToDotAHex(127, 0, 0, 1));
-
-        assertEquals("0177.0000.0000.0001", IpUtil.IPv4ToDotCOct(127, 0, 0, 1));
-        assertEquals("0177.0000.0001", IpUtil.IPv4ToDotBOct(127, 0, 0, 1));
-        assertEquals("0177.0001", IpUtil.IPv4ToDotAOct(127, 0, 0, 1));
-        assertEquals("017700000001", IpUtil.IPv4ToOct(127, 0, 0, 1));
-
-        assertEquals("127.0.1", IpUtil.IPv4ToDotBDec(127, 0, 0, 1));
-        assertEquals("127.1", IpUtil.IPv4ToDotADec(127, 0, 0, 1));
-        assertEquals("2130706433", IpUtil.IPv4ToInt(127, 0, 0, 1));
 
         // 127.10.172.192
         assertEquals("0x7f0aacc0", IpUtil.IPv4ToHex(127, 10, 172, 192));
@@ -407,15 +436,10 @@ public class IpUtilTest {
         assertEquals("0x7f.0x0a.0xacc0", IpUtil.IPv4ToDotBHex(127, 10, 172, 192));
         assertEquals("0x7f.0x0aacc0", IpUtil.IPv4ToDotAHex(127, 10, 172, 192));
 
-        assertEquals("0177.0012.0254.0300", IpUtil.IPv4ToDotCOct(127, 10, 172, 192));
-        assertEquals("0177.0012.0126300", IpUtil.IPv4ToDotBOct(127, 10, 172, 192));
-        assertEquals("0177.02526300", IpUtil.IPv4ToDotAOct(127, 10, 172, 192));
-        assertEquals("017702526300", IpUtil.IPv4ToOct(127, 10, 172, 192));
-
+        // 127.10.172.192
         assertEquals("127.10.44224", IpUtil.IPv4ToDotBDec(127, 10, 172, 192));
         assertEquals("127.699584", IpUtil.IPv4ToDotADec(127, 10, 172, 192));
         assertEquals("2131406016", IpUtil.IPv4ToInt(127, 10, 172, 192));
-
     }
 
     @Test
@@ -424,5 +448,36 @@ public class IpUtilTest {
         assertEquals("①⑨②。①⑥⑧。⓪。①①", IpUtil.IPv4ToUnicodeDigit("192.168.0.11"));
     }
 
+    @Test
+    public void testURL() throws IOException {
+        System.out.println("testURL");
+        try {
+            new URL("https://" + IpUtil.IPv4ToDotCDec(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotCOct(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotCHex(192, 0, 2, 11) + "/");
+
+            new URL("https://" + IpUtil.IPv4ToDotBDec(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotBOct(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotBHex(192, 0, 2, 11) + "/");
+
+            new URL("https://" + IpUtil.IPv4ToDotADec(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotAOct(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToDotAHex(192, 0, 2, 11) + "/");
+
+            new URL("https://" + IpUtil.IPv4ToInt(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToOct(192, 0, 2, 11) + "/");
+            new URL("https://" + IpUtil.IPv4ToHex(192, 0, 2, 11) + "/");
+
+            new URL("https://" + IpUtil.IPv4ToDotCDec(192, 0, 2, 11) + "./");
+            URL u = new URL("https://" + IpUtil.IPv4ToUnicodeDigit(IpUtil.IPv4ToDotCDec(192, 0, 2, 11)) + "/");
+            System.out.println("testURL:" + u.toExternalForm());
+            new URL("https://[::1]/");
+
+        }
+        catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        }
+
+    }
 
 }

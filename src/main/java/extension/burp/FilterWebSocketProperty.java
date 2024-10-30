@@ -22,6 +22,10 @@ public interface FilterWebSocketProperty extends FilterAnnotationProperty {
 
     public void setHideIncomingMessage(boolean value);
 
+    public boolean isShowOnlyEditedMessage();
+
+    public void setShowOnlyEditedMessage(boolean showOnlyEditedMessage);
+
     public boolean isMessageRegex();
 
     public void setMessageRegex(boolean requestRegex);

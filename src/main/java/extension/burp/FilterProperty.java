@@ -64,6 +64,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         this.hideItemsWithoutResponses = hideItemsWithoutResponses;
     }
 
+    @Expose
     private boolean showOnlyParameterizedRequests = false;
 
     /**
@@ -83,6 +84,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         this.showOnlyParameterizedRequests = showOnlyParameterizedRequests;
     }
 
+    @Expose
     private boolean showOnlyEditedMessage = false;
 
     /**
@@ -523,7 +525,10 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
             if (sb.length() > 0) {
                 sb.append("\n && ");
             }
-            sb.append(variable).append(".").append("edited()");
+            if (isHttpProtocol())
+                sb.append(variable).append(".").append("edited()");
+            else
+                sb.append(variable).append(".").append("editedPayload() != null");
         }
 
         //
@@ -630,10 +635,23 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
 
         // Filter by Search Item
         if (!this.method.isEmpty()) {
+//            if (sb.length() > 0) {
+//                sb.append("\n && ");
+//            }
+//            sb.append(variable).append(".").append("request().method().toUpperCase().equals(\"").append(StringUtil.literalEscape(this.method)).append("\")");
+            String[] methods = BurpUtil.splitFilterPattern(this.method);
+            StringBuilder sub = new StringBuilder();
+            for (String m : methods) {
+                if (sub.length() > 0) {
+                    sub.append("\n || ");
+                }
+                sub.append("method.equals(\"").append(StringUtil.literalEscape(m)).append("\")");
+            }
             if (sb.length() > 0) {
                 sb.append("\n && ");
             }
-            sb.append(variable).append(".").append("request().method().toUpperCase().equals(\"").append(StringUtil.literalEscape(this.method)).append("\")");
+            sb.append("((Predicate<String>)((method)->{ return ").append(sub).append("; })).test(").append(variable).append(".").append("request().method().toUpperCase())");
+
         }
         if (!this.path.isEmpty()) {
             if (sb.length() > 0) {
