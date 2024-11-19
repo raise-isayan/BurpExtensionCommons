@@ -126,21 +126,12 @@ public class DateUtilTest {
     @Test
     public void testParseHttpDate() {
         System.out.println("parseHttpDate");
-        ZonedDateTime expResult = ZonedDateTime.of(2022, 5, 8, 4, 6, 13, 0, ZoneOffset.UTC);
+        String value = "Thu, 31 Oct 2024 01:02:03 GMT";
         {
-            String dateStr = " Sun,  8  May  2022  04:06:13 GMT ";
-            ZonedDateTime result = DateUtil.parseSmartHttpDate(dateStr);
-            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
-        }
-        {
-            String dateStr = "8 May 2022 04:06:13 GMT";
-            ZonedDateTime result = ZonedDateTime.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(dateStr.trim()));
-            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
-        }
-        {
-            String dateStr = "8-May-2022 04:06:13 GMT";
-            ZonedDateTime result = ZonedDateTime.from(RFC_1123_DATE_TIME_HYPHEN.parse(dateStr.trim()));
-            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
+            ZonedDateTime zdtm = DateUtil.parseHttpDate(value);
+            String expResult = value;
+            String result = DateUtil.valueOfHttpDate(zdtm);
+            assertEquals(expResult, result);
         }
     }
 
@@ -195,7 +186,7 @@ public class DateUtilTest {
             int hour = 0;
             int minute = 0;
             int second = 0;
-            ZoneId zone = ZoneId.of("GMT");
+            ZoneId zone = DateUtil.ZONE_OFFSET_GMT;
             if (tm.isSupported(ChronoField.HOUR_OF_DAY)) {
                 hour = tm.get(ChronoField.HOUR_OF_DAY);
             }
@@ -221,7 +212,7 @@ public class DateUtilTest {
             int hour = 0;
             int minute = 0;
             int second = 0;
-            ZoneId zone = ZoneId.of("GMT");
+            ZoneId zone = DateUtil.ZONE_OFFSET_GMT;
             if (tm.isSupported(ChronoField.HOUR_OF_DAY)) {
                 hour = tm.get(ChronoField.HOUR_OF_DAY);
             }
@@ -767,6 +758,23 @@ public class DateUtilTest {
             ZonedDateTime expResult = ZonedDateTime.of(2022, 5, 8, 4, 6, 13, 0, ZoneOffset.UTC);
             ZonedDateTime result = DateUtil.parseSmartDate(dateStr);
             assertEquals(DateTimeFormatter.ISO_DATE_TIME.format(expResult), DateTimeFormatter.ISO_DATE_TIME.format(result));
+        }
+
+        ZonedDateTime expResult = ZonedDateTime.of(2022, 5, 8, 4, 6, 13, 0, ZoneOffset.UTC);
+        {
+            String dateStr = " Sun,  8  May  2022  04:06:13 GMT ";
+            ZonedDateTime result = DateUtil.parseSmartHttpDate(dateStr);
+            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
+        }
+        {
+            String dateStr = "8 May 2022 04:06:13 GMT";
+            ZonedDateTime result = ZonedDateTime.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(dateStr.trim()));
+            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
+        }
+        {
+            String dateStr = "8-May-2022 04:06:13 GMT";
+            ZonedDateTime result = ZonedDateTime.from(RFC_1123_DATE_TIME_HYPHEN.parse(dateStr.trim()));
+            assertEquals(DateTimeFormatter.RFC_1123_DATE_TIME.format(expResult), DateTimeFormatter.RFC_1123_DATE_TIME.format(result));
         }
 
     }

@@ -674,9 +674,9 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
                 sb.append("\n && ");
             }
             if (this.responseRegex) {
-                sb.append(variable).append(".").append("response().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.response)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
+                sb.append(variable).append(".").append("hasResponse() && ").append(variable).append(".").append("response().contains(Pattern.compile(\"").append(StringUtil.literalEscape(this.response)).append("\", Pattern.DOTALL").append(this.requestIgnoreCase ? "" : " | Pattern.CASE_INSENSITIVE").append("))");
             } else {
-                sb.append(variable).append(".").append("response().contains(\"").append(StringUtil.literalEscape(this.response)).append("\", ").append(this.responseIgnoreCase).append(")");
+                sb.append(variable).append(".").append("hasResponse() && ").append(variable).append(".").append("response().contains(\"").append(StringUtil.literalEscape(this.response)).append("\", ").append(this.responseIgnoreCase).append(")");
             }
         }
 

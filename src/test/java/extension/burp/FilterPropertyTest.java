@@ -117,7 +117,7 @@ public class FilterPropertyTest {
             FilterProperty instance = new FilterProperty(FilterCategory.HTTP);
             instance.setMethod("OPTIONS");
             String result = instance.build();
-            assertEquals("return requestResponse.request().method().toUpperCase().equals(\"OPTIONS\");", result);
+            assertEquals("return ((Predicate<String>)((method)->{ return method.equals(\"OPTIONS\"); })).test(requestResponse.request().method().toUpperCase());", result);
         }
         {
             FilterProperty instance = new FilterProperty(FilterCategory.HTTP);
@@ -151,6 +151,7 @@ public class FilterPropertyTest {
                     + " && !path.endsWith(\".css\"); })).test(requestResponse.request().pathWithoutQuery().toLowerCase());", result);
         }
         {
+        // request
             FilterProperty instance = new FilterProperty(FilterCategory.HTTP);
             instance.setRequest("www");
             String result = instance.build();
@@ -164,11 +165,12 @@ public class FilterPropertyTest {
             String result = instance.build();
             assertEquals("return requestResponse.request().contains(Pattern.compile(\"www\", Pattern.DOTALL | Pattern.CASE_INSENSITIVE));", result);
         }
+        // response
         {
             FilterProperty instance = new FilterProperty(FilterCategory.HTTP);
             instance.setResponse("www");
             String result = instance.build();
-            assertEquals("return requestResponse.response().contains(\"www\", false);", result);
+            assertEquals("return requestResponse.hasResponse() && requestResponse.response().contains(\"www\", false);", result);
         }
         {
             FilterProperty instance = new FilterProperty(FilterCategory.HTTP);
@@ -176,7 +178,7 @@ public class FilterPropertyTest {
             instance.setResponseRegex(true);
             instance.setResponseIgnoreCase(false);
             String result = instance.build();
-            assertEquals("return requestResponse.response().contains(Pattern.compile(\"www\", Pattern.DOTALL | Pattern.CASE_INSENSITIVE));", result);
+            assertEquals("return requestResponse.hasResponse() && requestResponse.response().contains(Pattern.compile(\"www\", Pattern.DOTALL | Pattern.CASE_INSENSITIVE));", result);
         }
     }
 

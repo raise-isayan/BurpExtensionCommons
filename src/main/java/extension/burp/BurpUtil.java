@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 /**
@@ -53,11 +54,26 @@ public class BurpUtil {
     }
 
     public static Frame suiteFrame() {
-        Frame[] frames = Frame.getFrames();
-        for (Frame frame : frames) {
-            if (frame.isVisible() && frame.getTitle().startsWith("Burp Suite")) {
-                return frame;
+        Frame suiteFrame = null;
+        try {
+            // 古いBurpには該当のメソッド存在しない
+            suiteFrame = BurpExtensionImpl.api().userInterface().swingUtils().suiteFrame();
+        } catch (java.lang.NoSuchMethodError | NullPointerException ex) {
+            Frame[] frames = Frame.getFrames();
+            for (Frame frame : frames) {
+                if (frame.isVisible() && frame.getTitle().startsWith("Burp Suite")) {
+                    suiteFrame = frame;
+                    break;
+                }
             }
+        }
+        return suiteFrame;
+    }
+
+    public static JFrame suiteJFrame() {
+        Frame suiteFrame = suiteFrame();
+        if (suiteFrame instanceof JFrame suiteJFrame) {
+            return suiteJFrame;
         }
         return null;
     }

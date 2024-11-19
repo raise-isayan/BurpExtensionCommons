@@ -373,7 +373,7 @@ public class BurpConfig {
     private final static BurpVersion SUPPORT_BAMBDA = new BurpVersion("Burp Suite Support", "2023", "10.3", "");
 
     public enum SupportApi {
-        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, PROXY_IS_INTERCEPT
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
@@ -382,9 +382,13 @@ public class BurpConfig {
                 case BURPSUITE_USEROPTION:
                     api.burpSuite().exportUserOptionsAsJson("user_options");
                     break;
+                case PROXY_IS_INTERCEPT: // support burp 2024.7
+                    api.proxy().isInterceptEnabled();
+                    break;
                 case BURPSUITE_BAMBDA:
                     BurpVersion burp_version = BurpUtil.suiteVersion();
                     return burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
+
             }
             return true;
         } catch (java.lang.NoSuchMethodError ex) {

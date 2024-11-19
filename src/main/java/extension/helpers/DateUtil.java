@@ -21,6 +21,8 @@ import java.util.regex.Pattern;
  */
 public class DateUtil {
 
+    public final static ZoneId ZONE_OFFSET_GMT = ZoneId.of("GMT");
+
     public final static long TOTAL_DAY_TIME_MILLIS = (long) (24L * 60L * 60L * 1000L);
 
     /**
@@ -45,7 +47,11 @@ public class DateUtil {
     }
 
     public static String valueOfHttpDate(ZonedDateTime zdtm) {
-        return DateTimeFormatter.RFC_1123_DATE_TIME.format(zdtm);
+        return valueOfHttpDate(zdtm, ZONE_OFFSET_GMT);
+    }
+
+    public static String valueOfHttpDate(ZonedDateTime zdtm, ZoneId zone) {
+        return DateTimeFormatter.RFC_1123_DATE_TIME.withZone(zone).format(zdtm);
     }
 
     public static ZonedDateTime parseSmartHttpDate(String dateStr) {
