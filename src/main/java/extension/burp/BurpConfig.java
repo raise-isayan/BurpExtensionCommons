@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1393,6 +1394,260 @@ public class BurpConfig {
             } else {
                 return false;
             }
+        }
+
+    }
+
+    /**
+     *
+     * @param api
+     * @return
+     */
+    public static List<RequestListener> getRequestListeners(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonArray listeners = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
+        Type listType = new TypeToken<ArrayList<RequestListener>>() {
+        }.getType();
+        JsonArray jsonArray = listeners.getAsJsonArray();
+        List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        return requestListeners;
+    }
+
+
+    /**
+     *
+     * @param api
+     * @param basePort
+     * @return
+     */
+    private static RequestListener findRequestListeners(MontoyaApi api, final int basePort) {
+        List<RequestListener> requestListeners = getRequestListeners(api);
+        requestListeners.sort(new Comparator<RequestListener>() {
+            @Override
+            public int compare(RequestListener o1, RequestListener o2) {
+                return o1.getListenerPort() - o2.getListenerPort();
+            }
+
+        });
+        RequestListener bindListener = null;
+        for (int i = basePort; i < 65536; i++) {
+            final int bindPort = i;
+            List<RequestListener> bindListenerList = requestListeners.stream().filter(l -> l.getListenerPort() == bindPort).toList();
+            if (bindListenerList.isEmpty()) {
+                bindListener = RequestListener.defaultListener(bindPort);
+                break;
+            }
+            else {
+                for (RequestListener l: bindListenerList) {
+                    if (RequestListener.matchListener(l, bindPort)) {
+                        bindListener = l;
+                        break;
+                    }
+                }
+            }
+        }
+        return bindListener;
+    }
+
+    public static RequestListener openBrowserRequestListener(MontoyaApi api, int basePort) {
+        List<RequestListener> requestListeners = getRequestListeners(api);
+        RequestListener bindListener = findRequestListeners(api, basePort);
+        requestListeners.add(bindListener);
+        String config = configRequestListeners(api, requestListeners, false);
+        return bindListener;
+    }
+
+    public static String configRequestListeners(MontoyaApi api, List<BurpConfig.RequestListener> requestListenrs) {
+        return configRequestListeners(api, requestListenrs, false);
+    }
+
+    public static String configRequestListeners(MontoyaApi api, List<BurpConfig.RequestListener> requestListenrs, boolean remove) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.request_listeners");
+        String updateConfig = updateRequestListeners(config, requestListenrs, remove);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+        return updateConfig;
+    }
+
+    static String updateRequestListeners(String config, List<BurpConfig.RequestListener> listenrs, boolean remove) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject json_proxy = root_json.getAsJsonObject("proxy");
+        Type listType = new TypeToken<ArrayList<RequestListener>>() {
+        }.getType();
+        JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
+        List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        List<RequestListener> resolvListeners = new ArrayList<>();
+        for (RequestListener l : listenrs) {
+            if (remove) {
+                requestListeners.removeAll(requestListeners.stream().filter(m -> m.listener_port == l.listener_port).toList());
+            } else {
+                if (requestListeners.stream().noneMatch(m -> m.listener_port == l.listener_port)) {
+                    resolvListeners.add(l);
+                }
+            }
+        }
+        if (!resolvListeners.isEmpty()) {
+            requestListeners.addAll(resolvListeners);
+        }
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(requestListeners, true);
+        json_proxy.add("request_listeners", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class RequestListener {
+
+        @Expose
+        private String certificate_mode = "pre_host";
+
+        @Expose
+        private List<String> custom_tls_protocols = new ArrayList<>();
+
+        @Expose
+        private boolean enable_http2 = true;
+
+        @Expose
+        private String listen_mode = "loopback_only";
+
+        @Expose
+        private int listener_port = 8080;
+
+        @Expose
+        private boolean running = true;
+
+        @Expose
+        private boolean support_invisible_proxying = false;
+
+        @Expose
+        private boolean use_custom_tls_protocols = false;
+
+        public RequestListener() {
+        }
+
+        public static RequestListener defaultListener() {
+            return defaultListener(8080);
+        }
+
+        public static RequestListener defaultListener(int port) {
+            RequestListener proxy = new RequestListener();
+            proxy.setListenerPort(port);
+            return proxy;
+        }
+
+        public static boolean matchListener(RequestListener value, int port) {
+            return (value.running && value.listen_mode.equals("loopback_only") && value.listener_port == port);
+        }
+
+        /**
+         * @return the certificateMode
+         */
+        public String getCertificateMode() {
+            return certificate_mode;
+        }
+
+        /**
+         * @param certificate_mode the certificate_mode to set
+         */
+        public void setCertificateMode(String certificate_mode) {
+            this.certificate_mode = certificate_mode;
+        }
+
+        /**
+         * @return the custom_tls_protocols
+         */
+        public List<String> getCustomTlsProtocols() {
+            return custom_tls_protocols;
+        }
+
+        /**
+         * @param custom_tls_protocols the custom_tls_protocols to set
+         */
+        public void setCustomTlsProtocols(List<String> custom_tls_protocols) {
+            this.custom_tls_protocols = custom_tls_protocols;
+        }
+
+        /**
+         * @return the enable_http2
+         */
+        public boolean isEnableHttp2() {
+            return enable_http2;
+        }
+
+        /**
+         * @param enable_http2 the enable_http2 to set
+         */
+        public void setEnableHttp2(boolean enable_http2) {
+            this.enable_http2 = enable_http2;
+        }
+
+        /**
+         * @return the listen_mode
+         */
+        public String getListenMode() {
+            return listen_mode;
+        }
+
+        /**
+         * @param listen_mode the listen_mode to set
+         */
+        public void setListenMode(String listen_mode) {
+            this.listen_mode = listen_mode;
+        }
+
+        /**
+         * @return the listener_port
+         */
+        public int getListenerPort() {
+            return listener_port;
+        }
+
+        /**
+         * @param listener_port the listener_port to set
+         */
+        public void setListenerPort(int listener_port) {
+            this.listener_port = listener_port;
+        }
+
+        /**
+         * @return the running
+         */
+        public boolean isRunning() {
+            return running;
+        }
+
+        /**
+         * @param running the running to set
+         */
+        public void setRunning(boolean running) {
+            this.running = running;
+        }
+
+        /**
+         * @return the support_invisible_proxying
+         */
+        public boolean isSupportInvisibleProxying() {
+            return support_invisible_proxying;
+        }
+
+        /**
+         * @param support_invisible_proxying the support_invisible_proxying to set
+         */
+        public void setSupportInvisibleProxying(boolean support_invisible_proxying) {
+            this.support_invisible_proxying = support_invisible_proxying;
+        }
+
+        /**
+         * @return the use_custom_tls_protocols
+         */
+        public boolean isUseCustomTlsProtocols() {
+            return use_custom_tls_protocols;
+        }
+
+        /**
+         * @param use_custom_tls_protocols the use_custom_tls_protocols to set
+         */
+        public void setUseCustomTlsProtocols(boolean use_custom_tls_protocols) {
+            this.use_custom_tls_protocols = use_custom_tls_protocols;
         }
 
     }

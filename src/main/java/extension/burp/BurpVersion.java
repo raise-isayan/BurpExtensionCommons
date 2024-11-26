@@ -140,7 +140,13 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         WINDOWS,
         LINUX,
         MAC,
-        UNKOWN,
+        UNKOWN;
+    }
+
+    public enum ArcType {
+        AMD64,
+        ARM64,
+        UNKOWN;
     }
 
     public static OSType getOSType() {
@@ -153,6 +159,17 @@ public final class BurpVersion implements Comparable<BurpVersion> {
             return OSType.MAC;
         } else {
             return OSType.UNKOWN;
+        }
+    }
+
+    public static ArcType getArchType() {
+        String cpu_arc = System.getProperty("sun.cpu.isalist").toLowerCase();
+        if (cpu_arc.startsWith("amd64")) {
+            return ArcType.AMD64;
+        } else if (cpu_arc.startsWith("arm64")) {
+            return ArcType.ARM64;
+        } else {
+            return ArcType.UNKOWN;
         }
     }
 

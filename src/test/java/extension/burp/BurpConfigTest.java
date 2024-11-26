@@ -244,6 +244,78 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testGetResuestListeners() {
+        System.out.println("testGetResuestListeners");
+        List<BurpConfig.RequestListener> listeners = BurpConfig.getRequestListeners(api);
+        for (BurpConfig.RequestListener l : listeners) {
+            System.out.println("port:" + l.getListenerPort());
+        }
+    }
+
+    @Test
+    public void testUpdResuestListeners() {
+        try {
+            System.out.println("testUpdResuestListeners");
+            String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            System.out.println("loadConfig:" + config);
+            List<BurpConfig.RequestListener> requestListenrs = new ArrayList<>();
+            requestListenrs.add(BurpConfig.RequestListener.defaultListener(8001));
+            config = BurpConfig.configRequestListeners(api, requestListenrs, true);
+            System.out.println("updateConfig:" + config);
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testAddResuestListeners() {
+        try {
+            System.out.println("testAddResuestListeners");
+            String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            System.out.println("loadConfig:" + config);
+            List<BurpConfig.RequestListener> requestListenrs = new ArrayList<>();
+            requestListenrs.add(BurpConfig.RequestListener.defaultListener(8080));
+            config = BurpConfig.configRequestListeners(api, requestListenrs, false);
+            System.out.println("updateConfig:" + config);
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testOpenBrowserResuestListener() {
+        try {
+            System.out.println("testOpenBrowserResuestListener");
+            String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            System.out.println("loadConfig:" + config);
+            BurpConfig.RequestListener bindListener = BurpConfig.openBrowserRequestListener(api, 8001);
+            assertEquals(8004, bindListener.getListenerPort());
+            System.out.println("BindListener:" + bindListener.getListenerPort());
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+
+    @Test
+    public void testOpenBrowserNewResuestListener() {
+        try {
+            System.out.println("testOpenBrowserNewResuestListener");
+            String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
+            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            System.out.println("loadConfig:" + config);
+            BurpConfig.RequestListener bindListener = BurpConfig.openBrowserRequestListener(api, 8080);
+            assertEquals(8080, bindListener.getListenerPort());
+            System.out.println("BindListener:" + bindListener.getListenerPort());
+        } catch (IOException ex) {
+            fail();
+        }
+    }
+
+    @Test
     public void testGetTargetScope() {
         System.out.println("testGetTargetScope");
         {

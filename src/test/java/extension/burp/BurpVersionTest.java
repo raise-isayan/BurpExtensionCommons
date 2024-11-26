@@ -5,6 +5,7 @@ import burp.api.montoya.burpsuite.BurpSuite;
 import burp.api.montoya.core.BurpSuiteEdition;
 import burp.api.montoya.core.Version;
 import extension.burp.montoya.MontoyaApiAdapter;
+import java.util.Properties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -148,6 +149,13 @@ public class BurpVersionTest {
 
     @AfterEach
     public void tearDown() {
+    }
+
+    @Test
+    public void testProperty() {
+        System.out.println("testProperty");
+        Properties p = System.getProperties();
+        p.list(System.out);
     }
 
     /**
