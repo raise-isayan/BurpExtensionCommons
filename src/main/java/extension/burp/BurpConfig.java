@@ -2,12 +2,19 @@ package extension.burp;
 
 import burp.api.montoya.MontoyaApi;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import extension.burp.FilterProperty.FilterCategory;
 import extension.helpers.HttpUtil;
+import extension.helpers.StringUtil;
 import extension.helpers.json.JsonBuilder;
 import extension.helpers.json.JsonObjectBuilder;
 import extension.helpers.json.JsonUtil;
@@ -475,7 +482,7 @@ public class BurpConfig {
         String config = api.burpSuite().exportProjectOptionsAsJson("project_options.connections.hostname_resolution");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
-        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
+        Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
         JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -516,7 +523,7 @@ public class BurpConfig {
     static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
-        Type listType = new TypeToken<ArrayList<HostnameResolution>>() {
+        Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
         JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -630,7 +637,7 @@ public class BurpConfig {
     static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject ssl_pass_through = root_json.getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
-        Type listType = new TypeToken<ArrayList<BurpConfig.SSLPassThroughRule>>() {
+        Type listType = new TypeToken<List<BurpConfig.SSLPassThroughRule>>() {
         }.getType();
         JsonArray jsonArray = ssl_pass_through.getAsJsonArray("rules");
         List<BurpConfig.SSLPassThroughRule> passsThrougRules = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -736,7 +743,7 @@ public class BurpConfig {
     static List<MatchReplaceRule> getMatchReplaceRules(String config) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("match_replace_rules");
-        Type listType = new TypeToken<ArrayList<BurpConfig.MatchReplaceRule>>() {
+        Type listType = new TypeToken<List<BurpConfig.MatchReplaceRule>>() {
         }.getType();
         List<MatchReplaceRule> matchReplaceRule = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         return matchReplaceRule;
@@ -1179,14 +1186,14 @@ public class BurpConfig {
             BurpConfig.TargetScope targetScope = JsonUtil.jsonFromString(JsonUtil.jsonToString(targetScope_json, true), BurpConfig.TargetScope.class, true);
             this.advanced_mode = targetScope.advanced_mode;
             if (this.advanced_mode) {
-                Type listType = new TypeToken<ArrayList<TargetScopeAdvance>>() {
+                Type listType = new TypeToken<List<TargetScopeAdvance>>() {
                 }.getType();
                 List<TargetScopeAdvance> includeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
                 List<TargetScopeAdvance> excludeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
                 this.setIncludeAdvance(includeAdvance);
                 this.setExcludeAdvance(excludeAdvance);
             } else {
-                Type listType = new TypeToken<ArrayList<TargetScopeURL>>() {
+                Type listType = new TypeToken<List<TargetScopeURL>>() {
                 }.getType();
                 List<TargetScopeURL> includeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
                 List<TargetScopeURL> excludeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
@@ -1407,7 +1414,7 @@ public class BurpConfig {
         String config = api.burpSuite().exportProjectOptionsAsJson("proxy");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonArray listeners = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
-        Type listType = new TypeToken<ArrayList<RequestListener>>() {
+        Type listType = new TypeToken<List<RequestListener>>() {
         }.getType();
         JsonArray jsonArray = listeners.getAsJsonArray();
         List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -1472,7 +1479,7 @@ public class BurpConfig {
     static String updateRequestListeners(String config, List<BurpConfig.RequestListener> listenrs, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject json_proxy = root_json.getAsJsonObject("proxy");
-        Type listType = new TypeToken<ArrayList<RequestListener>>() {
+        Type listType = new TypeToken<List<RequestListener>>() {
         }.getType();
         JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
         List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
@@ -1495,22 +1502,53 @@ public class BurpConfig {
         return updateConfig;
     }
 
+    @JsonAdapter(XRequestListener.class)
     public static class RequestListener {
 
+        public final static String CERTIFICATE_MODE_PER = "per_host";
+        public final static String CERTIFICATE_MODE_SELF = "self_signed";
+        public final static String CERTIFICATE_MODE_HOST = "fixed_host";
+        public final static String CERTIFICATE_MODE_CUSTOM = "custom";
+
         @Expose
-        private String certificate_mode = "pre_host";
+        private String certificate_mode = CERTIFICATE_MODE_PER;
+
+        @Expose
+        private String certificate_specific_host = null;
+
+        @Expose
+        private String certificate_file = null;
+
+        @Expose
+        private String certificate_password = null;
+
+        @Expose
+        private boolean use_custom_tls_protocols = false;
 
         @Expose
         private List<String> custom_tls_protocols = new ArrayList<>();
 
-        @Expose
-        private boolean enable_http2 = true;
+        public final static String LISTEN_MODE_LOOPBACK = "loopback_only";
+        public final static String LISTEN_MODE_ALL = "all_interfaces";
+        public final static String LISTEN_MODE_SPECIFIC = "specific_address";
 
         @Expose
-        private String listen_mode = "loopback_only";
+        private String listen_mode = LISTEN_MODE_LOOPBACK;
+
+        @Expose
+        private String listen_specific_address = null;
 
         @Expose
         private int listener_port = 8080;
+
+        @Expose
+        private boolean force_use_ssl = false;
+
+        @Expose
+        private String redirect_to_host = null;
+
+        @Expose
+        private int redirect_to_port = -1;
 
         @Expose
         private boolean running = true;
@@ -1519,7 +1557,7 @@ public class BurpConfig {
         private boolean support_invisible_proxying = false;
 
         @Expose
-        private boolean use_custom_tls_protocols = false;
+        private boolean enable_http2 = true;
 
         public RequestListener() {
         }
@@ -1531,11 +1569,14 @@ public class BurpConfig {
         public static RequestListener defaultListener(int port) {
             RequestListener proxy = new RequestListener();
             proxy.setListenerPort(port);
+            proxy.setListenMode(LISTEN_MODE_LOOPBACK);
+            List<String> tls_protocols = List.of("SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2", "TLSv1.3");
+            proxy.setCustomTlsProtocols(tls_protocols);
             return proxy;
         }
 
         public static boolean matchListener(RequestListener value, int port) {
-            return (value.running && value.listen_mode.equals("loopback_only") && value.listener_port == port);
+            return (value.running && value.listen_mode.equals(LISTEN_MODE_LOOPBACK) && value.listener_port == port);
         }
 
         /**
@@ -1550,6 +1591,48 @@ public class BurpConfig {
          */
         public void setCertificateMode(String certificate_mode) {
             this.certificate_mode = certificate_mode;
+        }
+
+        /**
+         * @return the certificate_specific_host
+         */
+        public String getCertificateSpecificHost() {
+            return certificate_specific_host;
+        }
+
+        /**
+         * @param certificate_specific_host the certificate_specific_host to set
+         */
+        public void setCertificateSpecificHost(String certificate_specific_host) {
+            this.certificate_specific_host = certificate_specific_host;
+        }
+
+        /**
+         * @return the certificate_password
+         */
+        public String getCertificatePassword() {
+            return certificate_password;
+        }
+
+        /**
+         * @param certificate_password the certificate_password to set
+         */
+        public void setCertificatePassword(String certificate_password) {
+            this.certificate_password = certificate_password;
+        }
+
+        /**
+         * @return the certificate_file
+         */
+        public String getCertificateFile() {
+            return certificate_file;
+        }
+
+        /**
+         * @param certificate_file the certificate_file to set
+         */
+        public void setCertificateFile(String certificate_file) {
+            this.certificate_file = certificate_file;
         }
 
         /**
@@ -1595,6 +1678,20 @@ public class BurpConfig {
         }
 
         /**
+         * @return the listen_specific_address
+         */
+        public String getListenSpecificAddress() {
+            return listen_specific_address;
+        }
+
+        /**
+         * @param listen_specific_address the listen_specific_address to set
+         */
+        public void setListenSpecificAddress(String listen_specific_address) {
+            this.listen_specific_address = listen_specific_address;
+        }
+
+        /**
          * @return the listener_port
          */
         public int getListenerPort() {
@@ -1623,6 +1720,48 @@ public class BurpConfig {
         }
 
         /**
+         * @return the redirect_to_port
+         */
+        public int getRedirectToPort() {
+            return redirect_to_port;
+        }
+
+        /**
+         * @param redirect_to_port the redirect_to_port to set
+         */
+        public void setRedirectToPort(int redirect_to_port) {
+            this.redirect_to_port = redirect_to_port;
+        }
+
+        /**
+         * @return the redirect_to_host
+         */
+        public String getRedirectToHost() {
+            return redirect_to_host;
+        }
+
+        /**
+         * @param redirect_to_host the redirect_to_host to set
+         */
+        public void setRedirectToHost(String redirect_to_host) {
+            this.redirect_to_host = redirect_to_host;
+        }
+
+        /**
+         * @return the force_use_ssl
+         */
+        public boolean isForceUseSsl() {
+            return force_use_ssl;
+        }
+
+        /**
+         * @param force_use_ssl the force_use_ssl to set
+         */
+        public void setForceUseSsl(boolean force_use_ssl) {
+            this.force_use_ssl = force_use_ssl;
+        }
+
+        /**
          * @return the support_invisible_proxying
          */
         public boolean isSupportInvisibleProxying() {
@@ -1648,6 +1787,112 @@ public class BurpConfig {
          */
         public void setUseCustomTlsProtocols(boolean use_custom_tls_protocols) {
             this.use_custom_tls_protocols = use_custom_tls_protocols;
+        }
+
+    }
+
+    public static class XRequestListener implements JsonSerializer<RequestListener>, JsonDeserializer<RequestListener> {
+
+        @Override
+        public JsonElement serialize(BurpConfig.RequestListener t, Type type, JsonSerializationContext jsc) {
+            final TypeToken<?> token = TypeToken.get(type);
+            final JsonObject jsonObject = new JsonObject();
+
+            // BINDING
+            jsonObject.add("listen_mode", jsc.serialize(t.getListenMode()));
+            if (RequestListener.LISTEN_MODE_SPECIFIC.equals(t.getListenMode())) {
+                jsonObject.add("listen_specific_address", jsc.serialize(t.getListenSpecificAddress()));
+            }
+            jsonObject.add("running", jsc.serialize(t.isRunning()));
+            jsonObject.add("listener_port", jsc.serialize(t.getListenerPort()));
+
+            // REQUEST HANDLING
+            if (!StringUtil.isNullOrEmpty(t.getRedirectToHost())) {
+                jsonObject.add("redirect_to_host", jsc.serialize(t.getRedirectToHost()));
+            }
+            if (t.getListenerPort() > 0) {
+                jsonObject.add("listener_port", jsc.serialize(t.getListenerPort()));
+            }
+            jsonObject.add("force_use_ssl", jsc.serialize(t.isForceUseSsl()));
+            jsonObject.add("support_invisible_proxying", jsc.serialize(t.isSupportInvisibleProxying()));
+
+            // CERTIFICATE
+            jsonObject.add("certificate_mode", jsc.serialize(t.getCertificateMode()));
+            if (RequestListener.CERTIFICATE_MODE_HOST.equals(t.getCertificateMode())) {
+               if (!StringUtil.isNullOrEmpty(t.getCertificateSpecificHost())) {
+                   jsonObject.add("certificate_specific_host", jsc.serialize(t.getCertificateSpecificHost()));
+               }
+            }
+            else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(t.getCertificateMode())) {
+               if (!StringUtil.isNullOrEmpty(t.getCertificateFile())) {
+                    jsonObject.add("certificate_file", jsc.serialize(t.getCertificateFile()));
+                    jsonObject.add("certificate_password", jsc.serialize(t.getCertificatePassword()));
+               }
+            }
+
+            // TLS PROTOCOL
+            jsonObject.add("use_custom_tls_protocols", jsc.serialize(t.isUseCustomTlsProtocols()));
+            jsonObject.add("custom_tls_protocols", jsc.serialize(t.getCustomTlsProtocols()));
+
+            // HTTP
+            jsonObject.add("enable_http2", jsc.serialize(t.isEnableHttp2()));
+            return jsonObject;
+        }
+
+        @Override
+        public BurpConfig.RequestListener deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            final RequestListener item = new RequestListener();
+            final TypeToken<?> token = TypeToken.get(type);
+            final JsonObject jsonObject = je.getAsJsonObject();
+
+            // BINDING
+            item.setListenMode(jdc.deserialize(jsonObject.get("listen_mode"), String.class));
+            if (RequestListener.LISTEN_MODE_SPECIFIC.equals(item.getListenMode())) {
+                if (jsonObject.has("listen_specific_address")) {
+                    item.setListenSpecificAddress(jdc.deserialize(jsonObject.get("listen_specific_address"), String.class));
+                }
+            }
+            item.setRunning(jdc.deserialize(jsonObject.get("running"), Boolean.TYPE));
+            item.setListenerPort(jdc.deserialize(jsonObject.get("listener_port"), Integer.TYPE));
+
+            // REQUEST HANDLING
+            if (jsonObject.has("redirect_to_host")) {
+                item.setRedirectToHost(jdc.deserialize(jsonObject.get("redirect_to_host"), String.class));
+            }
+            if (jsonObject.has("listener_port")) {
+                item.setListenerPort(jdc.deserialize(jsonObject.get("listener_port"), Integer.TYPE));
+            }
+            if (jsonObject.has("force_use_ssl")) {
+                item.setForceUseSsl(jdc.deserialize(jsonObject.get("force_use_ssl"), Boolean.TYPE));
+            }
+            if (jsonObject.has("support_invisible_proxying")) {
+                item.setSupportInvisibleProxying(jdc.deserialize(jsonObject.get("support_invisible_proxying"), Boolean.TYPE));
+            }
+
+            // CERTIFICATE
+            item.setCertificateMode(jdc.deserialize(jsonObject.get("certificate_mode"), String.class));
+            if (RequestListener.CERTIFICATE_MODE_HOST.equals(item.getCertificateMode())) {
+                if (jsonObject.has("certificate_specific_host")) {
+                    item.setCertificateSpecificHost(jdc.deserialize(jsonObject.get("certificate_specific_host"), String.class));
+                }
+            }
+            else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(item.getCertificateMode())) {
+                if (jsonObject.has("certificate_file")) {
+                    item.setCertificateSpecificHost(jdc.deserialize(jsonObject.get("certificate_file"), String.class));
+                }
+                if (jsonObject.has("certificate_password")) {
+                    item.setCertificateSpecificHost(jdc.deserialize(jsonObject.get("certificate_password"), String.class));
+                }
+            }
+
+            // TLS PROTOCOL
+            item.setUseCustomTlsProtocols(jdc.deserialize(jsonObject.get("use_custom_tls_protocols"), Boolean.TYPE));
+            item.setCustomTlsProtocols(jdc.deserialize(jsonObject.get("custom_tls_protocols"), new TypeToken<List<String>>(){}.getType()));
+
+            // HTTP
+            item.setEnableHttp2(jdc.deserialize(jsonObject.get("enable_http2"), Boolean.TYPE));
+
+            return item;
         }
 
     }
@@ -1809,7 +2054,7 @@ public class BurpConfig {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc.hotkeys");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject miscJson = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
-        Type listType = new TypeToken<ArrayList<Hotkey>>() {
+        Type listType = new TypeToken<List<Hotkey>>() {
         }.getType();
         JsonArray jsonArray = miscJson.getAsJsonArray("hotkeys");
         List<Hotkey> hotkeys = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);

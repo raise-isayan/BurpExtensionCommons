@@ -277,7 +277,7 @@ public class BurpConfigTest {
             System.out.println("loadConfig:" + config);
             List<BurpConfig.RequestListener> requestListenrs = new ArrayList<>();
             requestListenrs.add(BurpConfig.RequestListener.defaultListener(8080));
-            config = BurpConfig.configRequestListeners(api, requestListenrs, false);
+            config = BurpConfig.configRequestListeners(api, requestListenrs);
             System.out.println("updateConfig:" + config);
         } catch (IOException ex) {
             fail();
