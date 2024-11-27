@@ -1428,7 +1428,7 @@ public class BurpConfig {
      * @param basePort
      * @return
      */
-    private static RequestListener findRequestListeners(MontoyaApi api, final int basePort) {
+    static RequestListener findRequestListeners(MontoyaApi api, final int basePort) {
         List<RequestListener> requestListeners = getRequestListeners(api);
         requestListeners.sort(new Comparator<RequestListener>() {
             @Override
@@ -1449,7 +1449,7 @@ public class BurpConfig {
                 for (RequestListener l: bindListenerList) {
                     if (RequestListener.matchListener(l, bindPort)) {
                         bindListener = l;
-                        break;
+                        return bindListener;
                     }
                 }
             }
