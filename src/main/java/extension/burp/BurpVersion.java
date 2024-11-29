@@ -163,7 +163,7 @@ public final class BurpVersion implements Comparable<BurpVersion> {
     }
 
     public static ArcType getArchType() {
-        String cpu_arc = System.getProperty("sun.cpu.isalist").toLowerCase();
+        String cpu_arc = System.getProperty("os.arch").toLowerCase();
         if (cpu_arc.startsWith("amd64")) {
             return ArcType.AMD64;
         } else if (cpu_arc.startsWith("arm64")) {
