@@ -39,12 +39,16 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
  * @author isayan
  */
 public class BurpConfig {
+
+    public final static FileFilter BURP_CONFIG_FILTER = new FileNameExtensionFilter("burp config File(*.json)", "json");
 
     public static String getUserHomePath() {
         return System.getProperties().getProperty("user.home");
