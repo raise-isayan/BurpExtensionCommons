@@ -38,7 +38,7 @@ Please import BurpExtensionCommons.jar in the release folder as a Java library a
 * v2023.1.2 or higher (http://www.portswigger.net/burp/)
 
 ### Development environment
-* NetBean 20 (https://netbeans.apache.org/)
+* NetBean 23 (https://netbeans.apache.org/)
 * Gradle 7.6 (https://gradle.org/)
 
 ## build

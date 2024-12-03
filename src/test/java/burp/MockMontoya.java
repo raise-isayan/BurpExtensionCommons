@@ -47,6 +47,7 @@ import burp.api.montoya.organizer.Organizer;
 import burp.api.montoya.persistence.PersistedList;
 import burp.api.montoya.persistence.PersistedObject;
 import burp.api.montoya.persistence.Persistence;
+import burp.api.montoya.project.Project;
 import burp.api.montoya.proxy.MessageReceivedAction;
 import burp.api.montoya.proxy.MessageToBeSentAction;
 import burp.api.montoya.proxy.Proxy;
@@ -77,6 +78,13 @@ import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.menu.BasicMenuItem;
 import burp.api.montoya.ui.menu.Menu;
 import burp.api.montoya.utilities.Utilities;
+import burp.api.montoya.utilities.json.JsonArrayNode;
+import burp.api.montoya.utilities.json.JsonBooleanNode;
+import burp.api.montoya.utilities.json.JsonNode;
+import burp.api.montoya.utilities.json.JsonNullNode;
+import burp.api.montoya.utilities.json.JsonNumberNode;
+import burp.api.montoya.utilities.json.JsonObjectNode;
+import burp.api.montoya.utilities.json.JsonStringNode;
 import burp.api.montoya.websocket.BinaryMessageAction;
 import burp.api.montoya.websocket.MessageAction;
 import burp.api.montoya.websocket.TextMessageAction;
@@ -108,6 +116,7 @@ public class MockMontoya {
     public final MockMontoyaObjectFactory mockFactory = Mockito.spy(new MockMontoyaObjectFactory());
 
     public final MontoyaApi mockApi = Mockito.mock(MontoyaApi.class);
+
     public final BurpSuite burpSuteApi = Mockito.mock(BurpSuite.class);
     public final Collaborator collaboratorApi = Mockito.mock(Collaborator.class);
     public final Comparer comparerApi = Mockito.mock(Comparer.class);
@@ -119,10 +128,12 @@ public class MockMontoya {
     public final Persistence persistenceApi = Mockito.mock(Persistence.class);
     public final Proxy proxyApi = Mockito.mock(Proxy.class);
     public final Repeater repeaterApi = Mockito.mock(Repeater.class);
+    public final SiteMap siteMapApi = Mockito.mock(SiteMap.class);
     public final Scanner scannerApi = Mockito.mock(Scanner.class);
     public final Scope scopeApi = Mockito.mock(Scope.class);
-    ;
-    public final SiteMap siteMapApi = Mockito.mock(SiteMap.class);
+    public final Organizer organizerApi = Mockito.mock(Organizer.class);
+    public final Project projectApi = Mockito.mock(Project.class);
+
     public final UserInterface userInterfaceApi = Mockito.mock(UserInterface.class);
     public final Utilities utilitiesApi = Mockito.mock(Utilities.class);
     public final WebSockets websocketsApi = Mockito.mock(WebSockets.class);
@@ -137,7 +148,6 @@ public class MockMontoya {
     public final CookieJar cookieJar = Mockito.mock(CookieJar.class);
     public final HttpRequest httpRequestApi = Mockito.mock(HttpRequest.class);
     public final HttpResponse httpResponseApi = Mockito.mock(HttpResponse.class);
-    public final Organizer organizerApi = Mockito.mock(Organizer.class);
 
     public MockMontoya() {
         try {
@@ -285,6 +295,11 @@ public class MockMontoya {
             @Override
             public Organizer organizer() {
                 return organizerApi;
+            }
+
+            @Override
+            public Project project() {
+                return projectApi;
             }
 
         };
@@ -1130,6 +1145,66 @@ public class MockMontoya {
         @Override
         public RequestOptions requestOptions() {
             return this.requestOptions;
+        }
+
+        @Override
+        public JsonNode jsonNode(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonArrayNode jsonArrayNode() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonArrayNode jsonArrayNode(List<? extends JsonNode> list) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonArrayNode jsonArrayNode(JsonNode... jns) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonBooleanNode jsonBooleanNode(boolean bln) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonNullNode jsonNullNode() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonNumberNode jsonNumberNode(long l) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonNumberNode jsonNumberNode(double d) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonNumberNode jsonNumberNode(Number number) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonObjectNode jsonObjectNode() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonObjectNode jsonObjectNode(Map<String, ? extends JsonNode> map) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public JsonStringNode jsonStringNode(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
 

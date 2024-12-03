@@ -8,6 +8,12 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -163,6 +169,40 @@ public class FileUtil {
             bostm.write(buff, 0, len);
         }
         return bostm.toByteArray();
+    }
+
+    public static String stringFromFile(File file, Charset charset) throws IOException {
+        StringWriter writer = new StringWriter();
+        try (InputStreamReader fstm = new InputStreamReader(new FileInputStream(file), charset)) {
+            char[] buff = new char[1024];
+            int len = 0;
+            while ((len = fstm.read(buff)) > 0) {
+                writer.write(buff, 0, len);
+            }
+        }
+        return writer.toString();
+    }
+
+    public static File stringToFile(String string, File file, Charset charset) throws IOException {
+        StringReader reader = new StringReader(string);
+        try (OutputStreamWriter fstm = new OutputStreamWriter(new FileOutputStream(file), charset)) {
+            char[] buff = new char[1024];
+            int len = 0;
+            while ((len = reader.read(buff)) > 0) {
+                fstm.write(buff, 0, len);
+            }
+        }
+        return file;
+    }
+
+    public static String readAllString(Reader reader) throws IOException {
+        StringWriter writer = new StringWriter();
+        char[] buff = new char[1024];
+        int len = 0;
+        while ((len = reader.read(buff)) >= 0) {
+            writer.write(buff, 0, len);
+        }
+        return writer.toString();
     }
 
     public static String appendFirstSeparator(String path, String separator) {

@@ -38,7 +38,7 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 * v2023.1.2以上 (http://www.portswigger.net/burp/)
 
 ### 開発環境
-* NetBean 20 (https://netbeans.apache.org/)
+* NetBean 23 (https://netbeans.apache.org/)
 * Gradle 7.6 (https://gradle.org/)
 
 ## ビルド
