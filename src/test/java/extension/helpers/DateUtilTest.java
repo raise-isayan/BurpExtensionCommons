@@ -1,5 +1,6 @@
 package extension.helpers;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -14,9 +15,12 @@ import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -778,4 +782,72 @@ public class DateUtilTest {
         }
 
     }
+
+    @Test
+    public void testDateTime() {
+        System.out.println("testDateTime");
+        Date date = new Date();
+        ZonedDateTime cdtm = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        System.out.println("testDateTime.current:" + cdtm);
+        System.out.println("testDateTime.date.current:" + Date.from(cdtm.toInstant()));
+        ZonedDateTime zdtm = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of("Europe/Paris"));
+        System.out.println("testDateTime.zone:" + zdtm);
+        System.out.println("testDateTime.date.zone:" + Date.from(zdtm.toInstant()));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd H:mm:ss zzz");
+        String s = formatter.format(zdtm);
+        System.out.println("testDateTime.format:" + s);
+    }
+
+    @Test
+    public void testZoneDateTime() {
+        System.out.println("testZoneDateTime");
+        ZoneId id = ZoneId.of("JST", ZoneId.SHORT_IDS);
+        System.out.println(id.getId());
+        System.out.println(id.getRules().getOffset(Instant.EPOCH));
+        System.out.println(id.getRules().toString());
+    }
+
+    @Test
+    public void testCovertDate() {
+        System.out.println("testCovertDate");
+        long unix_time = 1655470800L;
+        LocalDateTime udtm = LocalDateTime.ofInstant(Instant.ofEpochSecond(unix_time), ZoneOffset.UTC);
+        System.out.println("LocalDateTime(UTC): " + udtm);
+        System.out.println("LocalDateTime(UTC): " + udtm.getYear() + "-" + udtm.getMonthValue() + "-" + udtm.getDayOfMonth() + " " + udtm.getHour() + ":" + udtm.getMinute() + ":" + udtm.getSecond());
+        LocalDateTime ldtm = LocalDateTime.ofInstant(Instant.ofEpochSecond(unix_time), ZoneId.of("Asia/Tokyo"));
+        System.out.println("LocalDateTime(JST): " + ldtm.getYear() + "-" + ldtm.getMonthValue() + "-" + ldtm.getDayOfMonth() + " " + ldtm.getHour() + ":" + ldtm.getMinute() + ":" + ldtm.getSecond());
+        Date dateLocal = Date.from(ldtm.toInstant(ZoneOffset.UTC));
+        System.out.println("LocalDateTime(Z): " + dateLocal);
+        System.out.println("TransUtil.toZoneWithDate: " + DateUtil.toZoneWithDate(ldtm, ZoneOffset.UTC));
+        ZonedDateTime zdtm = ZonedDateTime.ofInstant(Instant.ofEpochSecond(unix_time), ZoneOffset.UTC);
+        System.out.println("ZoneDateTime: " + zdtm);
+        Date dateZone = Date.from(ldtm.toInstant(ZoneOffset.UTC));
+        System.out.println("ZoneDateTime(Z): " + dateZone);
+        System.out.println("withZoneSameInstant: " + zdtm.withZoneSameInstant(ZoneId.systemDefault()));
+
+        Calendar cl = Calendar.getInstance();
+        cl.setTime(dateZone);
+        System.out.println("Calendar.toDate: " + cl.getTime());
+        System.out.println("Calendar.get: " + cl.get(Calendar.YEAR) + "-" + cl.get(Calendar.MONTH) + "-" + cl.get(Calendar.DAY_OF_MONTH) + " " + cl.get(Calendar.HOUR) + ":" + cl.get(Calendar.MINUTE) + ":" + cl.get(Calendar.SECOND));
+        cl.setTimeZone(TimeZone.getTimeZone(DateUtil.ZONE_OFFSET_GMT));
+        System.out.println("Calendar.toDate: " + cl.getTime());
+        System.out.println("Calendar.get: " + cl.get(Calendar.YEAR) + "-" + cl.get(Calendar.MONTH) + "-" + cl.get(Calendar.DAY_OF_MONTH) + " " + cl.get(Calendar.HOUR) + ":" + cl.get(Calendar.MINUTE) + ":" + cl.get(Calendar.SECOND));
+        Calendar clz = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        clz.setTime(dateZone);
+        System.out.println("Calendar.get(z): " + cl.get(Calendar.YEAR) + "-" + clz.get(Calendar.MONTH) + "-" + clz.get(Calendar.DAY_OF_MONTH) + " " + clz.get(Calendar.HOUR) + ":" + clz.get(Calendar.MINUTE) + ":" + clz.get(Calendar.SECOND));
+    }
+
+    @Test
+    public void testToZoneWithDate() {
+        System.out.println("testToZoneWithDate");
+        long unix_time = 1665835871;
+        // 2022/10/15 21:11:11 Asia/Tokyo
+        // 2022/10/15 12:11:11 UTC
+        Date date = new Date(unix_time * 1000);
+        System.out.println("date:" + date.toString());
+        ZonedDateTime zdtm = DateUtil.toZoneWithZoneDate(date, ZoneOffset.UTC);
+        System.out.println("zdtm:" + zdtm);
+
+    }
+
 }

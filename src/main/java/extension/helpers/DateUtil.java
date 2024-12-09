@@ -11,7 +11,11 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,6 +128,27 @@ public class DateUtil {
         LocalDate ldt = LocalDate.from(ta);
         LocalTime ltm = LocalTime.of(hour, minute, second);
         return LocalDateTime.of(ldt, ltm).atZone(zoneId);
+    }
+
+
+    /*
+     * DateへはZoneがデフォルトのZoneになるため強制的に変更
+     */
+    public static Date toZoneWithDate(LocalDateTime ldtm, ZoneId zoneId) {
+        GregorianCalendar cal = new GregorianCalendar(ldtm.getYear(), ldtm.getMonthValue() - 1, ldtm.getDayOfMonth(), ldtm.getHour(), ldtm.getMinute(), ldtm.getSecond());
+        cal.setTimeZone(TimeZone.getTimeZone(zoneId));
+        return cal.getTime();
+    }
+
+    /*
+     * DateへはZoneがデフォルトのZoneになるため強制的に変更
+     */
+    public static ZonedDateTime toZoneWithZoneDate(Date date, ZoneId zoneId) {
+        Calendar cal = GregorianCalendar.getInstance();
+        //cal.setTimeZone(TimeZone.getTimeZone(zoneId));
+        cal.setTime(date);
+        ZonedDateTime zdtm = ZonedDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), 0, zoneId);
+        return zdtm;
     }
 
 }
