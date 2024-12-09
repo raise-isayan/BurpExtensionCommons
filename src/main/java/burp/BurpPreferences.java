@@ -11,6 +11,8 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
@@ -18,6 +20,8 @@ import java.util.prefs.Preferences;
  * @author isayan
  */
 public class BurpPreferences {
+
+    private final static Logger logger = Logger.getLogger(BurpPreferences.class.getName());
 
     private static final String CA_PASSWORD = "/burp/media/ps.p12";
 
@@ -48,6 +52,7 @@ public class BurpPreferences {
                 return keyPair;
             }
         } catch (NoSuchAlgorithmException | UnrecoverableKeyException ex) {
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return null;
     }

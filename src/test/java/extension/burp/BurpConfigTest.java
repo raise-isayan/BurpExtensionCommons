@@ -521,6 +521,18 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testGetEmbeddedBrowser() {
+        System.out.println("testGetEmbeddedBrowser");
+        try {
+            BurpConfig.EmbeddedBrowser browser = BurpConfig.getEmbeddedBrowser(api);
+            System.out.println("isAllowSavingBrowserSettings:" + browser.isAllowSavingBrowserSettings());
+            System.out.println("getBrowserDataDirectory:" + browser.getBrowserDataDirectory());
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
+
+    @Test
     public void testGetHotkey() {
         System.out.println("getHotkey");
         List<BurpConfig.Hotkey> hotkeys = BurpConfig.getHotkey(api);

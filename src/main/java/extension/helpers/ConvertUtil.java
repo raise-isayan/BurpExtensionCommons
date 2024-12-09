@@ -682,15 +682,16 @@ public class ConvertUtil {
 
     public static Process executeFormat(String target, String args[]) throws IOException {
         Process process = null;
-        String command = "";
         MessageFormat msgfmt = new MessageFormat(target);
         if (msgfmt.getFormats().length > 0) {
-            command = msgfmt.format(target, (Object[]) args);
-            process = Runtime.getRuntime().exec(command);
+            String command = msgfmt.format(target, (Object[]) args);
+            ProcessBuilder processBulder = new ProcessBuilder(command);
+            process = processBulder.start();
         } else {
             ArrayList<String> list = new ArrayList<>(Arrays.asList(args));
             list.add(0, target);
-            process = Runtime.getRuntime().exec((String[]) list.toArray(String[]::new));
+            ProcessBuilder processBulder = new ProcessBuilder(list);
+            process = processBulder.start();
         }
         //Runtime.getRuntime().exec(args);
         return process;

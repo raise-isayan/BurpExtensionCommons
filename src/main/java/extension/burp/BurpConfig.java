@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
@@ -47,6 +49,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author isayan
  */
 public class BurpConfig {
+
+    private final static Logger logger = Logger.getLogger(BurpConfig.class.getName());
 
     public final static FileFilter BURP_CONFIG_FILTER = new FileNameExtensionFilter("burp config File(*.json)", "json");
 
@@ -98,6 +102,9 @@ public class BurpConfig {
                     break;
                 case SPECIFIC_CHARACTER_SET:
                     result = CHARACTER_SETS_MODE_SET;
+                    break;
+                default:
+                    logger.log(Level.WARNING, "no match:" + this.name());
                     break;
             }
             return result;
@@ -369,6 +376,7 @@ public class BurpConfig {
                 signatures.addAll(loadFromResource(BUILT_IN_USER_AGENTS_SHORT_SIGNATURE));
                 break;
             default:
+                logger.log(Level.WARNING, "no match:" + payloadType.name());
                 break;
         }
         return signatures;
@@ -400,7 +408,9 @@ public class BurpConfig {
                 case BURPSUITE_BAMBDA:
                     BurpVersion burp_version = BurpUtil.suiteVersion();
                     return burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
-
+                default:
+                    logger.log(Level.WARNING, "no match:" + type.name());
+                    break;
             }
             return true;
         } catch (java.lang.NoSuchMethodError ex) {
@@ -1035,8 +1045,7 @@ public class BurpConfig {
         if (root_json.getAsJsonObject("bambda").has(filter)) {
             JsonObject bambda = root_json.getAsJsonObject("bambda").getAsJsonObject(filter);
             return bambda.getAsJsonPrimitive("bambda").getAsString();
-        }
-        else {
+        } else {
             return "return true;";
         }
     }
@@ -1059,7 +1068,7 @@ public class BurpConfig {
         history_filter.addProperty("bambda", filter.getBambdaQuery());
         if (changeFilterMode) {
             JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add(getFilterCategoryProperty(filter.getFilterCategory()),
-                JsonBuilder.createObjectBuilder().add("filter_mode", "BAMBDA").build());
+                    JsonBuilder.createObjectBuilder().add("filter_mode", "BAMBDA").build());
             root_json.add("proxy", jsonBuilder.build());
         }
         String updateConfig = JsonUtil.prettyJson(root_json, true);
@@ -1425,7 +1434,6 @@ public class BurpConfig {
         return requestListeners;
     }
 
-
     /**
      *
      * @param api
@@ -1448,9 +1456,8 @@ public class BurpConfig {
             if (bindListenerList.isEmpty()) {
                 bindListener = RequestListener.defaultListener(bindPort);
                 break;
-            }
-            else {
-                for (RequestListener l: bindListenerList) {
+            } else {
+                for (RequestListener l : bindListenerList) {
                     if (RequestListener.matchListener(l, bindPort)) {
                         bindListener = l;
                         return bindListener;
@@ -1482,7 +1489,7 @@ public class BurpConfig {
 
     static String updateRequestListeners(String config, List<BurpConfig.RequestListener> listenrs, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject json_proxy = root_json.getAsJsonObject("proxy");
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
         Type listType = new TypeToken<List<RequestListener>>() {
         }.getType();
         JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
@@ -1501,7 +1508,7 @@ public class BurpConfig {
             requestListeners.addAll(resolvListeners);
         }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(requestListeners, true);
-        json_proxy.add("request_listeners", updateJsonElemet);
+        proxy_json.add("request_listeners", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -1773,7 +1780,8 @@ public class BurpConfig {
         }
 
         /**
-         * @param support_invisible_proxying the support_invisible_proxying to set
+         * @param support_invisible_proxying the support_invisible_proxying to
+         * set
          */
         public void setSupportInvisibleProxying(boolean support_invisible_proxying) {
             this.support_invisible_proxying = support_invisible_proxying;
@@ -1823,15 +1831,14 @@ public class BurpConfig {
             // CERTIFICATE
             jsonObject.add("certificate_mode", jsc.serialize(t.getCertificateMode()));
             if (RequestListener.CERTIFICATE_MODE_HOST.equals(t.getCertificateMode())) {
-               if (!StringUtil.isNullOrEmpty(t.getCertificateSpecificHost())) {
-                   jsonObject.add("certificate_specific_host", jsc.serialize(t.getCertificateSpecificHost()));
-               }
-            }
-            else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(t.getCertificateMode())) {
-               if (!StringUtil.isNullOrEmpty(t.getCertificateFile())) {
+                if (!StringUtil.isNullOrEmpty(t.getCertificateSpecificHost())) {
+                    jsonObject.add("certificate_specific_host", jsc.serialize(t.getCertificateSpecificHost()));
+                }
+            } else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(t.getCertificateMode())) {
+                if (!StringUtil.isNullOrEmpty(t.getCertificateFile())) {
                     jsonObject.add("certificate_file", jsc.serialize(t.getCertificateFile()));
                     jsonObject.add("certificate_password", jsc.serialize(t.getCertificatePassword()));
-               }
+                }
             }
 
             // TLS PROTOCOL
@@ -1879,8 +1886,7 @@ public class BurpConfig {
                 if (jsonObject.has("certificate_specific_host")) {
                     item.setCertificateSpecificHost(jdc.deserialize(jsonObject.get("certificate_specific_host"), String.class));
                 }
-            }
-            else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(item.getCertificateMode())) {
+            } else if (RequestListener.CERTIFICATE_MODE_CUSTOM.equals(item.getCertificateMode())) {
                 if (jsonObject.has("certificate_file")) {
                     item.setCertificateSpecificHost(jdc.deserialize(jsonObject.get("certificate_file"), String.class));
                 }
@@ -1891,7 +1897,8 @@ public class BurpConfig {
 
             // TLS PROTOCOL
             item.setUseCustomTlsProtocols(jdc.deserialize(jsonObject.get("use_custom_tls_protocols"), Boolean.TYPE));
-            item.setCustomTlsProtocols(jdc.deserialize(jsonObject.get("custom_tls_protocols"), new TypeToken<List<String>>(){}.getType()));
+            item.setCustomTlsProtocols(jdc.deserialize(jsonObject.get("custom_tls_protocols"), new TypeToken<List<String>>() {
+            }.getType()));
 
             // HTTP
             item.setEnableHttp2(jdc.deserialize(jsonObject.get("enable_http2"), Boolean.TYPE));
@@ -1899,6 +1906,57 @@ public class BurpConfig {
             return item;
         }
 
+    }
+
+    /**
+     *
+     * @param api
+     * @return
+     */
+    public static EmbeddedBrowser getEmbeddedBrowser(MontoyaApi api) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject misc_json = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        JsonObject embeddedBrowserJson = misc_json.getAsJsonObject("embedded_browser");
+        EmbeddedBrowser embeddedBrowser = JsonUtil.jsonFromJsonElement(embeddedBrowserJson, EmbeddedBrowser.class, true);
+        return embeddedBrowser;
+    }
+
+    public static class EmbeddedBrowser {
+
+        @Expose
+        private boolean allow_saving_browser_settings = true;
+        @Expose
+        private String browser_data_directory = null;
+
+        /**
+         * @return the allow_saving_browser_settings
+         */
+        public boolean isAllowSavingBrowserSettings() {
+            return allow_saving_browser_settings;
+        }
+
+        /**
+         * @param allow_saving_browser_settings the
+         * allow_saving_browser_settings to set
+         */
+        public void setAllowSavingBrowserSettings(boolean allow_saving_browser_settings) {
+            this.allow_saving_browser_settings = allow_saving_browser_settings;
+        }
+
+        /**
+         * @return the browser_data_directory
+         */
+        public String getBrowserDataDirectory() {
+            return browser_data_directory;
+        }
+
+        /**
+         * @param browser_data_directory the browser_data_directory to set
+         */
+        public void setBrowserDataDirectory(String browser_data_directory) {
+            this.browser_data_directory = browser_data_directory;
+        }
     }
 
     public static class Hotkey {
@@ -2014,7 +2072,7 @@ public class BurpConfig {
             uninitializedMap.put("Ctrl", Integer.valueOf(InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK));
             uninitializedMap.put("Meta", Integer.valueOf(InputEvent.META_DOWN_MASK | InputEvent.META_MASK));
             uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
-            uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK|InputEvent.ALT_GRAPH_MASK));
+            uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK | InputEvent.ALT_GRAPH_MASK));
             uninitializedMap.put("Button1", Integer.valueOf(InputEvent.BUTTON1_DOWN_MASK));
             uninitializedMap.put("Button2", Integer.valueOf(InputEvent.BUTTON2_DOWN_MASK));
             uninitializedMap.put("Button3", Integer.valueOf(InputEvent.BUTTON3_DOWN_MASK));
@@ -2043,7 +2101,7 @@ public class BurpConfig {
             StringBuilder buf = new StringBuilder();
             buf.append(KeyEvent.getModifiersExText(keyStroke.getModifiers()));
             buf.append("+");
-            buf.append((char)keyStroke.getKeyCode());
+            buf.append((char) keyStroke.getKeyCode());
             return buf.toString();
         }
 
