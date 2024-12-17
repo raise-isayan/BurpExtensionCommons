@@ -398,21 +398,23 @@ public class BurpConfig {
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
         try {
+            boolean supportApi = true;
             switch (type) {
                 case BURPSUITE_USEROPTION:
                     api.burpSuite().exportUserOptionsAsJson("user_options");
                     break;
-                case PROXY_IS_INTERCEPT: // support burp 2024.7
-                    api.proxy().isInterceptEnabled();
+                case PROXY_IS_INTERCEPT: // supportApi burp 2024.7
+//                    api.proxy().isInterceptEnabled();
+                    supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null;
                     break;
                 case BURPSUITE_BAMBDA:
                     BurpVersion burp_version = BurpUtil.suiteVersion();
-                    return burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
+                    supportApi = burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
                 default:
                     logger.log(Level.WARNING, "no match:" + type.name());
                     break;
             }
-            return true;
+            return supportApi;
         } catch (java.lang.NoSuchMethodError ex) {
             return false;
         }

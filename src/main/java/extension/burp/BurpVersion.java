@@ -151,11 +151,11 @@ public final class BurpVersion implements Comparable<BurpVersion> {
 
     public static OSType getOSType() {
         String os_name = System.getProperty("os.name").toLowerCase();
-        if (os_name.startsWith("win")) {
+        if (os_name.contains("win")) {
             return OSType.WINDOWS;
-        } else if (os_name.startsWith("linux")) {
+        } else if (os_name.contains("linux")) {
             return OSType.LINUX;
-        } else if (os_name.startsWith("mac")) {
+        } else if (os_name.contains("mac") || os_name.contains("darwin") ) {
             return OSType.MAC;
         } else {
             return OSType.UNKOWN;

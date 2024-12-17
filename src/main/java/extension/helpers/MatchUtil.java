@@ -167,6 +167,10 @@ public class MatchUtil {
         return buff.toString();
     }
 
+    public static boolean isAlphaNum(int codePoint) {
+        return (0x30 <= codePoint && codePoint <= 0x39) || (0x41 <= codePoint && codePoint <= 0x5a) || (0x61 <= codePoint && codePoint <= 0x7a);
+    }
+
     public static boolean isUrlencoded(String value) {
         boolean result = true;
         for (int i = 0; i < value.length(); i++) {

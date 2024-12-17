@@ -199,15 +199,15 @@ public final class SwingUtil {
     public static Object[] editItem(javax.swing.JTable srcTable) {
         TableModel modelSrc = srcTable.getModel();
         int index = srcTable.getSelectedRow();
-        Object[] editRows = null;
+        Object[] editColumns = null;
         if (index > -1) {
             int rowIndex = srcTable.convertRowIndexToModel(index);
-            editRows = new Object[modelSrc.getColumnCount()];
-            for (int i = 0; i < editRows.length; i++) {
-                editRows[i] = modelSrc.getValueAt(rowIndex, i);
+            editColumns = new Object[modelSrc.getColumnCount()];
+            for (int i = 0; i < editColumns.length; i++) {
+                editColumns[i] = modelSrc.getValueAt(rowIndex, i);
             }
         }
-        return editRows;
+        return editColumns;
     }
 
     public static void allNodesChanged(JTree tree) {

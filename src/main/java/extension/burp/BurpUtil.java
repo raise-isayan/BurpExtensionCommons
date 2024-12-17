@@ -33,6 +33,7 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.JToggleButton;
 
 /**
  *
@@ -98,6 +99,25 @@ public class BurpUtil {
                     JTabbedPane tabbed = findSuiteTabbedPane(inner);
                     if (tabbed != null) {
                         return tabbed;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static JToggleButton findSuiteIntercept(Container container) {
+        if (container instanceof JToggleButton button) {
+            if ("interceptToggleButton".equals(button.getName())) {
+                return button;
+            }
+        } else {
+            for (int i = 0; i < container.getComponentCount(); i++) {
+                Component c = container.getComponent(i);
+                if (c instanceof Container inner) {
+                    JToggleButton button = findSuiteIntercept(inner);
+                    if (button != null) {
+                        return button;
                     }
                 }
             }
