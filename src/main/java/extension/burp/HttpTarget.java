@@ -3,6 +3,7 @@ package extension.burp;
 import extension.helpers.HttpUtil;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
 
@@ -58,7 +59,7 @@ public class HttpTarget implements burp.api.montoya.http.HttpService {
     }
 
     public static HttpTarget getHttpTarget(final String target) throws MalformedURLException {
-        return new HttpTarget(new URL(target));
+        return new HttpTarget(URI.create(target).toURL());
     }
 
     public static String getProtocol(boolean secure) {

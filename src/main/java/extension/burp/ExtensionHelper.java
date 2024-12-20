@@ -16,6 +16,7 @@ import extension.helpers.SwingUtil;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
@@ -308,26 +309,22 @@ public class ExtensionHelper {
     public void sendToMessageInfoCopy(ContextMenuEvent contextMenuEvent) {
         final List<HttpRequestResponse> messageList = contextMenuEvent.selectedRequestResponses();
         StringBuilder buff = new StringBuilder();
-        try {
-            buff.append("url\tquery\tmethod\tstatus\tlength").append(System.lineSeparator());
-            for (HttpRequestResponse messageInfo : messageList) {
+        buff.append("url\tquery\tmethod\tstatus\tlength").append(System.lineSeparator());
+        for (HttpRequestResponse messageInfo : messageList) {
 //                IRequestInfo reqInfo = api.getHelpers().analyzeRequest(messageInfo);
-                URL url = new URL(messageInfo.request().url());
-                buff.append(HttpUtil.toURL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()));
+            URI uri = URI.create(messageInfo.request().url());
+            buff.append(HttpUtil.toURL(uri.getScheme(), uri.getHost(), uri.getPort(), uri.getPath()));
+            buff.append("\t");
+            buff.append(uri.getQuery());
+            buff.append("\t");
+            buff.append(messageInfo.request().method());
+            if (messageInfo.response() != null) {
                 buff.append("\t");
-                buff.append(url.getQuery());
+                buff.append(messageInfo.response().statusCode());
                 buff.append("\t");
-                buff.append(messageInfo.request().method());
-                if (messageInfo.response() != null) {
-                    buff.append("\t");
-                    buff.append(messageInfo.response().statusCode());
-                    buff.append("\t");
-                    buff.append(messageInfo.response().body().length());
-                }
-                buff.append(System.lineSeparator());
+                buff.append(messageInfo.response().body().length());
             }
-        } catch (MalformedURLException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            buff.append(System.lineSeparator());
         }
         SwingUtil.systemClipboardCopy(buff.toString());
     }

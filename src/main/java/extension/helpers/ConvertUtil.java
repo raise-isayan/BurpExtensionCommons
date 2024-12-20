@@ -17,12 +17,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -567,8 +565,10 @@ public class ConvertUtil {
     }
 
     public static Process executeProcess(String target, List argsList) throws IOException {
-        argsList.add(0, target);
-        ProcessBuilder processBulder = new ProcessBuilder(argsList);
+        final List<String> commandList = new ArrayList<>();
+        commandList.add(target);
+        commandList.addAll(argsList);
+        ProcessBuilder processBulder = new ProcessBuilder(commandList);
         return processBulder.start();
     }
 

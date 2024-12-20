@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -495,12 +496,16 @@ public class BurpConfig {
     }
 
     public static synchronized List<HostnameResolution> getHostnameResolution(MontoyaApi api) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("project_options.connections.hostname_resolution");
+        String config = api.burpSuite().exportProjectOptionsAsJson("project_options");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        JsonObject project_options = root_json.getAsJsonObject("project_options");
+        JsonObject hostname = project_options.getAsJsonObject("connections");
+        if (project_options.has("dns")) {
+            hostname = project_options.getAsJsonObject("dns");
+        }                
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
-        JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
+        JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         return hostnameResolution;
     }
@@ -527,7 +532,7 @@ public class BurpConfig {
      * @param remove
      */
     public static void configHostnameResolution(MontoyaApi api, List<HostnameResolution> hosts, boolean remove) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("project_options.connections.hostname_resolution");
+        String config = api.burpSuite().exportProjectOptionsAsJson("project_options");
         String updateConfig = updateHostnameResolution(config, hosts, remove);
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
@@ -538,10 +543,14 @@ public class BurpConfig {
 
     static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject connections = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        JsonObject project_options = root_json.getAsJsonObject("project_options");
+        JsonObject hostname = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        if (project_options.has("dns")) {
+            hostname = project_options.getAsJsonObject("dns");
+        }        
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
-        JsonArray jsonArray = connections.getAsJsonArray("hostname_resolution");
+        JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         List<HostnameResolution> resolvHost = new ArrayList<>();
         for (HostnameResolution h : hosts) {
@@ -557,7 +566,7 @@ public class BurpConfig {
             hostnameResolution.addAll(resolvHost);
         }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hostnameResolution, true);
-        connections.add("hostname_resolution", updateJsonElemet);
+        hostname.add("hostname_resolution", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -1244,8 +1253,8 @@ public class BurpConfig {
         private String prefix = "";
 
         public static TargetScopeURL parseTargetURL(String url_string) throws MalformedURLException {
-            URL url = new URL(url_string);
-            return new TargetScopeURL(true, false, HttpUtil.toURL(url.getProtocol(), url.getHost(), url.getPort(), url.getPath()));
+            URI uri = URI.create(url_string);
+            return new TargetScopeURL(true, false, HttpUtil.toURL(uri.getScheme(), uri.getHost(), uri.getPort(), uri.getPath()));
         }
 
         public TargetScopeURL(boolean enabled, boolean include_subdomains, String prefix) {
@@ -1323,7 +1332,7 @@ public class BurpConfig {
         private String protocol = "";
 
         public static TargetScopeAdvance parseTargetURL(String url_string) throws MalformedURLException {
-            URL url = HttpUtil.toURL(new URL(url_string));
+            URL url = HttpUtil.toURL(URI.create(url_string).toURL());
             return new TargetScopeAdvance(true, url.getProtocol(), BurpUtil.escapeRegex(url.getHost()), BurpUtil.escapeRegex(Integer.toString(url.getPort())), BurpUtil.escapeRegexPath(url.getPath()));
         }
 

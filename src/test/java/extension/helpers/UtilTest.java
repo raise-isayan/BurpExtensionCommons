@@ -1,6 +1,7 @@
 package extension.helpers;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -45,6 +46,7 @@ public class UtilTest {
      */
     @Test
     public void testCalc() {
+        System.out.println("testCalc");
         double pow = Math.pow(16, 20);
         System.out.println(String.format("%4.2f", Math.log(pow) / Math.log(2.0)));
     }
@@ -53,12 +55,13 @@ public class UtilTest {
      */
     @Test
     public void testURL() {
-        try {
-            URL u = new URL("http://192.0.2.11/cgi-bin/multienc.cgi");
+       System.out.println("testURL");
+       try {
+            URL u = URI.create("http://192.0.2.11/cgi-bin/multienc.cgi").toURL();
             System.out.println("url:" + u.toString());
             System.out.println("url:" + u.toExternalForm());
 
-            URL u2 = new URL("http://192.0.2.11:80/cgi-bin/multienc.cgi");
+            URL u2 = URI.create("http://192.0.2.11:80/cgi-bin/multienc.cgi").toURL();
             System.out.println("url2:" + u2.toString());
             System.out.println("url2:" + u2.toExternalForm());
             System.out.println("url3:" + u2.toURI().normalize().toString());
@@ -75,6 +78,7 @@ public class UtilTest {
      */
     @Test
     public void testMatch() {
+        System.out.println("testMatch");
         Pattern p = Pattern.compile("http://192.0.2.11/cgi-bin/multienc.cgi");
         Matcher m = p.matcher("http://192.0.2.11/cgi-bin/multienc.cgi?charset=EUC-JP");
         if (m.matches()) {

@@ -2,6 +2,7 @@ package extension.burp;
 
 import extension.helpers.HttpUtil;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,8 +179,8 @@ public class TargetScopeItem {
         while (scanner.hasNext()) {
             String line = scanner.next();
             try {
-                URL url = new URL(line);
-                urls.add(url);
+                URI uri = URI.create(line);
+                urls.add(uri.toURL());
             } catch (MalformedURLException ex) {
             }
         }

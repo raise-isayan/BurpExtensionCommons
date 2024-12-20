@@ -13,6 +13,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
     public enum FilterCategory {
         HTTP,
         WEBSOCKET,
+        SITE_MAP,
         LOGGER_CAPTURE,
         LOGGER_DISPLAY,
     }

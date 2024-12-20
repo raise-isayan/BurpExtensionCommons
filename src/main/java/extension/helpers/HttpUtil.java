@@ -95,9 +95,9 @@ public final class HttpUtil {
         return (header.contains("xml") || header.contains("json"));
     }
 
-    public static boolean isValidUrl(String url) {
+    public static boolean isValidUrl(String url_str) {
         try {
-            URL url1 = new URL(url);
+            URL url = new URL(url_str);
             return true;
         } catch (MalformedURLException ex) {
             return false;
@@ -312,7 +312,7 @@ public final class HttpUtil {
     }
 
     public static byte[] buildGetRequestByte(String urlString) throws MalformedURLException {
-        return buildGetRequestByte(new URL(urlString));
+        return buildGetRequestByte(URI.create(urlString).toURL());
     }
 
     public static String getBaseName(URL url) {
@@ -324,8 +324,8 @@ public final class HttpUtil {
         return name;
     }
 
-    public static String normalizeURL(String urlString) throws MalformedURLException {
-        URL url = new URL(urlString);
+    public static String normalizeURL(String url_string) throws MalformedURLException {
+        URL url = URI.create(url_string).toURL();
         if (url.getDefaultPort() == url.getPort()) {
             //     public URL(String protocol, String host, int port, String file)
             return (new URL(url.getProtocol(), url.getHost(), -1, url.getFile())).toExternalForm();
@@ -382,7 +382,7 @@ public final class HttpUtil {
     public static URL toURL(URL url) throws MalformedURLException {
         return new URL(url.getProtocol(), url.getHost(), url.getPort() == -1 ? url.getDefaultPort() : url.getPort(), url.getFile());
     }
-
+    
     public static String getDefaultProtocol(boolean useHttps) {
         if (useHttps) {
             return "https";
@@ -617,7 +617,7 @@ public final class HttpUtil {
             String line = scanner.next();
             try {
                 URL url = new URL(line);
-                urls.add(HttpUtil.normalizeURL(url.toExternalForm()));
+                urls.add(HttpUtil.normalizeURL(url.toString()));
             } catch (MalformedURLException ex) {
                 if (includeIgnoreURL) {
                     urls.add(line);
