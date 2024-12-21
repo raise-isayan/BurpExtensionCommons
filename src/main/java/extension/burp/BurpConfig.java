@@ -394,7 +394,7 @@ public class BurpConfig {
     private final static BurpVersion SUPPORT_BAMBDA = new BurpVersion("Burp Suite Support", "2023", "10.3", "");
 
     public enum SupportApi {
-        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, PROXY_IS_INTERCEPT
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT 
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
@@ -411,12 +411,16 @@ public class BurpConfig {
                 case BURPSUITE_BAMBDA:
                     BurpVersion burp_version = BurpUtil.suiteVersion();
                     supportApi = burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
+                    break;
+                case BURPSUITE_BAMBDA_SITEMAP:
+                    String map = BurpConfig.getBambda(api, FilterCategory.SITE_MAP);
+                    break;
                 default:
                     logger.log(Level.WARNING, "no match:" + type.name());
                     break;
             }
             return supportApi;
-        } catch (java.lang.NoSuchMethodError ex) {
+        } catch (java.lang.NullPointerException | java.lang.NoSuchMethodError ex) {
             return false;
         }
     }
@@ -544,7 +548,7 @@ public class BurpConfig {
     static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject project_options = root_json.getAsJsonObject("project_options");
-        JsonObject hostname = root_json.getAsJsonObject("project_options").getAsJsonObject("connections");
+        JsonObject hostname = project_options.getAsJsonObject("connections");
         if (project_options.has("dns")) {
             hostname = project_options.getAsJsonObject("dns");
         }        
@@ -1032,6 +1036,9 @@ public class BurpConfig {
                 break;
             case WEBSOCKET:
                 property = "web_sockets_history_display_filter";
+                break;
+            case SITE_MAP:
+                property = "sitemap_display_filter";
                 break;
             case LOGGER_CAPTURE:
                 property = "logger_capture_filter";

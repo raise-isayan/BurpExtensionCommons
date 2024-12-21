@@ -8,7 +8,7 @@ import java.util.EnumSet;
  *
  * @author isayan
  */
-public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProperty {
+public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProperty, FilterSiteMapProperty {
 
     public enum FilterCategory {
         HTTP,
@@ -491,8 +491,25 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         return !this.filterCategory.equals(FilterCategory.WEBSOCKET);
     }
 
-    public String build() {
-        String variable = isHttpProtocol() ? "requestResponse" : "message";
+    private String getBambdaVariable() {
+        FilterCategory category = this.getFilterCategory();
+        String variable = null;
+        switch (category) {
+            case HTTP:
+                variable = "requestResponse";
+                break;
+            case WEBSOCKET:
+                variable = "message";
+                break;
+            case SITE_MAP:
+                variable = "node";
+                break;
+        }
+        return variable;
+    }
+    
+    public String build() {        
+        String variable = getBambdaVariable();
         StringBuilder sb = new StringBuilder();
 
         //
@@ -718,7 +735,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         this.setFilterCategory(property.getFilterCategory());
         this.setFilterMode(property.getFilterMode());
 
-        // HTTP
+        // HTTP and SiteMap
 
         this.setShowOnlyScopeItems(property.isShowOnlyScopeItems());
         this.setHideItemsWithoutResponses(property.isHideItemsWithoutResponses());
@@ -761,13 +778,14 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
 
         this.setMessage(property.getMessage());
 
+        this.setListenerPort(property.getListenerPort());
+        
     }
 
     public void setAnnotationProperty(FilterAnnotationProperty property) {
         this.setShowOnlyComment(property.getShowOnlyComment());
         this.setShowOnlyHighlightColors(property.getShowOnlyHighlightColors());
         this.setHighlightColors(property.getHighlightColors());
-        this.setListenerPort(property.getListenerPort());
     }
 
     @Expose
@@ -793,6 +811,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
     /**
      * @return the filterMode
      */
+    @Override
     public FilterMode getFilterMode() {
         return this.filterMode;
     }
@@ -800,6 +819,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
     /**
      * @param filterMode the filterMode to set
      */
+    @Override
     public void setFilterMode(FilterMode filterMode) {
         this.filterMode = filterMode;
     }

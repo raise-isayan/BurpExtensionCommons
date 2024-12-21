@@ -479,6 +479,13 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testGetSiteMapBambda() {
+        System.out.println("testGetSiteMapBambda");
+        String bambda = BurpConfig.getBambda(api, FilterCategory.SITE_MAP);
+        System.out.println("getBambda:" + bambda);
+    }
+    
+    @Test
     public void testGetNullBambda() {
         System.out.println("testGetNullBambda");
         {

@@ -20,8 +20,4 @@ public interface FilterAnnotationProperty {
 
     public void setHighlightColors(EnumSet<MessageHighlightColor> colors);
 
-    public int getListenerPort();
-
-    public void setListenerPort(int listenerPort);
-
 }
