@@ -166,7 +166,7 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         String cpu_arc = System.getProperty("os.arch").toLowerCase();
         if (cpu_arc.startsWith("amd64") || cpu_arc.startsWith("x86_64")) {
             return ArcType.AMD64;
-        } else if (cpu_arc.startsWith("arm64")) {
+        } else if (cpu_arc.startsWith("arm64") || cpu_arc.startsWith("aarch64")) {
             return ArcType.ARM64;
         } else {
             return ArcType.UNKOWN;

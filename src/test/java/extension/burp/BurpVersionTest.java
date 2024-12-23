@@ -158,6 +158,20 @@ public class BurpVersionTest {
         p.list(System.out);
     }
 
+    @Test
+    public void testOS() {
+        System.out.println("testOS");
+        BurpVersion.OSType os = BurpVersion.getOSType();
+        assertNotEquals(os, BurpVersion.OSType.UNKOWN);        
+    }
+
+    @Test
+    public void testArch() {
+        System.out.println("testArch");
+        BurpVersion.ArcType arch = BurpVersion.getArchType();
+        assertNotEquals(arch, BurpVersion.ArcType.UNKOWN);        
+    }
+    
     /**
      * Test of parseFreeVersion method, of class BurpVersion.
      */

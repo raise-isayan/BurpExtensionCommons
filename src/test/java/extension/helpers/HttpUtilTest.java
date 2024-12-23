@@ -523,7 +523,7 @@ public class HttpUtilTest {
         {
             try {
                 String encodeFilePath = HttpUtilTest.class.getResource("/resources/encode.html").getPath();
-                String encodeFile = StringUtil.getStringCharset(FileUtil.bytesFromFile(new File(encodeFilePath)), StandardCharsets.UTF_8);
+                String encodeFile = FileUtil.stringFromFile(new File(encodeFilePath), StandardCharsets.UTF_8);
                 String comments[] = HttpUtil.extractHTMLComments(encodeFile, true);
                 assertEquals(1, comments.length);
                 assertEquals("<!--  エンコード -->", comments[0]);
@@ -554,7 +554,7 @@ public class HttpUtilTest {
             }
             try {
                 String encodeFilePath = HttpUtilTest.class.getResource("/resources/encode.html").getPath();
-                String encodeFile = StringUtil.getStringCharset(FileUtil.bytesFromFile(new File(encodeFilePath)), StandardCharsets.UTF_8);
+                String encodeFile = FileUtil.stringFromFile(new File(encodeFilePath), StandardCharsets.UTF_8);
                 String title = HttpUtil.extractHTMLTitle(encodeFile);
                 assertEquals("タイトル", title);
             } catch (IOException ex) {

@@ -92,9 +92,9 @@ import burp.api.montoya.websocket.WebSockets;
 import extension.burp.MessageHighlightColor;
 import extension.helpers.ConvertUtil;
 import extension.helpers.FileUtil;
-import extension.helpers.StringUtil;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,10 +153,9 @@ public class MockMontoya {
         try {
             this.instanceMap.put(MockMontoyaObjectFactory.class, this.mockFactory);
             String projectFile = MockMontoya.class.getResource("/resources/project_json.json").getPath();
-            String project_json = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(projectFile)));
+            String project_json = FileUtil.stringFromFile(new File(projectFile), StandardCharsets.UTF_8);
             String userFile = MockMontoya.class.getResource("/resources/user_json.json").getPath();
-            String user_json = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(userFile)));
-
+            String user_json = FileUtil.stringFromFile(new File(userFile), StandardCharsets.UTF_8);
             Mockito.when(this.mockApi.burpSuite()).thenReturn(this.burpSuteApi);
             Mockito.when(this.burpSuteApi.version()).thenReturn(this.versionApi);
             Mockito.when(this.burpSuteApi.exportProjectOptionsAsJson(Mockito.anyString())).thenReturn(project_json);

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class BurpConfigTest {
         System.out.println("testUpdateHostnameResolution");
         try {
             String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
             hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
             System.out.println("loadConfig:" + config);
@@ -127,7 +128,7 @@ public class BurpConfigTest {
         System.out.println("testUpdateHostnameResolutionEmpty");
         try {
             String configFile = BurpConfigTest.class.getResource("/resources/hostname_resolution_empty.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             List<BurpConfig.HostnameResolution> hosts = new ArrayList<>();
             hosts.add(new BurpConfig.HostnameResolution(true, "newhost", "192.0.2.11"));
             System.out.println("loadConfig:" + config);
@@ -156,7 +157,7 @@ public class BurpConfigTest {
         System.out.println("testUpdateSSLPassThroughRules");
         try {
             String configFile = BurpConfigTest.class.getResource("/resources/ssl_pass_through_rules.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             {
                 List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
                 rules.add(new BurpConfig.SSLPassThroughRule(true, "192.0.2.11", "443"));
@@ -204,7 +205,7 @@ public class BurpConfigTest {
         System.out.println("testGetMatchReplaceRules");
         String configFile = BurpConfigTest.class.getResource("/resources/match_replace_rules.json").getPath();
         try {
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             List<BurpConfig.MatchReplaceRule> rules = BurpConfig.getMatchReplaceRules(config);
             assertEquals(12, rules.size());
             for (BurpConfig.MatchReplaceRule rule : rules) {
@@ -224,7 +225,7 @@ public class BurpConfigTest {
             System.out.println("testUpdateSocksProxy(user)");
             {
                 String configFile = BurpConfigTest.class.getResource("/resources/user_socks_proxy.json").getPath();
-                String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
                 System.out.println("loadConfig:" + config);
                 String updateConfig = BurpConfig.updateSocksProxy(config, new BurpConfig.SocksProxy(true, "192.168.1.1", 8123, "user", "pass", false), false);
                 System.out.println("updateConfig:" + updateConfig);
@@ -233,7 +234,7 @@ public class BurpConfigTest {
             System.out.println("testUpdateSocksProxy(project)");
             {
                 String configFile = BurpConfigTest.class.getResource("/resources/project_socks_proxy.json").getPath();
-                String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
                 System.out.println("loadConfig:" + config);
                 String updateConfig = BurpConfig.updateSocksProxy(config, new BurpConfig.SocksProxy(true, "192.168.1.1", 8123, "user", "pass", false), true);
                 System.out.println("updateConfig:" + updateConfig);
@@ -257,7 +258,7 @@ public class BurpConfigTest {
         try {
             System.out.println("testAddResuestListeners");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
             List<BurpConfig.RequestListener> requestListenrs = new ArrayList<>();
             requestListenrs.add(BurpConfig.RequestListener.defaultListener(8080));
@@ -273,7 +274,7 @@ public class BurpConfigTest {
         try {
             System.out.println("testDelResuestListeners");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
             List<BurpConfig.RequestListener> requestListenrs = new ArrayList<>();
             requestListenrs.add(BurpConfig.RequestListener.defaultListener(8001));
@@ -299,7 +300,7 @@ public class BurpConfigTest {
         try {
             System.out.println("testOpenBrowserResuestListener");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
             BurpConfig.RequestListener bindListener = BurpConfig.openBrowserRequestListener(api, 8001);
             assertEquals(8004, bindListener.getListenerPort());
@@ -314,7 +315,7 @@ public class BurpConfigTest {
         try {
             System.out.println("testOpenBrowserNewResuestListener");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
             BurpConfig.RequestListener bindListener = BurpConfig.openBrowserRequestListener(api, 8080);
             assertEquals(8080, bindListener.getListenerPort());
@@ -420,7 +421,7 @@ public class BurpConfigTest {
         System.out.println("testUpdateTargetScopeAdvance");
         String configFile = BurpConfigTest.class.getResource("/resources/target_scope_advance.json").getPath();
         try {
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             TargetScope targetScope = new TargetScope();
             targetScope.setAdvancedMode(true);
             List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
@@ -440,7 +441,7 @@ public class BurpConfigTest {
         System.out.println("testUpdateTargetScopeURL");
         String configFile = BurpConfigTest.class.getResource("/resources/target_scope_url.json").getPath();
         try {
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             TargetScope targetScope = new TargetScope();
             targetScope.setAdvancedMode(false);
             List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
@@ -503,7 +504,7 @@ public class BurpConfigTest {
         System.out.println("testHttpHistoryDisplayFilter");
         String configFile = BurpConfigTest.class.getResource("/resources/http_history_display_filter.json").getPath();
         try {
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             FilterProperty filter = new FilterProperty(FilterCategory.HTTP);
             filter.setFilterMode(FilterProperty.FilterMode.BAMBDA);
             filter.setBambda("return false;");
@@ -564,7 +565,7 @@ public class BurpConfigTest {
         try {
             System.out.println("testUpdateHotkey");
             String configFile = BurpConfigTest.class.getResource("/resources/user_hotkey.json").getPath();
-            String config = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(configFile)));
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             List<BurpConfig.Hotkey> hotkeys = new ArrayList<>();
             hotkeys.add(new BurpConfig.Hotkey(BurpConfig.Hotkey.HotkeyAction.EDITOR_COPY, KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK)));
             hotkeys.add(new BurpConfig.Hotkey(BurpConfig.Hotkey.HotkeyAction.EDITOR_CUT, KeyStroke.getKeyStroke(KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK)));

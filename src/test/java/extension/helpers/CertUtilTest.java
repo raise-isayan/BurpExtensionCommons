@@ -14,6 +14,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -103,14 +104,14 @@ public class CertUtilTest {
     public void testPemToPrivateKey() throws Exception {
         System.out.println("pemToPrivateKey");
         String storeFileName = CertUtilTest.class.getResource("/resources/burpca.pem").getPath();
-        PrivateKey priKey = CertUtil.pemToPrivateKey(StringUtil.getBytesRawString(FileUtil.bytesFromFile(new File(storeFileName))));
+        PrivateKey priKey = CertUtil.pemToPrivateKey(FileUtil.stringFromFile(new File(storeFileName), StandardCharsets.UTF_8));
     }
 
     @Test
     public void testPemToCertificate() throws Exception {
         System.out.println("pemToCerficate");
         String storeFileName = CertUtilTest.class.getResource("/resources/burpca.pem").getPath();
-        X509Certificate x509Cert = CertUtil.loadCertificate(StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(storeFileName))));
+        X509Certificate x509Cert = CertUtil.loadCertificate(FileUtil.stringFromFile(new File(storeFileName), StandardCharsets.UTF_8));
     }
 
     @Test
@@ -133,7 +134,7 @@ public class CertUtilTest {
     public void testExportToPem_X509Certificate() throws Exception {
         System.out.println("exportToPem");
         String pemFileName = CertUtilTest.class.getResource("/resources/burpca_certificate.pem").getPath();
-        String expResult = StringUtil.getStringRaw(FileUtil.bytesFromFile(new File(pemFileName)));
+        String expResult = FileUtil.stringFromFile(new File(pemFileName), StandardCharsets.UTF_8);
 
         String storeFileName = CertUtilTest.class.getResource("/resources/burpca.p12").getPath();
         HashMap<String, Map.Entry<Key, X509Certificate>> certMap = CertUtil.loadFromPKCS12(new File(storeFileName), "testca");
@@ -178,12 +179,10 @@ public class CertUtilTest {
     @Test
     public void testRSAPem() throws Exception {
         String privateFile = CertUtilTest.class.getResource("/resources/private-key.pem").getPath();
-        byte[] privateBytes = FileUtil.bytesFromFile(new File(privateFile));
-        String privaeData = new String(privateBytes, StandardCharsets.ISO_8859_1);
+        String privaeData = FileUtil.stringFromFile(new File(privateFile), StandardCharsets.UTF_8);
         PrivateKey privateKey = CertUtil.loadPrivateKey(privaeData);
         String publicFile = CertUtilTest.class.getResource("/resources/public-key.pem").getPath();
-        byte[] publicBytes = FileUtil.bytesFromFile(new File(publicFile));
-        String publicData = new String(publicBytes, StandardCharsets.ISO_8859_1);
+        String publicData = FileUtil.stringFromFile(new File(publicFile), StandardCharsets.UTF_8);
         PublicKey publicKey = CertUtil.loadPublicKey(publicData);
     }
 

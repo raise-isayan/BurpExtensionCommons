@@ -3,6 +3,7 @@ package extension.helpers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
@@ -197,7 +198,7 @@ public class FileUtilTest {
     public void testBytesFromFile() throws Exception {
         System.out.println("bytesFromFile");
         String responseUTF8 = FileUtilTest.class.getResource("/resources/response.UTF-8").getPath();
-        String result = StringUtil.getStringUTF8(FileUtil.bytesFromFile(new File(responseUTF8)));
+        String result = FileUtil.stringFromFile(new File(responseUTF8), StandardCharsets.UTF_8);
         assertTrue(result.contains("あいうえお"));
     }
 

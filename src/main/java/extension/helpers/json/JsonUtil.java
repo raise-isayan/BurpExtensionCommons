@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -180,7 +181,7 @@ public class JsonUtil {
             gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
         }
         Gson gson = gsonBuilder.create();
-        String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
+        String jsonString = FileUtil.stringFromFile(fi, StandardCharsets.UTF_8);
         return gson.fromJson(jsonString, classOfT);
     }
 
@@ -260,7 +261,7 @@ public class JsonUtil {
         GsonBuilder gsonBuilder = new GsonBuilder().serializeNulls();
         gsonBuilder = gsonBuilder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = gsonBuilder.create();
-        String jsonString = StringUtil.getStringUTF8(FileUtil.bytesFromFile(fi));
+        String jsonString = FileUtil.stringFromFile(fi, StandardCharsets.UTF_8);
         JsonElement jsonRoot = JsonUtil.parseJson(jsonString);
         if (jsonRoot.isJsonObject()) {
             JsonObject jsonMap = jsonRoot.getAsJsonObject();
