@@ -9,12 +9,15 @@ import javax.swing.JOptionPane;
 
 public final class BurpVersion implements Comparable<BurpVersion> {
 
+    // Professional / Community 2024.2.1.3 build:28102 BuldNumber:20240201003028102
+
     private final static BurpVersion SUPPORT_MIN_VERSION = new BurpVersion("Burp Suite Support", "2023", "1.2", "");
 
     private String productName = "";
     private String majorVersion = "";
     private String minorVersion = "";
     private String build = "";
+    private long buildNumber = -1;
 
     public BurpVersion(MontoyaApi api) {
         this(api.burpSuite().version());
@@ -28,11 +31,16 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         parseVersion(title);
     }
 
+    @Deprecated(forRemoval = true)
     protected BurpVersion(String name, String major, String minor, String build) {
         this.productName = name;
         this.majorVersion = major;
         this.minorVersion = minor;
         this.build = build;
+    }
+
+    protected BurpVersion(long buildNumber) {
+        this.buildNumber = buildNumber;
     }
 
     private final static Pattern SUITE_VERSION = Pattern.compile("(Burp Suite \\w+(?: Edition)?) v(\\d+)\\.([\\d\\.]+)(-(\\d+))?");
@@ -61,6 +69,10 @@ public final class BurpVersion implements Comparable<BurpVersion> {
 
     public String getBuild() {
         return this.build;
+    }
+
+    public long getBuildNumber() {
+        return this.buildNumber;
     }
 
     public int getMajorVersion() {

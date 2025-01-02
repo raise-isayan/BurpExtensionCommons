@@ -1,5 +1,6 @@
 package extension.helpers;
 
+import extension.burp.BurpVersion;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -567,6 +568,25 @@ public class ConvertUtil {
     public static Process executeProcess(String target, List argsList) throws IOException {
         final List<String> commandList = new ArrayList<>();
         commandList.add(target);
+        commandList.addAll(argsList);
+        ProcessBuilder processBulder = new ProcessBuilder(commandList);
+        return processBulder.start();
+    }
+
+    private final static String MAC_OPEN = "open";
+    private final static String MAC_OPEN_N = "-n";
+    private final static String MAC_ARGS = "--args";
+
+    public static Process executeProcess(BurpVersion.OSType osType, String target, List argsList) throws IOException {
+        final List<String> commandList = new ArrayList<>();
+        if (BurpVersion.OSType.MAC == osType) {
+            commandList.add(MAC_OPEN);
+        }
+        commandList.add(target);
+        if (BurpVersion.OSType.MAC == osType) {
+            commandList.add(MAC_OPEN_N);
+            commandList.add(MAC_ARGS);
+        }
         commandList.addAll(argsList);
         ProcessBuilder processBulder = new ProcessBuilder(commandList);
         return processBulder.start();
