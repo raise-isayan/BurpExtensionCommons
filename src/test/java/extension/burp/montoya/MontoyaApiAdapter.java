@@ -2,7 +2,6 @@ package extension.burp.montoya;
 
 import burp.api.montoya.core.BurpSuiteEdition;
 import burp.api.montoya.core.Version;
-import extension.helpers.ConvertUtil;
 
 /**
  *
@@ -13,22 +12,32 @@ public class MontoyaApiAdapter {
     public static class VersionAdapter implements Version {
 
         final String name;
+        final String year;
         final String major;
         final String minor;
+        final String revision;
         final String build;
+        final long buildNumber;
         final BurpSuiteEdition edition;
 
-        public VersionAdapter(String name, String major, String minor, String build, BurpSuiteEdition edition) {
+        public VersionAdapter(String name, long buildNumber, BurpSuiteEdition edition) {
+            this.buildNumber = buildNumber;
             this.name = name;
-            this.major = major;
-            this.minor = minor;
-            this.build = build;
+            this.year = Long.toString((this.buildNumber) / 10000000000000L);
+            this.major = Long.toString((this.buildNumber % 10000000000000L) / 100000000000L);
+            this.minor = Long.toString((this.buildNumber % 100000000000L) / 1000000000L);
+            this.revision = Long.toString((this.buildNumber % 1000000000L) / 1000000L);
+            this.build = Long.toString((this.buildNumber % 100000L));
             this.edition = edition;
         }
 
         @Override
         public String name() {
             return this.name;
+        }
+
+        public String year() {
+            return this.year;
         }
 
         @Override
@@ -39,6 +48,10 @@ public class MontoyaApiAdapter {
         @Override
         public String minor() {
             return this.minor;
+        }
+
+        public String revision() {
+            return this.revision;
         }
 
         @Override
@@ -53,7 +66,7 @@ public class MontoyaApiAdapter {
 
         @Override
         public long buildNumber() {
-            return ConvertUtil.parseLongDefault(this.build, 0);
+            return this.buildNumber;
         }
 
     }

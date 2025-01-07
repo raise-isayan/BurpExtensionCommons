@@ -391,10 +391,8 @@ public class BurpConfig {
         }
     }
 
-    private final static BurpVersion SUPPORT_BAMBDA = new BurpVersion("Burp Suite Support", "2023", "10.3", "");
-
     public enum SupportApi {
-        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT 
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
@@ -402,22 +400,31 @@ public class BurpConfig {
             boolean supportApi = true;
             switch (type) {
                 case BURPSUITE_USEROPTION:
+                {
                     api.burpSuite().exportUserOptionsAsJson("user_options");
                     break;
+                }
                 case PROXY_IS_INTERCEPT: // supportApi burp 2024.7
+                {
 //                    api.proxy().isInterceptEnabled();
                     supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null;
                     break;
+                }
                 case BURPSUITE_BAMBDA:
-                    BurpVersion burp_version = BurpUtil.suiteVersion();
-                    supportApi = burp_version.compareTo(SUPPORT_BAMBDA) >= 0;
+                {
+                    String map = BurpConfig.getBambda(api, FilterCategory.HTTP);
                     break;
+                }
                 case BURPSUITE_BAMBDA_SITEMAP:
+                {
                     String map = BurpConfig.getBambda(api, FilterCategory.SITE_MAP);
                     break;
+                }
                 default:
+                {
                     logger.log(Level.WARNING, "no match:" + type.name());
                     break;
+                }
             }
             return supportApi;
         } catch (java.lang.NullPointerException | java.lang.NoSuchMethodError ex) {
@@ -506,7 +513,7 @@ public class BurpConfig {
         JsonObject hostname = project_options.getAsJsonObject("connections");
         if (project_options.has("dns")) {
             hostname = project_options.getAsJsonObject("dns");
-        }                
+        }
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
         JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");
@@ -551,7 +558,7 @@ public class BurpConfig {
         JsonObject hostname = project_options.getAsJsonObject("connections");
         if (project_options.has("dns")) {
             hostname = project_options.getAsJsonObject("dns");
-        }        
+        }
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
         JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");

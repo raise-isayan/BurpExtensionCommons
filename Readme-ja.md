@@ -1,4 +1,4 @@
-Burp suite Extension 共通ライブラリ
+Burp Suite Extension 共通ライブラリ
 =============
 
 Language/[English](Readme-ja.md)
@@ -14,12 +14,8 @@ Language/[English](Readme-ja.md)
 
 利用するバージョンは以下のものをご利用ください
 
-* Burp suite v2023.1.2 より前のバージョン
-   * BurpExtensionCommons v0.5.5.0 以前
-
-* Burp suite v2023.1.2 より後のバージョン
-   * BurpExtensionCommons v3.0.0 以降
-   * BurpExtensionCommons v0.5.5.0 以前(現時点で利用可)
+* Burp Suite v2024.2.1.3 より後のバージョン
+   * BurpExtensionCommons v3.2.5 以降
 
 ## 使用方法
 
@@ -27,18 +23,18 @@ release フォルダの BurpExtensionCommons.jar をJavaのライブラリとし
 
 ## 機能
 
-* Burp sute Extension のAPIインタフェース
+* Burp Suite Extension のAPIインタフェース
 * Item位置を移動可能なListModelおよびTableModel
 * HTTP Request、HTTP Response を扱うのに便利なラッパー
 
 ### Java
 * JRE(JDK) 17 (Open JDK を推奨)(https://openjdk.java.net/)
 
-### Burp suite
-* v2023.1.2以上 (http://www.portswigger.net/burp/)
+### Burp Suite
+* v2024.2.1.3 以上 (http://www.portswigger.net/burp/)
 
 ### 開発環境
-* NetBean 23 (https://netbeans.apache.org/)
+* NetBean 24 (https://netbeans.apache.org/)
 * Gradle 7.6 (https://gradle.org/)
 
 ## ビルド

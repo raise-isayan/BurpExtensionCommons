@@ -21,12 +21,7 @@ public class BurpExtensionImpl implements BurpExtension {
     public void initialize(MontoyaApi api) {
         extenderImpl = this;
         montoyaApi = api;
-        try {
-            burp_version = new BurpVersion(api);
-        } catch (Exception ex) {
-            // 取得できない場合Frameのタイトルから取得
-            burp_version = BurpUtil.suiteVersion();
-        }
+        burp_version = new BurpVersion(api);
         helper = new ExtensionHelper(api);
     }
 

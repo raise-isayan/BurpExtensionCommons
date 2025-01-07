@@ -1,4 +1,4 @@
-Burp suite Extension common library
+Burp Suite Extension common library
 =============
 
 Language/[日本語](Readme-ja.md)
@@ -14,12 +14,8 @@ Please download the stable release version from the following.
 
 Please use the following versions
 
-* Burp suite v2023.1.2 or less than
-  * BurpExtensionCommons v0.5.5.0 or less than
-
-* Burp suite v2023.1.2 or above
-  * BurpExtensionCommons v3.0.0 or above
-  * BurpExtensionCommons v0.5.5.0 or less (currently available)
+* Burp suite v2024.2.1.3 or above
+  * BurpExtensionCommons v3.2.5 or above
 
 ## How to use
 
@@ -27,18 +23,18 @@ Please import BurpExtensionCommons.jar in the release folder as a Java library a
 
 ## Features
 
-* API interface of Burp sute Extension
+* API interface of Burp Suite Extension
 * ListModel and TableModel with movable Item position
 * A useful wrapper for handling HTTP Requests and HTTP Responses
 
 ### Java
 * JRE (JDK) 17 (Open JDK is recommended) (https://openjdk.java.net/)
 
-### Burp suite
-* v2023.1.2 or higher (http://www.portswigger.net/burp/)
+### Burp Suite
+* v2024.2.1.3 or higher (http://www.portswigger.net/burp/)
 
 ### Development environment
-* NetBean 23 (https://netbeans.apache.org/)
+* NetBean 24 (https://netbeans.apache.org/)
 * Gradle 7.6 (https://gradle.org/)
 
 ## build

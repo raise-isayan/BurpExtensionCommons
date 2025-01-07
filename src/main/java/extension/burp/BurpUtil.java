@@ -2,6 +2,7 @@ package extension.burp;
 
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Range;
+import burp.api.montoya.core.Version;
 import burp.api.montoya.http.handler.HttpHandler;
 import burp.api.montoya.http.handler.HttpRequestToBeSent;
 import burp.api.montoya.http.handler.HttpResponseReceived;
@@ -126,8 +127,8 @@ public class BurpUtil {
     }
 
     public static BurpVersion suiteVersion() {
-        Frame suiteFrame = suiteFrame();
-        return new BurpVersion(suiteFrame.getTitle());
+        Version version = BurpExtensionImpl.api().burpSuite().version();
+        return new BurpVersion(version.name(), version.buildNumber());
     }
 
     public static boolean isTemporaryProject() {

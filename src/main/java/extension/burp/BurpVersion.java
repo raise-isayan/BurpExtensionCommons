@@ -3,19 +3,19 @@ package extension.burp;
 import burp.api.montoya.MontoyaApi;
 import extension.helpers.ConvertUtil;
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 public final class BurpVersion implements Comparable<BurpVersion> {
 
     // Professional / Community 2024.2.1.3 build:28102 BuldNumber:20240201003028102
 
-    private final static BurpVersion SUPPORT_MIN_VERSION = new BurpVersion("Burp Suite Support", "2023", "1.2", "");
+    private final static BurpVersion SUPPORT_MIN_VERSION = new BurpVersion("Burp suite Community Edition v2024.2.1.3", 20240201003028102L);
 
     private String productName = "";
+    private String yearVersion = "";
     private String majorVersion = "";
     private String minorVersion = "";
+    private String revision = "";
     private String build = "";
     private long buildNumber = -1;
 
@@ -24,39 +24,25 @@ public final class BurpVersion implements Comparable<BurpVersion> {
     }
 
     public BurpVersion(burp.api.montoya.core.Version version) {
-        this(version.name(), version.major(), version.minor(), version.build());
+        this(version.name(), version.buildNumber());
     }
 
-    public BurpVersion(String title) {
-        parseVersion(title);
-    }
-
-    @Deprecated(forRemoval = true)
-    protected BurpVersion(String name, String major, String minor, String build) {
-        this.productName = name;
-        this.majorVersion = major;
-        this.minorVersion = minor;
-        this.build = build;
-    }
-
-    protected BurpVersion(long buildNumber) {
+    protected BurpVersion(String name, long buildNumber) {
         this.buildNumber = buildNumber;
-    }
-
-    private final static Pattern SUITE_VERSION = Pattern.compile("(Burp Suite \\w+(?: Edition)?) v(\\d+)\\.([\\d\\.]+)(-(\\d+))?");
-
-    private void parseVersion(String title) {
-        Matcher m = SUITE_VERSION.matcher(title);
-        if (m.lookingAt()) {
-            this.productName = m.group(1);
-            this.majorVersion = m.group(2);
-            this.minorVersion = m.group(3);
-            this.build = m.group(5);
-        }
+        this.productName = name;
+        this.yearVersion = String.format("%04d", ((this.buildNumber) / 10000000000000L));
+        this.majorVersion = String.format("%02d", ((this.buildNumber % 10000000000000L) / 100000000000L));
+        this.minorVersion = String.format("%02d", ((this.buildNumber % 100000000000L) / 1000000000L));
+        this.revision = String.format("%03d", (this.buildNumber % 1000000000L) / 1000000L);
+        this.build = String.format("%06d", ((this.buildNumber % 100000L)));
     }
 
     public String getProductName() {
         return this.productName;
+    }
+
+    public String getYear() {
+        return this.yearVersion;
     }
 
     public String getMajor() {
@@ -67,6 +53,10 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         return this.minorVersion;
     }
 
+    public String getRevision() {
+        return this.revision;
+    }
+
     public String getBuild() {
         return this.build;
     }
@@ -75,21 +65,12 @@ public final class BurpVersion implements Comparable<BurpVersion> {
         return this.buildNumber;
     }
 
-    public int getMajorVersion() {
-        String majorver = this.majorVersion.replaceAll("\\.", "");
-        return ConvertUtil.parseIntDefault(majorver, 0);
-    }
-
-    public int getMinorVersion() {
-        return (int) ConvertUtil.parseFloatDefault(this.minorVersion, 0);
-    }
-
     public boolean isProfessional() {
         return this.productName.contains("Professional");
     }
 
     public static boolean isUnsupportVersion(BurpVersion version) {
-        return (version.compareTo(SUPPORT_MIN_VERSION) < 0);
+        return (version.buildNumber < SUPPORT_MIN_VERSION.buildNumber);
     }
 
     private static boolean showUnsupport = false;
@@ -103,7 +84,7 @@ public final class BurpVersion implements Comparable<BurpVersion> {
      */
     public synchronized static boolean showUnsupporttDlg(BurpVersion version, String productname) {
         if (!showUnsupport && isUnsupportVersion(version)) {
-            JOptionPane.showMessageDialog(null, "Burp suite v2023.1.2 or higher version is required.", productname, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Burp Suite v2024.2.1.3 or higher version is required.", productname, JOptionPane.INFORMATION_MESSAGE);
             showUnsupport = true;
             return true;
         }
@@ -121,11 +102,7 @@ public final class BurpVersion implements Comparable<BurpVersion> {
 
     @Override
     public int compareTo(BurpVersion o) {
-        int major = this.getMajorVersion() - o.getMajorVersion();
-        if (major != 0) {
-            return major;
-        }
-        return compareMinor(this.getMinor(), o.getMinor());
+        return Long.compare(this.buildNumber, o.buildNumber);
     }
 
     public static int compareMinor(String minora, String minorb) {
