@@ -1,6 +1,9 @@
 package burp;
 
 import burp.api.montoya.MontoyaApi;
+import burp.api.montoya.ai.Ai;
+import burp.api.montoya.ai.chat.Message;
+import burp.api.montoya.ai.chat.PromptOptions;
 import burp.api.montoya.burpsuite.BurpSuite;
 import burp.api.montoya.collaborator.Collaborator;
 import burp.api.montoya.collaborator.CollaboratorClient;
@@ -118,6 +121,7 @@ public class MockMontoya {
     public final MontoyaApi mockApi = Mockito.mock(MontoyaApi.class);
 
     public final BurpSuite burpSuteApi = Mockito.mock(BurpSuite.class);
+    public final Ai aiApi = Mockito.mock(Ai.class);
     public final Collaborator collaboratorApi = Mockito.mock(Collaborator.class);
     public final Comparer comparerApi = Mockito.mock(Comparer.class);
     public final Decoder decoderApi = Mockito.mock(Decoder.class);
@@ -163,6 +167,9 @@ public class MockMontoya {
 
             Mockito.doNothing().when(this.burpSuteApi).importProjectOptionsFromJson(Mockito.anyString());
             Mockito.doNothing().when(this.burpSuteApi).importUserOptionsFromJson(Mockito.anyString());
+
+            Mockito.when(this.mockApi.ai()).thenReturn(this.aiApi);
+
 
             Mockito.when(this.mockApi.collaborator()).thenReturn(this.collaboratorApi);
             Mockito.when(this.collaboratorApi.createClient()).thenReturn(this.collaboratorClientApi);
@@ -299,6 +306,11 @@ public class MockMontoya {
             @Override
             public Project project() {
                 return projectApi;
+            }
+
+            @Override
+            public Ai ai() {
+                return aiApi;
             }
 
         };
@@ -1203,6 +1215,26 @@ public class MockMontoya {
 
         @Override
         public JsonStringNode jsonStringNode(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public PromptOptions promptOptions() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public Message systemMessage(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public Message userMessage(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public Message assistantMessage(String string) {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }

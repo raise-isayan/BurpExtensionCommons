@@ -391,6 +391,11 @@ public class BurpConfig {
         }
     }
 
+    /*
+     Professional / Community 2024.9.3
+     HTTP match and replace rules with Bambdas
+    */
+
     public enum SupportApi {
         BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT
     }

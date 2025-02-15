@@ -379,10 +379,14 @@ public final class HttpUtil {
         return toURL(schema, host, port) + FileUtil.appendFirstSeparator(path, "/");
     }
 
+    public static String toURL(boolean useHttps, String host, int port, String path) {
+        return toURL(getDefaultProtocol(useHttps), host, port) + FileUtil.appendFirstSeparator(path, "/");
+    }
+
     public static URL toURL(URL url) throws MalformedURLException {
         return new URL(url.getProtocol(), url.getHost(), url.getPort() == -1 ? url.getDefaultPort() : url.getPort(), url.getFile());
     }
-    
+
     public static String getDefaultProtocol(boolean useHttps) {
         if (useHttps) {
             return "https";

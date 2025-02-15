@@ -646,4 +646,57 @@ public class HttpUtilTest {
         }
     }
 
+    @Test
+    public void testToURL() {
+        System.out.println("testToURL");
+        {
+            String url = HttpUtil.toURL("http", "www.example.com", 80, "/");
+            assertEquals("http://www.example.com/", url);
+        }
+        {
+            String url = HttpUtil.toURL(false, "www.example.com", 80, "");
+            assertEquals("http://www.example.com/", url);
+        }
+        {
+            String url = HttpUtil.toURL(false, "www.example.com", 8080, "");
+            assertEquals("http://www.example.com:8080/", url);
+        }
+        {
+            String url = HttpUtil.toURL(false, "www.example.com", 8080, "/");
+            assertEquals("http://www.example.com:8080/", url);
+        }
+        {
+            String url = HttpUtil.toURL(false, "www.example.com", 8080, "/path");
+            assertEquals("http://www.example.com:8080/path", url);
+        }
+        {
+            String url = HttpUtil.toURL("https", "www.example.com", 443, "/");
+            assertEquals("https://www.example.com/", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 443, "/");
+            assertEquals("https://www.example.com/", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 443, "");
+            assertEquals("https://www.example.com/", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 443, "/path");
+            assertEquals("https://www.example.com/path", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 8443, "/");
+            assertEquals("https://www.example.com:8443/", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 8443, "");
+            assertEquals("https://www.example.com:8443/", url);
+        }
+        {
+            String url = HttpUtil.toURL(true, "www.example.com", 8443, "/path" );
+            assertEquals("https://www.example.com:8443/path", url);
+        }
+    }
+
 }

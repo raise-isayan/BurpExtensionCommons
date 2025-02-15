@@ -16,6 +16,8 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         SITE_MAP,
         LOGGER_CAPTURE,
         LOGGER_DISPLAY,
+        REQUEST_REPLACE,
+        RESPONSE_REPLACE,
     }
 
     public enum FilterMode {
@@ -502,13 +504,13 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
                 variable = "message";
                 break;
             case SITE_MAP:
-                variable = "node";
+                variable = "node.requestResponse()";
                 break;
         }
         return variable;
     }
-    
-    public String build() {        
+
+    public String build() {
         String variable = getBambdaVariable();
         StringBuilder sb = new StringBuilder();
 
@@ -779,7 +781,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         this.setMessage(property.getMessage());
 
         this.setListenerPort(property.getListenerPort());
-        
+
     }
 
     public void setAnnotationProperty(FilterAnnotationProperty property) {

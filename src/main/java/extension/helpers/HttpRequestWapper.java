@@ -434,4 +434,14 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
         return request.withRemovedHeaders(httpHeader);
     }
 
+    @Override
+    public ParsedHttpParameter parameter(String name) {
+        return request.parameter(name);
+    }
+
+    @Override
+    public String parameterValue(String name) {
+        return request.parameterValue(name);
+    }
+
 }
