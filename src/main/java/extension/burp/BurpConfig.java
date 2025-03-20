@@ -394,18 +394,16 @@ public class BurpConfig {
     /*
      Professional / Community 2024.9.3
      HTTP match and replace rules with Bambdas
-    */
-
+     */
     public enum SupportApi {
-        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT, BURPSUITE_AI
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
         try {
             boolean supportApi = true;
             switch (type) {
-                case BURPSUITE_USEROPTION:
-                {
+                case BURPSUITE_USEROPTION: {
                     api.burpSuite().exportUserOptionsAsJson("user_options");
                     break;
                 }
@@ -415,18 +413,19 @@ public class BurpConfig {
                     supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null;
                     break;
                 }
-                case BURPSUITE_BAMBDA:
-                {
+                case BURPSUITE_BAMBDA: {
                     String map = BurpConfig.getBambda(api, FilterCategory.HTTP);
                     break;
                 }
-                case BURPSUITE_BAMBDA_SITEMAP:
-                {
+                case BURPSUITE_BAMBDA_SITEMAP: {
                     String map = BurpConfig.getBambda(api, FilterCategory.SITE_MAP);
                     break;
                 }
-                default:
-                {
+                case BURPSUITE_AI: {
+                    api.ai().isEnabled();
+                    break;
+                }
+                default: {
                     logger.log(Level.WARNING, "no match:" + type.name());
                     break;
                 }

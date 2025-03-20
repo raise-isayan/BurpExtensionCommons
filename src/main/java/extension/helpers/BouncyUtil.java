@@ -1,9 +1,5 @@
 package extension.helpers;
 
-import extension.helpers.CertUtil;
-import extension.helpers.ConvertUtil;
-import extension.helpers.DateUtil;
-import extension.helpers.StringUtil;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,6 +52,13 @@ import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.AsconDigest;
+import org.bouncycastle.crypto.digests.AsconXof;
+import org.bouncycastle.crypto.digests.ISAPDigest;
+import org.bouncycastle.crypto.digests.PhotonBeetleDigest;
+import org.bouncycastle.crypto.digests.SparkleDigest;
+import org.bouncycastle.crypto.digests.XoodyakDigest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
@@ -225,6 +228,45 @@ public class BouncyUtil {
         md.reset();
         md.update(binary);
         String digeststr = ConvertUtil.toHexString(md.digest(), upperCase);
+        return digeststr;
+    }
+
+    /**
+     * ハッシュ値の取得
+     *
+     * @param digest
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     * @throws java.security.NoSuchAlgorithmException
+     */
+    public static String toMessageDigest(Digest digest, String str, Charset charset, boolean upperCase) {
+        return toMessageDigest(digest, StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * ハッシュ値の取得
+     *
+     * @param digest
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     * @throws java.security.NoSuchAlgorithmException
+     */
+    public static String toMessageDigest(Digest digest, String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return toMessageDigest(digest, StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    public static String toMessageDigest(Digest digest, byte[] binary, boolean upperCase) {
+        digest.reset();
+        digest.update(binary, 0, binary.length);
+        byte[] out = new byte[digest.getDigestSize()];
+        digest.doFinal(out, 0);
+        String digeststr = ConvertUtil.toHexString(out, upperCase);
         return digeststr;
     }
 
@@ -3078,6 +3120,334 @@ public class BouncyUtil {
     public static String toTUPLEHASH256_512Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         return BouncyUtil.toTUPLEHASH256_512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * AsconHash値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconHash(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new AsconDigest(AsconDigest.AsconParameters.AsconHash), binary, upperCase);
+    }
+
+    /**
+     * AsconHash値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconHash(String str, boolean upperCase) {
+        return toMessageDigest(new AsconDigest(AsconDigest.AsconParameters.AsconHash), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * AsconHash値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toAsconHash(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toAsconHash(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * AsconHashA値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconHashA(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new AsconDigest(AsconDigest.AsconParameters.AsconHashA), binary, upperCase);
+    }
+
+    /**
+     * AsconHashA値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconHashA(String str, boolean upperCase) {
+        return toMessageDigest(new AsconDigest(AsconDigest.AsconParameters.AsconHashA), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * AsconHashA値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toAsconHashA(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toAsconHashA(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * AsconXof値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconXof(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new AsconXof(AsconXof.AsconParameters.AsconXof), binary, upperCase);
+    }
+
+    /**
+     * AsconXof値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconXof(String str, boolean upperCase) {
+        return toMessageDigest(new AsconXof(AsconXof.AsconParameters.AsconXof), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * AsconXof値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toAsconXof(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toAsconXof(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /////
+    // https://downloads.bouncycastle.org/java/docs/bcprov-jdk14-javadoc/org/bouncycastle/crypto/digests/package-summary.html
+    ////
+    
+    /**
+     * AsconXofA値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconXofA(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new AsconXof(AsconXof.AsconParameters.AsconXofA), binary, upperCase);
+    }
+
+    /**
+     * AsconXofA値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toAsconXofA(String str, boolean upperCase) {
+        return toMessageDigest(new AsconXof(AsconXof.AsconParameters.AsconXofA), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * AsconXofA値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toAsconXofA(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toAsconXofA(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * ISAPDigest値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toISAPSum(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new ISAPDigest(), binary, upperCase);
+    }
+
+    /**
+     * ISAPDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toISAPSum(String str, boolean upperCase) {
+        return toMessageDigest(new ISAPDigest(), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * ISAPDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toISAPSum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toISAPSum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * ESCH256値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toESCH256Sum(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new SparkleDigest(SparkleDigest.SparkleParameters.ESCH256), binary, upperCase);
+    }
+
+    /**
+     * ESCH256値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toESCH256Sum(String str, boolean upperCase) {
+        return toMessageDigest(new SparkleDigest(SparkleDigest.SparkleParameters.ESCH256), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * toESCH256値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toESCH256Sum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toESCH256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * ESCH384値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toESCH384Sum(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new SparkleDigest(SparkleDigest.SparkleParameters.ESCH384), binary, upperCase);
+    }
+
+    /**
+     * ESCH384値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toESCH384Sum(String str, boolean upperCase) {
+        return toMessageDigest(new SparkleDigest(SparkleDigest.SparkleParameters.ESCH384), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * ESCH384値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toESCH384Sum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toESCH384Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * PhotonBeetleDigest値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toPhotonBeetleSum(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new PhotonBeetleDigest(), binary, upperCase);
+    }
+
+    /**
+     * PhotonBeetleDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toPhotonBeetleSum(String str, boolean upperCase) {
+        return toMessageDigest(new PhotonBeetleDigest(), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * PhotonBeetleDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toPhotonBeetleSum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toPhotonBeetleSum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    /**
+     * XoodyakDigest値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toXoodyakSum(byte[] binary, boolean upperCase) {
+        return toMessageDigest(new XoodyakDigest(), binary, upperCase);
+    }
+
+    /**
+     * XoodyakDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toXoodyakSum(String str, boolean upperCase) {
+        return toMessageDigest(new XoodyakDigest(), str, StandardCharsets.ISO_8859_1, upperCase);
+    }
+
+    /**
+     * PhotonBeetleDigest値の取得値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toXoodyakSum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return BouncyUtil.toXoodyakSum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     // https://github.com/bcgit/bc-java/tree/main/core/src/test/java/org/bouncycastle/crypto/test

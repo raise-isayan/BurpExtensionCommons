@@ -1,9 +1,6 @@
 package extension.helpers;
 
-import extension.helpers.BouncyUtil;
 import burp.BurpPreferences;
-import extension.helpers.CertUtil;
-import extension.helpers.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +26,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import org.bouncycastle.crypto.digests.*;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -884,8 +883,213 @@ public class BoncyUtilTest {
                 logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
+        {
+            try {
+                String hash = BouncyUtil.toISAPSum("hello world", true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash);
+                String hash2 = BouncyUtil.toISAPSum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash2);
+                String hash3 = BouncyUtil.toISAPSum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toAsconHash("hello world", true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash);
+                String hash2 = BouncyUtil.toAsconHash(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash2);
+                String hash3 = BouncyUtil.toAsconHash("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toAsconHashA("hello world", true);
+                assertEquals("97C154B3FE5E03CAA8ED975C57C6C48507BD4ABF6505C83570F31818233B50A2", hash);
+                String hash2 = BouncyUtil.toAsconHashA(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("97C154B3FE5E03CAA8ED975C57C6C48507BD4ABF6505C83570F31818233B50A2", hash2);
+                String hash3 = BouncyUtil.toAsconHashA("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("97C154B3FE5E03CAA8ED975C57C6C48507BD4ABF6505C83570F31818233B50A2", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toAsconXof("hello world", true);
+                assertEquals("04F0D6DC95E00FAC56CA104E81F3F312964E8E8286D3F6C713CBF7B003824391", hash);
+                String hash2 = BouncyUtil.toAsconXof(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("04F0D6DC95E00FAC56CA104E81F3F312964E8E8286D3F6C713CBF7B003824391", hash2);
+                String hash3 = BouncyUtil.toAsconXof("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("04F0D6DC95E00FAC56CA104E81F3F312964E8E8286D3F6C713CBF7B003824391", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toAsconXofA("hello world", true);
+                assertEquals("CBAAB6290215269DF8D018907C5149A19B898843CA11B2C1289009F187169295", hash);
+                String hash2 = BouncyUtil.toAsconXofA(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("CBAAB6290215269DF8D018907C5149A19B898843CA11B2C1289009F187169295", hash2);
+                String hash3 = BouncyUtil.toAsconXofA("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("CBAAB6290215269DF8D018907C5149A19B898843CA11B2C1289009F187169295", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toISAPSum("hello world", true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash);
+                String hash2 = BouncyUtil.toISAPSum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash2);
+                String hash3 = BouncyUtil.toISAPSum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("620DC816F50623FA8566AE3AE66EDA84529584A205D09EFBAB7764A3540269AF", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toESCH256Sum("hello world", true);
+                assertEquals("86E855E970D25ADD4DE6C8BDB621F384D5BAE90C5B7144474810668CAAD97601", hash);
+                String hash2 = BouncyUtil.toESCH256Sum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("86E855E970D25ADD4DE6C8BDB621F384D5BAE90C5B7144474810668CAAD97601", hash2);
+                String hash3 = BouncyUtil.toESCH256Sum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("86E855E970D25ADD4DE6C8BDB621F384D5BAE90C5B7144474810668CAAD97601", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toESCH384Sum("hello world", true);
+                assertEquals("6EE0522AA5D6E271B9E865B1FF51ADF79B187AE382534377CF3AFEDB6AE19304BD417DCBE899E592EEC2ED548CB8C262", hash);
+                String hash2 = BouncyUtil.toESCH384Sum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("6EE0522AA5D6E271B9E865B1FF51ADF79B187AE382534377CF3AFEDB6AE19304BD417DCBE899E592EEC2ED548CB8C262", hash2);
+                String hash3 = BouncyUtil.toESCH384Sum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("6EE0522AA5D6E271B9E865B1FF51ADF79B187AE382534377CF3AFEDB6AE19304BD417DCBE899E592EEC2ED548CB8C262", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toPhotonBeetleSum("hello world", true);
+                assertEquals("9A17493B10E20EC4C424C4FE8A0C246CD2E67FF7113EB349076EB6A1F7B4E62C", hash);
+                String hash2 = BouncyUtil.toPhotonBeetleSum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("9A17493B10E20EC4C424C4FE8A0C246CD2E67FF7113EB349076EB6A1F7B4E62C", hash2);
+                String hash3 = BouncyUtil.toPhotonBeetleSum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("9A17493B10E20EC4C424C4FE8A0C246CD2E67FF7113EB349076EB6A1F7B4E62C", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        {
+            try {
+                String hash = BouncyUtil.toXoodyakSum("hello world", true);
+                assertEquals("5CBA6EB834C9745874C96559FE716BF40AC2B7D86CE6360AE841E89CA3231BE7", hash);
+                String hash2 = BouncyUtil.toXoodyakSum(StringUtil.getBytesRaw("hello world"), true);
+                assertEquals("5CBA6EB834C9745874C96559FE716BF40AC2B7D86CE6360AE841E89CA3231BE7", hash2);
+                String hash3 = BouncyUtil.toXoodyakSum("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                assertEquals("5CBA6EB834C9745874C96559FE716BF40AC2B7D86CE6360AE841E89CA3231BE7", hash3);
+            } catch (UnsupportedEncodingException ex) {
+                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
 
     }
 
-}
+    @Test
+    public void testAddHash() {
+        System.out.println("testAddHash");
+        {
+            AsconDigest digest = new AsconDigest(AsconDigest.AsconParameters.AsconHash);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("AsconHash:" + digeststr);
+        }
+        {
+            AsconDigest digest = new AsconDigest(AsconDigest.AsconParameters.AsconHashA);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("AsconHashA:" + digeststr);
+        }
+        {
+            AsconXof digest = new AsconXof(AsconXof.AsconParameters.AsconXof);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("AsconXof:" + digeststr);
+        }
+        {
+            AsconXof digest = new AsconXof(AsconXof.AsconParameters.AsconXofA);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("AsconXofA:" + digeststr);
+        }
+        {
+            ISAPDigest digest = new ISAPDigest();
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("ISAPDigest:" + digeststr);
+        }
+        {
+            SparkleDigest digest = new SparkleDigest(SparkleDigest.SparkleParameters.ESCH256);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("SparkleDigest256:" + digeststr);
+        }
+        {
+            SparkleDigest digest = new SparkleDigest(SparkleDigest.SparkleParameters.ESCH384);
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("SparkleDigest384:" + digeststr);
+        }
+        {
+            PhotonBeetleDigest digest = new PhotonBeetleDigest();
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("PhotonBeetleDigest:" + digeststr);
+        }
+        {
+            XoodyakDigest digest = new XoodyakDigest();
+            byte b[] = StringUtil.getBytesRaw("hello world");
+            digest.update(b, 0, b.length);
+            byte out[] = new byte[digest.getDigestSize()];
+            int len = digest.doFinal(out, 0);
+            String digeststr = ConvertUtil.toHexString(out, true);
+            System.out.println("XoodyakDigest:" + digeststr);
+        }
+    }
 
+}
