@@ -1,6 +1,7 @@
 package burp;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -55,6 +56,11 @@ public class BurpPreferences {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
         return null;
+    }
+
+    public static File getWorkingDir() {
+        Preferences prefs = Preferences.userNodeForPackage(burp.BurpPreferences.class);
+        return new File(prefs.get("workingdirectory", ""));
     }
 
 }

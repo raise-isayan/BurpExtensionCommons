@@ -1,0 +1,23 @@
+{
+    "project_options":{
+        "connections":{
+            "hostname_resolution":[],
+            "out_of_scope_requests":{
+                "advanced_mode":false,
+                "drop_all_out_of_scope":false,
+                "exclude":[],
+                "include":[],
+                "scope_option":"suite"
+            },
+            "socks_proxy":{
+                "dns_over_socks":false,
+                "host":"127.0.0.2",
+                "password":"pass",
+                "port":8080,
+                "use_proxy":true,
+                "use_user_options":false,
+                "username":"user"
+            }
+        }
+    }
+}

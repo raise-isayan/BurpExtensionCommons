@@ -15,10 +15,6 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
-// https://docs.oracle.com/javase/tutorial/uiswing/dnd/basicdemo.html)
-// Demo - DropDemo (The Java™ Tutorials > Creating a GUI With JFC/Swing > Drag and Drop and Data Transfer)
-// https://docs.oracle.com/javase/tutorial/uiswing/dnd/dropmodedemo.html
-// @see https://docs.oracle.com/javase/tutorial/uiswing/examples/dnd/DropDemoProject/src/dnd/ListTransferHandler.java
 public class TableRowTransferHandler extends TransferHandler {
 
     private final static Logger logger = Logger.getLogger(TableRowTransferHandler.class.getName());

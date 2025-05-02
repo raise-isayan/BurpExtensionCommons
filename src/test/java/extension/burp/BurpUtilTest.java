@@ -42,6 +42,11 @@ public class BurpUtilTest {
         System.out.println("parseFilterPattern");
         String pattern = "jpg,png,gif,js.map";
         {
+            String result = BurpUtil.parseFilterPattern(pattern);
+            System.out.println("pattern:" + result);
+            assertEquals("\\.(\\Qjpg\\E|\\Qpng\\E|\\Qgif\\E|\\Qjs.map\\E)$", result);
+        }
+        {
             String expResult = "test.jpg";
             String result = BurpUtil.parseFilterPattern(pattern);
             Pattern p = Pattern.compile(result);

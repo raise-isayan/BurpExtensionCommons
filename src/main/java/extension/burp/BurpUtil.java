@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -144,6 +145,10 @@ public class BurpUtil {
 
     public static String parseFilterPattern(String pattern) {
         String[] extentions = splitFilterPattern(pattern);
+        return parseFilterPattern(extentions);
+    }
+
+    public static String parseFilterPattern(String[] extentions) {
         StringBuilder buff = new StringBuilder();
         if (extentions.length == 1 && extentions[0].equals("")) {
             return buff.toString();
@@ -155,7 +160,7 @@ public class BurpUtil {
                 if (i > 0) {
                     buff.append("|");
                 }
-                buff.append(extentions[i]);
+                buff.append(Pattern.quote(extentions[i]));
             }
         }
         buff.append(")$");

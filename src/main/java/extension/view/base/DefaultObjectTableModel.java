@@ -9,8 +9,8 @@ import javax.swing.table.TableModel;
 
 public class DefaultObjectTableModel<T extends ObjectTableMapping> extends AbstractTableModel {
 
-    protected List<T> data;
-    protected ObjectTableColumn columns;
+    protected final List<T> data;
+    protected final ObjectTableColumn columns;
 
     public DefaultObjectTableModel(TableModel table) {
         this(new ObjectTableColumn() {

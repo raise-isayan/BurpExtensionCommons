@@ -1,0 +1,20 @@
+{
+    "target":{
+        "scope":{
+            "advanced_mode":false,
+            "exclude":[],
+            "include":[
+                {
+                    "enabled":true,
+                    "include_subdomains":false,
+                    "prefix":"https://www.example.com/"
+                },
+                {
+                    "enabled":true,
+                    "include_subdomains":false,
+                    "prefix":"https://www.google.com/"
+                }
+            ]
+        }
+    }
+}

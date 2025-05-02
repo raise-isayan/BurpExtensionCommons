@@ -4,6 +4,7 @@ import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.ai.Ai;
 import burp.api.montoya.ai.chat.Message;
 import burp.api.montoya.ai.chat.PromptOptions;
+import burp.api.montoya.bambda.Bambda;
 import burp.api.montoya.burpsuite.BurpSuite;
 import burp.api.montoya.collaborator.Collaborator;
 import burp.api.montoya.collaborator.CollaboratorClient;
@@ -122,6 +123,7 @@ public class MockMontoya {
 
     public final BurpSuite burpSuteApi = Mockito.mock(BurpSuite.class);
     public final Ai aiApi = Mockito.mock(Ai.class);
+    public final Bambda bambdaApi = Mockito.mock(Bambda.class);
     public final Collaborator collaboratorApi = Mockito.mock(Collaborator.class);
     public final Comparer comparerApi = Mockito.mock(Comparer.class);
     public final Decoder decoderApi = Mockito.mock(Decoder.class);
@@ -311,6 +313,11 @@ public class MockMontoya {
             @Override
             public Ai ai() {
                 return aiApi;
+            }
+
+            @Override
+            public Bambda bambda() {
+                return bambdaApi;
             }
 
         };

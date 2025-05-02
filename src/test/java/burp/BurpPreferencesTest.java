@@ -60,4 +60,10 @@ public class BurpPreferencesTest {
         assertNotNull(caKey);
     }
 
+    @Test
+    public void testWorkDir() throws Exception {
+        System.out.println("testWorkDir");
+        System.out.println("Work:" + BurpPreferences.getWorkingDir());
+    }
+
 }
