@@ -85,6 +85,10 @@ public class HttpCookie implements Cookie {
         return (this.expiration.isPresent()) ? Date.from(this.expiration.get().toInstant()) : null;
     }
 
+    public static String valueOf(Cookie cookie) {
+        return cookie.name() + "=" + cookie.name();
+    }
+
     /**
      * Set-HttpCookie
      *

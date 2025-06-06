@@ -555,8 +555,11 @@ public class BurpConfigTest {
             System.out.println("fromCopyKey:" + copyKey);
         }
         {
-            KeyStroke copyKey = KeyStroke.getKeyStroke(KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_DOWN_MASK);
-            System.out.println("toCopyKey:" + BurpConfig.Hotkey.toHotkeyText(copyKey));
+            KeyStroke spaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_DOWN_MASK);
+            String text = BurpConfig.Hotkey.toHotkeyText(spaceKey);
+            System.out.println("toSpaceKey:" + text);
+            KeyStroke parseKey = BurpConfig.Hotkey.parseHotkey(text);
+            System.out.println("toSpaceKey.toString:" + parseKey.toString() + ":" + parseKey.getKeyCode());
         }
     }
 
@@ -576,4 +579,6 @@ public class BurpConfigTest {
             fail();
         }
     }
+
+
 }

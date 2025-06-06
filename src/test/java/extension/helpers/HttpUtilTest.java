@@ -56,6 +56,17 @@ public class HttpUtilTest {
      * Test of buildHost method, of class HttpUtil.
      */
     @Test
+    public void testIsPortAvailable() {
+        System.out.println("testIsPortAvailable");
+        boolean available = HttpUtil.isPortAvailable(65432);
+        assertTrue(available);
+    }
+
+
+    /**
+     * Test of buildHost method, of class HttpUtil.
+     */
+    @Test
     public void testBuildHost() {
         assertEquals("example.com", HttpUtil.buildHost("example.com", 80, false));
         assertEquals("example.com:443", HttpUtil.buildHost("example.com", 443, false));

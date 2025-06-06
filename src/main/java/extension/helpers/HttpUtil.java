@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
@@ -57,6 +58,14 @@ public final class HttpUtil {
     private HttpUtil() {
     }
 
+    public static boolean isPortAvailable(int port) {
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            serverSocket.setReuseAddress(true);
+            return true;  // ポートは利用可能
+        } catch (IOException e) {
+            return false; // ポートはすでに使用されている
+        }
+    }
     private final static Pattern HEADER_VALUE = Pattern.compile("^([^:]+)\\s*:\\s*(.*)");
 
     public static String getHeader(String key, String[] headers) {
