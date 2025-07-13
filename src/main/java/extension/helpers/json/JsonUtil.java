@@ -283,4 +283,30 @@ public class JsonUtil {
         FileUtil.bytesToFile(StringUtil.getBytesUTF8(jsonString), fo);
     }
 
+    public static String toJsonPath(JsonElement root, JsonElement target) {
+        return toPathRecursive(root, target, "$");
+    }
+
+    private static String toPathRecursive(JsonElement current, JsonElement target, String currentPath) {
+    //    if (current.equals(target)) {
+        if (current == target) {
+            return currentPath;
+        }
+
+        if (current.isJsonObject()) {
+            JsonObject obj = current.getAsJsonObject();
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                String result = toPathRecursive(entry.getValue(), target, currentPath + "." + entry.getKey());
+                if (result != null) return result;
+            }
+        } else if (current.isJsonArray()) {
+            JsonArray array = current.getAsJsonArray();
+            for (int i = 0; i < array.size(); i++) {
+                String result = toPathRecursive(array.get(i), target, currentPath + "[" + i + "]");
+                if (result != null) return result;
+            }
+        }
+        return null; // 見つからなかった場合
+    }
+
 }

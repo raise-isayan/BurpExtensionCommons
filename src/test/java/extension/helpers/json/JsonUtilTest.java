@@ -342,4 +342,44 @@ public class JsonUtilTest {
         }
     }
 
+    @Test
+    public void testJsonPath() {
+        System.out.println("testJsonPath");
+        {
+            String json = "{\"abc\":123,\"def\":\"test\"}";
+            JsonElement result = JsonUtil.parseJson(json);
+            String path = JsonUtil.toJsonPath(result, result.getAsJsonObject().get("abc"));
+            System.out.println("testJsonPath:" + path);
+            assertEquals(path, "$.abc");
+        }
+        {
+            String json = """
+            {
+                "store": {
+                    "book": [
+                        {
+                            "category": "reference",
+                            "author": "Nigel Rees",
+                            "title": "Sayings of the Century"
+                        },
+                        {
+                            "category": "fiction",
+                            "author": "Evelyn Waugh",
+                            "title": "Sword of Honour"
+                        }
+                    ],
+                    "bicycle": {
+                        "color": "red",
+                        "price": 19.95
+                    }
+                }
+            }
+            """;
+            JsonElement result = JsonUtil.parseJson(json);
+            String path = JsonUtil.toJsonPath(result, result.getAsJsonObject().get("store").getAsJsonObject().get("book").getAsJsonArray().get(0).getAsJsonObject().get("category"));
+            System.out.println("testJsonPath:" + path);
+            assertEquals(path, "$.store.book[0].category");
+        }
+    }
+
 }

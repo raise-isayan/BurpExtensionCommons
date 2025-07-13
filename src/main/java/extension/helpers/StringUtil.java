@@ -289,6 +289,12 @@ public class StringUtil {
         printWriter.append(message);
         printWriter.append(':');
         ex.printStackTrace(printWriter);
+        Throwable causeEx = ex.getCause();
+        if (causeEx != null) {
+            printWriter.append(causeEx.getMessage());
+            printWriter.append(':');
+            causeEx.printStackTrace(printWriter);
+        }
         return result.toString();
     }
 

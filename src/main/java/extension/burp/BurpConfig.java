@@ -55,9 +55,9 @@ public class BurpConfig {
 
     public final static FileFilter BURP_CONFIG_FILTER = new FileNameExtensionFilter("burp config File(*.json)", "json");
 
-    private final static Map<Integer,String> mapKey = new HashMap<>();
+    private final static Map<Integer, String> mapKey = new HashMap<>();
 
-    private final static Map<String,Integer> mapRverseKey = new HashMap<>();
+    private final static Map<String, Integer> mapRverseKey = new HashMap<>();
 
     static {
         mapKey.put(KeyEvent.VK_ENTER, "Enter");
@@ -196,7 +196,7 @@ public class BurpConfig {
         mapKey.put(KeyEvent.VK_KATAKANA, "Katakana");
         mapKey.put(KeyEvent.VK_HIRAGANA, "Hiragana");
         mapKey.put(KeyEvent.VK_FULL_WIDTH, "Full-Width");
-        mapKey.put(KeyEvent.VK_HALF_WIDTH,"Half-Width");
+        mapKey.put(KeyEvent.VK_HALF_WIDTH, "Half-Width");
         mapKey.put(KeyEvent.VK_ROMAN_CHARACTERS, "Roman Characters");
         mapKey.put(KeyEvent.VK_ALL_CANDIDATES, "All Candidates");
         mapKey.put(KeyEvent.VK_PREVIOUS_CANDIDATE, "Previous Candidate");
@@ -208,7 +208,7 @@ public class BurpConfig {
         mapKey.put(KeyEvent.VK_INPUT_METHOD_ON_OFF, "Input Method On/Off");
 
         mapKey.put(KeyEvent.VK_AGAIN, "Again");
-        mapKey.put(KeyEvent.VK_UNDO,"Undo");
+        mapKey.put(KeyEvent.VK_UNDO, "Undo");
         mapKey.put(KeyEvent.VK_COPY, "Copy");
         mapKey.put(KeyEvent.VK_PASTE, "Paste");
         mapKey.put(KeyEvent.VK_CUT, "Cut");
@@ -218,7 +218,7 @@ public class BurpConfig {
 
         for (int keyCode = KeyEvent.VK_NUMPAD0; keyCode <= KeyEvent.VK_NUMPAD9; keyCode++) {
             String numpad = "NumPad";
-            char c = (char)(keyCode - KeyEvent.VK_NUMPAD0 + '0');
+            char c = (char) (keyCode - KeyEvent.VK_NUMPAD0 + '0');
             mapKey.put(keyCode, numpad + "-" + c);
         }
 
@@ -226,9 +226,7 @@ public class BurpConfig {
             mapRverseKey.put(entry.getValue(), entry.getKey());
         }
 
-
     }
-
 
     public static String getUserHomePath() {
         return System.getProperties().getProperty("user.home");
@@ -1656,10 +1654,12 @@ public class BurpConfig {
         RequestListener bindListener = null;
         for (int i = basePort; i < 65536; i++) {
             final int bindPort = i;
-            // Port利用済みの場合スキップ
-            if (!HttpUtil.isPortAvailable(bindPort)) continue;
             List<RequestListener> bindListenerList = requestListeners.stream().filter(l -> l.getListenerPort() == bindPort).toList();
             if (bindListenerList.isEmpty()) {
+                // Port利用済みの場合スキップ
+                if (!HttpUtil.isPortAvailable(bindPort)) {
+                    continue;
+                }
                 bindListener = RequestListener.defaultListener(bindPort);
                 break;
             } else {
@@ -1677,6 +1677,7 @@ public class BurpConfig {
     public static RequestListener openBrowserRequestListener(MontoyaApi api, int basePort) {
         List<RequestListener> requestListeners = getRequestListeners(api);
         RequestListener bindListener = findRequestListeners(api, basePort);
+        bindListener.setRunning(true);
         requestListeners.add(bindListener);
         String config = configRequestListeners(api, requestListeners, false);
         return bindListener;
@@ -1792,8 +1793,12 @@ public class BurpConfig {
             return proxy;
         }
 
+        public static boolean matchListener(RequestListener value, boolean running, int port) {
+            return (value.running == running && value.listen_mode.equals(LISTEN_MODE_LOOPBACK) && value.listener_port == port);
+        }
+
         public static boolean matchListener(RequestListener value, int port) {
-            return (value.running && value.listen_mode.equals(LISTEN_MODE_LOOPBACK) && value.listener_port == port);
+            return (value.listen_mode.equals(LISTEN_MODE_LOOPBACK) && value.listener_port == port);
         }
 
         /**
@@ -2299,8 +2304,7 @@ public class BurpConfig {
                 if (i == count - 1) {
                     if (token.length() == 1) {
                         keyCode = token.charAt(0);
-                    }
-                    else {
+                    } else {
                         keyCode = mapRverseKey.get(token);
                     }
                 }
@@ -2319,9 +2323,9 @@ public class BurpConfig {
     }
 
     public static String getKeyText(int keyCode) {
-        if (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9 ||
-            keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z) {
-            return String.valueOf((char)keyCode);
+        if (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9
+                || keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z) {
+            return String.valueOf((char) keyCode);
         }
 
         String text = mapKey.get(keyCode);
@@ -2331,12 +2335,12 @@ public class BurpConfig {
 
         if (keyCode >= KeyEvent.VK_NUMPAD0 && keyCode <= KeyEvent.VK_NUMPAD9) {
             String numpad = "NumPad";
-            char c = (char)(keyCode - KeyEvent.VK_NUMPAD0 + '0');
+            char c = (char) (keyCode - KeyEvent.VK_NUMPAD0 + '0');
             return numpad + "-" + c;
         }
 
         if ((keyCode & 0x01000000) != 0) {
-            return String.valueOf((char)(keyCode ^ 0x01000000 ));
+            return String.valueOf((char) (keyCode ^ 0x01000000));
         }
         String unknown = "Unknown";
         return unknown + " keyCode: 0x" + Integer.toString(keyCode, 16);

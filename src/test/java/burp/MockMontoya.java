@@ -81,6 +81,8 @@ import burp.api.montoya.ui.Selection;
 import burp.api.montoya.ui.UserInterface;
 import burp.api.montoya.ui.menu.BasicMenuItem;
 import burp.api.montoya.ui.menu.Menu;
+import burp.api.montoya.ui.settings.SettingsPanelBuilder;
+import burp.api.montoya.ui.settings.SettingsPanelSetting;
 import burp.api.montoya.utilities.Utilities;
 import burp.api.montoya.utilities.json.JsonArrayNode;
 import burp.api.montoya.utilities.json.JsonBooleanNode;
@@ -89,6 +91,7 @@ import burp.api.montoya.utilities.json.JsonNullNode;
 import burp.api.montoya.utilities.json.JsonNumberNode;
 import burp.api.montoya.utilities.json.JsonObjectNode;
 import burp.api.montoya.utilities.json.JsonStringNode;
+import burp.api.montoya.utilities.shell.ExecuteOptions;
 import burp.api.montoya.websocket.BinaryMessageAction;
 import burp.api.montoya.websocket.MessageAction;
 import burp.api.montoya.websocket.TextMessageAction;
@@ -1242,6 +1245,56 @@ public class MockMontoya {
 
         @Override
         public Message assistantMessage(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelBuilder settingsPanel() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting integerSetting(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting integerSetting(String string, int i) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting booleanSetting(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting booleanSetting(String string, boolean bln) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting stringSetting(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting stringSetting(String string, String string1) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting listSetting(String string, String... strings) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SettingsPanelSetting listSetting(String string, List<String> list, String string1) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public ExecuteOptions executeOptions() {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }

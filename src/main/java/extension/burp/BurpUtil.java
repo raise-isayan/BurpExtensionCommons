@@ -84,21 +84,21 @@ public class BurpUtil {
     public static JTabbedPane suiteTabbedPane() {
         Frame frame = suiteFrame();
         if (frame != null) {
-            return findSuiteTabbedPane(frame);
+            return findTabbedPane("burpTabBar", frame);
         }
         return null;
     }
 
-    protected static JTabbedPane findSuiteTabbedPane(Container container) {
+    protected static JTabbedPane findTabbedPane(String name, Container container) {
         if (container instanceof JTabbedPane jTabbedPane) {
-            if ("burpTabBar".equals(jTabbedPane.getName())) {
+            if (name.equals(jTabbedPane.getName())) {
                 return jTabbedPane;
             }
         } else {
             for (int i = 0; i < container.getComponentCount(); i++) {
                 Component c = container.getComponent(i);
                 if (c instanceof Container inner) {
-                    JTabbedPane tabbed = findSuiteTabbedPane(inner);
+                    JTabbedPane tabbed = findTabbedPane(name, inner);
                     if (tabbed != null) {
                         return tabbed;
                     }
