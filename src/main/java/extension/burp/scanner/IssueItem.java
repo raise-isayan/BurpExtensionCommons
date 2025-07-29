@@ -10,6 +10,16 @@ import extension.view.base.CaptureItem;
  */
 public class IssueItem extends CaptureItem {
 
+    public IssueItem() {
+        super();
+    }
+
+    public IssueItem(CaptureItem captureItem) {
+        setCaptureValue(captureItem.getCaptureValue());
+        setStart(captureItem.start());
+        setEnd(captureItem.end());
+    }
+
     private boolean messageIsRequest = false;
 
     /**
