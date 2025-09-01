@@ -33,6 +33,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
@@ -101,6 +102,25 @@ public class BurpUtil {
                     JTabbedPane tabbed = findTabbedPane(name, inner);
                     if (tabbed != null) {
                         return tabbed;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public static JButton findSuiteButton(String name, Container container) {
+        if (container instanceof JButton button) {
+            if (name.equals(button.getName())) {
+                return button;
+            }
+        } else {
+            for (int i = 0; i < container.getComponentCount(); i++) {
+                Component c = container.getComponent(i);
+                if (c instanceof Container inner) {
+                    JButton button = findSuiteButton(name, inner);
+                    if (button != null) {
+                        return button;
                     }
                 }
             }

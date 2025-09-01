@@ -70,9 +70,9 @@ public class RegexItem {
     }
 
     public Pattern compileRegex(boolean quote) {
-        int flags = Pattern.MULTILINE;
         Pattern newregex = null;
         try {
+            int flags = Pattern.DOTALL; // Pattern.MULTILINE;
             if (this.ignoreCase) {
                 flags |= Pattern.CASE_INSENSITIVE;
             }

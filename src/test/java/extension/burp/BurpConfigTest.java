@@ -70,8 +70,8 @@ public class BurpConfigTest {
      */
     @Test
     public void testLoadCACeart() {
+        System.out.println("loadCACeart");
         try {
-            System.out.println("loadCACeart");
             KeyStore result = BurpPreferences.loadCACeart();
             Properties p = System.getProperties();
             Enumeration<String> e = result.aliases();
@@ -221,8 +221,8 @@ public class BurpConfigTest {
 
     @Test
     public void testUpdateSocksProxy() {
+        System.out.println("testUpdateSocksProxy(user)");
         try {
-            System.out.println("testUpdateSocksProxy(user)");
             {
                 String configFile = BurpConfigTest.class.getResource("/resources/user_socks_proxy.json").getPath();
             String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
@@ -255,8 +255,8 @@ public class BurpConfigTest {
 
     @Test
     public void testAddResuestListeners() {
+        System.out.println("testAddResuestListeners");
         try {
-            System.out.println("testAddResuestListeners");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
             String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
@@ -271,8 +271,8 @@ public class BurpConfigTest {
 
     @Test
     public void testDelResuestListeners() {
+        System.out.println("testDelResuestListeners");
         try {
-            System.out.println("testDelResuestListeners");
             String configFile = BurpConfigTest.class.getResource("/resources/request_listeners.json").getPath();
             String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             System.out.println("loadConfig:" + config);
@@ -521,8 +521,8 @@ public class BurpConfigTest {
                     + "    }\n"
                     + "  }\n"
                     + "}";
-            assertEquals(except, update_filter);
             System.out.println("updateFilter:" + update_filter);
+            assertEquals(except, update_filter);
         } catch (Exception e) {
             fail();
         }
@@ -565,8 +565,8 @@ public class BurpConfigTest {
 
     @Test
     public void testUpdateHotkey() {
+        System.out.println("testUpdateHotkey");
         try {
-            System.out.println("testUpdateHotkey");
             String configFile = BurpConfigTest.class.getResource("/resources/user_hotkey.json").getPath();
             String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
             List<BurpConfig.Hotkey> hotkeys = new ArrayList<>();
@@ -578,6 +578,122 @@ public class BurpConfigTest {
         } catch (IOException ex) {
             fail();
         }
+    }
+
+    @Test
+    public void testIntercept() {
+        System.out.println("testIntercept");
+        {
+            BurpConfig.InterceptClientRequests intercept = BurpConfig.getInterceptClientRequests(api);
+            System.out.println("InterceptClientRequests:" + intercept.isDoIntercept());
+            assertTrue(intercept.isDoIntercept());
+            List<BurpConfig.InterceptRule> rules = intercept.getRules();
+            for (BurpConfig.InterceptRule r : rules) {
+                System.out.println("----------");
+                System.out.println("r.Enabled:" + r.isEnabled());
+                System.out.println("r.BooleanOperator:" + r.getBooleanOperator());
+                System.out.println("r.MatchRelationship:" + r.getMatchRelationship());
+                System.out.println("r.MatchCondition:" + r.getMatchCondition());
+                System.out.println("r.MatchType:" + r.getMatchType());
+                System.out.println("r.toString:" + r.toString());
+            }
+        }
+        {
+            System.out.println("=========");
+            BurpConfig.InterceptServerResponses intercept = BurpConfig.getInterceptServerResponses(api);
+            System.out.println("InterceptServerResponses:" + intercept.isDoIntercept());
+            assertFalse(intercept.isDoIntercept());
+            List<BurpConfig.InterceptRule> rules = intercept.getRules();
+            for (BurpConfig.InterceptRule r : rules) {
+                System.out.println("----------");
+                System.out.println("r.Enabled:" + r.isEnabled());
+                System.out.println("r.BooleanOperator:" + r.getBooleanOperator());
+                System.out.println("r.MatchRelationship:" + r.getMatchRelationship());
+                System.out.println("r.MatchCondition:" + r.getMatchCondition());
+                System.out.println("r.MatchType:" + r.getMatchType());
+                System.out.println("r.toString:" + r.toString());
+            }
+        }
+        {
+            BurpConfig.InterceptWebSocketsMessages intercept = BurpConfig.getInterceptWebSocketsMessages(api);
+            System.out.println("ClientToServerMessages:" + intercept.isClientToServerMessages());
+            System.out.println("ServerToClientMessages:" + intercept.isServerToClientMessages());
+            System.out.println("InterceptInScopeOnly:" + intercept.isInterceptInScopeOnly());
+            assertTrue(intercept.isClientToServerMessages());
+            assertTrue(intercept.isServerToClientMessages());
+            assertFalse(intercept.isInterceptInScopeOnly());
+        }
+    }
+
+    @Test
+    public void testNewIntercept() {
+        System.out.println("testNewIntercepte");
+        String configFile = BurpConfigTest.class.getResource("/resources/proxy_json.json").getPath();
+        try {
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
+            {
+                BurpConfig.InterceptClientRequests intercept = new BurpConfig.InterceptClientRequests(false);
+                String updateConfig = BurpConfig.updateInterceptClientRequests(config, intercept);
+                System.out.println("updateConfig1-1:" + updateConfig);
+                intercept.setDoIntercept(true);
+                List<BurpConfig.InterceptRule> rules = intercept.getRules();
+                BurpConfig.InterceptRule rule1 = new BurpConfig.InterceptRule();
+                rule1.setEnabled(true);
+                rule1.setBooleanOperator("or");
+                rule1.setMatchCondition("(^gif$|^jpg$|^png$|^css$|^js$|^ico$|^svg$|^eot$|^woff$|^woff2$|^ttf$)");
+                rule1.setMatchType("file_extension");
+                rule1.setMatchRelationship("does_not_match");
+                rules.add(rule1);
+                String updateConfig2 = BurpConfig.updateInterceptClientRequests(config, intercept);
+                System.out.println("updateConfig1-2:" + updateConfig2);
+            }
+            {
+                BurpConfig.InterceptServerResponses intercept = new BurpConfig.InterceptServerResponses(true);
+                String updateConfig = BurpConfig.updateInterceptServerResponses(config, intercept);
+                System.out.println("updateConfig2-1:" + updateConfig);
+                intercept.setDoIntercept(true);
+                List<BurpConfig.InterceptRule> rules = intercept.getRules();
+                BurpConfig.InterceptRule rule1 = new BurpConfig.InterceptRule();
+                rule1.setEnabled(true);
+                rule1.setBooleanOperator("or");
+                rule1.setMatchCondition("text");
+                rule1.setMatchType("content_type_header");
+                rule1.setMatchRelationship("matches");
+                rules.add(rule1);
+                String updateConfig2 = BurpConfig.updateInterceptServerResponses(config, intercept);
+                System.out.println("updateConfig2-2:" + updateConfig2);
+            }
+            {
+                BurpConfig.InterceptWebSocketsMessages intercept = new BurpConfig.InterceptWebSocketsMessages();
+                intercept.setClientToServerMessages(false);
+                intercept.setServerToClientMessages(false);
+                intercept.setInterceptInScopeOnly(true);
+                String updateConfig = BurpConfig.updateInterceptWebSocketsMessages(config, intercept);
+                System.out.println("updateConfig3-1:" + updateConfig);
+            }
+        } catch (IOException ex) {
+            fail();
+        }
+
+    }
+
+    @Test
+    public void testUpdateIntercept() {
+        System.out.println("testUpdatIntercepte");
+        String configFile = BurpConfigTest.class.getResource("/resources/proxy_json.json").getPath();
+        try {
+            String config = FileUtil.stringFromFile(new File(configFile), StandardCharsets.UTF_8);
+            {
+                BurpConfig.InterceptClientRequests intercept = BurpConfig.getInterceptClientRequests(api);
+                List<BurpConfig.InterceptRule> rules = intercept.getRules();
+                rules.get(3).setEnabled(true);
+                String updateConfig = BurpConfig.updateInterceptClientRequests(config, intercept);
+                System.out.println("updateConfig1-1:" + updateConfig);
+            }
+        } catch (IOException ex) {
+            fail();
+        }
+
     }
 
 

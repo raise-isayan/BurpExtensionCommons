@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -32,10 +34,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.security.auth.x500.X500Principal;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Encoding;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DLSet;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -3448,6 +3455,22 @@ public class BouncyUtil {
     public static String toXoodyakSum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
         return BouncyUtil.toXoodyakSum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+    public static String X509_NAME_hash_old(String subject) {
+        return X509_NAME_hash_old(new X500Principal(subject));
+    }
+
+    private static String X509_NAME_hash_old(X500Principal principal) {
+        try {
+            byte[] enc = principal.getEncoded();
+            byte[] digest = MessageDigest.getInstance("MD5").digest(enc);
+            ByteBuffer buff = ByteBuffer.wrap(digest, 0, 4);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            return Long.toUnsignedString(buff.getInt() & 0xffffffffL, 16);
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
     }
 
     // https://github.com/bcgit/bc-java/tree/main/core/src/test/java/org/bouncycastle/crypto/test

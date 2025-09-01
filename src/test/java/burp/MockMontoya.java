@@ -1297,6 +1297,11 @@ public class MockMontoya {
         public ExecuteOptions executeOptions() {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
+
+        @Override
+        public HttpHeader httpHeader(byte[] bytes, byte[] bytes1) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
     }
 
     public ByteArray wrapByte(byte[] message) {

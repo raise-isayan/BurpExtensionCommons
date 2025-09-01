@@ -13,6 +13,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import extension.burp.FilterProperty.FilterCategory;
+import extension.helpers.FileUtil;
 import extension.helpers.HttpUtil;
 import extension.helpers.StringUtil;
 import extension.helpers.json.JsonBuilder;
@@ -33,9 +34,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -288,6 +291,20 @@ public class BurpConfig {
 
     public static CharacterSets getCharacterSets(CharacterSetMode characterSet, String charCode) {
         return new CharacterSets(characterSet.toIdent(), charCode);
+    }
+
+    /* Config Default */
+    private static final String CONFIG_USER_DEFAULTS = "/resources/Preferences/UserDefaults.json";
+    private static final String CONFIG_PROJECT_DEFAULTS = "/resources/Preferences/ProjectDefaults.json";
+
+    public static String getRestoreUserDefaults() throws IOException {
+        InputStream streamUTF8 = BurpConfig.class.getResourceAsStream(CONFIG_USER_DEFAULTS);
+        return StringUtil.getStringUTF8(FileUtil.readAllBytes(streamUTF8));
+    }
+
+    public static String getRestoreProjectDefaults() throws IOException {
+        InputStream streamUTF8 = BurpConfig.class.getResourceAsStream(CONFIG_PROJECT_DEFAULTS);
+        return StringUtil.getStringUTF8(FileUtil.readAllBytes(streamUTF8));
     }
 
     /* Burp built in PayloadStrings */
@@ -621,8 +638,8 @@ public class BurpConfig {
     public static CharacterSets getCharacterSets(MontoyaApi api) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.display.character_sets");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject character_sets = root_json.getAsJsonObject("user_options").getAsJsonObject("display").getAsJsonObject("character_sets");
-        return JsonUtil.jsonFromString(JsonUtil.jsonToString(character_sets, true), BurpConfig.CharacterSets.class, true);
+        JsonObject character_sets_json = root_json.getAsJsonObject("user_options").getAsJsonObject("display").getAsJsonObject("character_sets");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(character_sets_json, true), BurpConfig.CharacterSets.class, true);
     }
 
     /**
@@ -686,14 +703,14 @@ public class BurpConfig {
     public static synchronized List<HostnameResolution> getHostnameResolution(MontoyaApi api) {
         String config = api.burpSuite().exportProjectOptionsAsJson("project_options");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject project_options = root_json.getAsJsonObject("project_options");
-        JsonObject hostname = project_options.getAsJsonObject("connections");
-        if (project_options.has("dns")) {
-            hostname = project_options.getAsJsonObject("dns");
+        JsonObject project_json = root_json.getAsJsonObject("project_options");
+        JsonObject hostname_json = project_json.getAsJsonObject("connections");
+        if (project_json.has("dns")) {
+            hostname_json = project_json.getAsJsonObject("dns");
         }
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
-        JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");
+        JsonArray jsonArray = hostname_json.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         return hostnameResolution;
     }
@@ -731,30 +748,30 @@ public class BurpConfig {
 
     static String updateHostnameResolution(String config, List<HostnameResolution> hosts, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject project_options = root_json.getAsJsonObject("project_options");
-        JsonObject hostname = project_options.getAsJsonObject("connections");
-        if (project_options.has("dns")) {
-            hostname = project_options.getAsJsonObject("dns");
+        JsonObject project_json = root_json.getAsJsonObject("project_options");
+        JsonObject hostname_json = project_json.getAsJsonObject("connections");
+        if (project_json.has("dns")) {
+            hostname_json = project_json.getAsJsonObject("dns");
         }
         Type listType = new TypeToken<List<HostnameResolution>>() {
         }.getType();
-        JsonArray jsonArray = hostname.getAsJsonArray("hostname_resolution");
+        JsonArray jsonArray = hostname_json.getAsJsonArray("hostname_resolution");
         List<HostnameResolution> hostnameResolution = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
-        List<HostnameResolution> resolvHost = new ArrayList<>();
+        List<HostnameResolution> newHostnameResolution = new ArrayList<>();
         for (HostnameResolution h : hosts) {
             if (remove) {
                 hostnameResolution.removeAll(hostnameResolution.stream().filter(m -> m.hostname.equalsIgnoreCase(h.hostname)).toList());
             } else {
                 if (hostnameResolution.stream().noneMatch(m -> m.hostname.equalsIgnoreCase(h.hostname))) {
-                    resolvHost.add(h);
+                    newHostnameResolution.add(h);
                 }
             }
         }
-        if (!resolvHost.isEmpty()) {
-            hostnameResolution.addAll(resolvHost);
+        if (!newHostnameResolution.isEmpty()) {
+            hostnameResolution.addAll(newHostnameResolution);
         }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hostnameResolution, true);
-        hostname.add("hostname_resolution", updateJsonElemet);
+        hostname_json.add("hostname_resolution", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -849,26 +866,27 @@ public class BurpConfig {
 
     static String updateSSLPassThroughRules(String config, List<SSLPassThroughRule> rules, boolean remove) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject ssl_pass_through = root_json.getAsJsonObject("proxy").getAsJsonObject("ssl_pass_through");
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonObject ssl_pass_through_json = proxy_json.getAsJsonObject("ssl_pass_through");
         Type listType = new TypeToken<List<BurpConfig.SSLPassThroughRule>>() {
         }.getType();
-        JsonArray jsonArray = ssl_pass_through.getAsJsonArray("rules");
+        JsonArray jsonArray = ssl_pass_through_json.getAsJsonArray("rules");
         List<BurpConfig.SSLPassThroughRule> passsThrougRules = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
-        List<BurpConfig.SSLPassThroughRule> resolvRules = new ArrayList<>();
-        for (SSLPassThroughRule h : rules) {
+        List<BurpConfig.SSLPassThroughRule> newRules = new ArrayList<>();
+        for (SSLPassThroughRule r : rules) {
             if (remove) {
-                passsThrougRules.removeAll(passsThrougRules.stream().filter(m -> m.host.equalsIgnoreCase(h.host)).toList());
+                passsThrougRules.removeAll(passsThrougRules.stream().filter(m -> m.host.equalsIgnoreCase(r.host)).toList());
             } else {
-                if (passsThrougRules.stream().noneMatch(m -> m.host.equalsIgnoreCase(h.host))) {
-                    resolvRules.add(h);
+                if (passsThrougRules.stream().noneMatch(m -> m.host.equalsIgnoreCase(r.host))) {
+                    newRules.add(r);
                 }
             }
         }
-        if (!resolvRules.isEmpty()) {
-            passsThrougRules.addAll(resolvRules);
+        if (!newRules.isEmpty()) {
+            passsThrougRules.addAll(newRules);
         }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(passsThrougRules, true);
-        ssl_pass_through.add("rules", updateJsonElemet);
+        ssl_pass_through_json.add("rules", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -955,10 +973,11 @@ public class BurpConfig {
 
     static List<MatchReplaceRule> getMatchReplaceRules(String config) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("match_replace_rules");
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonArray rules_json = proxy_json.getAsJsonArray("match_replace_rules");
         Type listType = new TypeToken<List<BurpConfig.MatchReplaceRule>>() {
         }.getType();
-        List<MatchReplaceRule> matchReplaceRule = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
+        List<MatchReplaceRule> matchReplaceRule = JsonUtil.jsonFromJsonElement(rules_json, listType, true);
         return matchReplaceRule;
     }
 
@@ -1076,8 +1095,8 @@ public class BurpConfig {
         String config_key = override_project ? "project_options" : "user_options";
         String config = override_project ? api.burpSuite().exportProjectOptionsAsJson(config_key + ".connections.socks_proxy") : api.burpSuite().exportUserOptionsAsJson(config_key + ".connections.socks_proxy");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject socks_proxy = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
-        return JsonUtil.jsonFromString(JsonUtil.jsonToString(socks_proxy, true), SocksProxy.class, true);
+        JsonObject socks_proxy_json = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(socks_proxy_json, true), SocksProxy.class, true);
     }
 
     /**
@@ -1096,9 +1115,9 @@ public class BurpConfig {
     static String updateSocksProxy(String config, SocksProxy socksProxy, boolean override_project) {
         String config_key = override_project ? "project_options" : "user_options";
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject socks_proxy = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
+        JsonObject socks_proxy_json = root_json.getAsJsonObject(config_key).getAsJsonObject("connections").getAsJsonObject("socks_proxy");
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(socksProxy, true);
-        socks_proxy.add("socks_proxy", updateJsonElemet);
+        socks_proxy_json.add("socks_proxy", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -1285,16 +1304,16 @@ public class BurpConfig {
     public static TargetScope getTargetScope(MontoyaApi api) {
         String config = api.burpSuite().exportProjectOptionsAsJson("target.scope");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject targetScopeJson = root_json.getAsJsonObject("target").getAsJsonObject("scope");
-        TargetScope targetScope = JsonUtil.jsonFromJsonElement(targetScopeJson, TargetScope.class, true);
+        JsonObject scope_json = root_json.getAsJsonObject("target").getAsJsonObject("scope");
+        TargetScope targetScope = JsonUtil.jsonFromJsonElement(scope_json, TargetScope.class, true);
         targetScope.setJson(config);
         return targetScope;
     }
 
     static String updateTargetScope(String config, TargetScope targetScope) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject target = root_json.getAsJsonObject("target");
-        target.add("scope", targetScope.getJson());
+        JsonObject target_json = root_json.getAsJsonObject("target");
+        target_json.add("scope", targetScope.getJson());
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }
@@ -1397,21 +1416,21 @@ public class BurpConfig {
 
         public void setJson(String config) {
             JsonObject root_json = JsonUtil.parseJsonObject(config);
-            JsonObject targetScope_json = root_json.getAsJsonObject("target").getAsJsonObject("scope");
-            BurpConfig.TargetScope targetScope = JsonUtil.jsonFromString(JsonUtil.jsonToString(targetScope_json, true), BurpConfig.TargetScope.class, true);
+            JsonObject scope_json = root_json.getAsJsonObject("target").getAsJsonObject("scope");
+            BurpConfig.TargetScope targetScope = JsonUtil.jsonFromString(JsonUtil.jsonToString(scope_json, true), BurpConfig.TargetScope.class, true);
             this.advanced_mode = targetScope.advanced_mode;
             if (this.advanced_mode) {
                 Type listType = new TypeToken<List<TargetScopeAdvance>>() {
                 }.getType();
-                List<TargetScopeAdvance> includeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
-                List<TargetScopeAdvance> excludeAdvance = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
+                List<TargetScopeAdvance> includeAdvance = JsonUtil.jsonFromJsonElement(scope_json.get("include").getAsJsonArray(), listType, true);
+                List<TargetScopeAdvance> excludeAdvance = JsonUtil.jsonFromJsonElement(scope_json.get("exclude").getAsJsonArray(), listType, true);
                 this.setIncludeAdvance(includeAdvance);
                 this.setExcludeAdvance(excludeAdvance);
             } else {
                 Type listType = new TypeToken<List<TargetScopeURL>>() {
                 }.getType();
-                List<TargetScopeURL> includeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("include").getAsJsonArray(), listType, true);
-                List<TargetScopeURL> excludeURL = JsonUtil.jsonFromJsonElement(targetScope_json.get("exclude").getAsJsonArray(), listType, true);
+                List<TargetScopeURL> includeURL = JsonUtil.jsonFromJsonElement(scope_json.get("include").getAsJsonArray(), listType, true);
+                List<TargetScopeURL> excludeURL = JsonUtil.jsonFromJsonElement(scope_json.get("exclude").getAsJsonArray(), listType, true);
                 this.setIncludeURL(includeURL);
                 this.setExcludeURL(excludeURL);
             }
@@ -1628,10 +1647,10 @@ public class BurpConfig {
     public static List<RequestListener> getRequestListeners(MontoyaApi api) {
         String config = api.burpSuite().exportProjectOptionsAsJson("proxy");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonArray listeners = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
+        JsonArray listeners_json = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
         Type listType = new TypeToken<List<RequestListener>>() {
         }.getType();
-        JsonArray jsonArray = listeners.getAsJsonArray();
+        JsonArray jsonArray = listeners_json.getAsJsonArray();
         List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         return requestListeners;
     }
@@ -1701,18 +1720,18 @@ public class BurpConfig {
         }.getType();
         JsonArray jsonArray = root_json.getAsJsonObject("proxy").getAsJsonArray("request_listeners");
         List<RequestListener> requestListeners = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
-        List<RequestListener> resolvListeners = new ArrayList<>();
+        List<RequestListener> newListeners = new ArrayList<>();
         for (RequestListener l : listenrs) {
             if (remove) {
                 requestListeners.removeAll(requestListeners.stream().filter(m -> m.listener_port == l.listener_port).toList());
             } else {
                 if (requestListeners.stream().noneMatch(m -> m.listener_port == l.listener_port)) {
-                    resolvListeners.add(l);
+                    newListeners.add(l);
                 }
             }
         }
-        if (!resolvListeners.isEmpty()) {
-            requestListeners.addAll(resolvListeners);
+        if (!newListeners.isEmpty()) {
+            requestListeners.addAll(newListeners);
         }
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(requestListeners, true);
         proxy_json.add("request_listeners", updateJsonElemet);
@@ -1744,7 +1763,7 @@ public class BurpConfig {
         private boolean use_custom_tls_protocols = false;
 
         @Expose
-        private List<String> custom_tls_protocols = new ArrayList<>();
+        private final List<String> custom_tls_protocols = new ArrayList<>();
 
         public final static String LISTEN_MODE_LOOPBACK = "loopback_only";
         public final static String LISTEN_MODE_ALL = "all_interfaces";
@@ -1868,7 +1887,8 @@ public class BurpConfig {
          * @param custom_tls_protocols the custom_tls_protocols to set
          */
         public void setCustomTlsProtocols(List<String> custom_tls_protocols) {
-            this.custom_tls_protocols = custom_tls_protocols;
+            this.custom_tls_protocols.clear();
+            this.custom_tls_protocols.addAll(custom_tls_protocols);
         }
 
         /**
@@ -2115,6 +2135,512 @@ public class BurpConfig {
             item.setEnableHttp2(jdc.deserialize(jsonObject.get("enable_http2"), Boolean.TYPE));
 
             return item;
+        }
+
+    }
+
+    public static BurpConfig.InterceptClientRequests getInterceptClientRequests(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_client_requests");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonObject request_json = proxy_json.getAsJsonObject("intercept_client_requests");
+        JsonArray rules_json = request_json.getAsJsonArray("rules");
+        Type listType = new TypeToken<List<BurpConfig.InterceptRule>>() {
+        }.getType();
+        List<InterceptRule> interceptRule = JsonUtil.jsonFromJsonElement(rules_json, listType, true);
+        BurpConfig.InterceptClientRequests requests = new BurpConfig.InterceptClientRequests(request_json.get("do_intercept").getAsBoolean());
+        requests.setRules(interceptRule);
+        return requests;
+    }
+
+    public static String configInterceptClientRequests(MontoyaApi api, BurpConfig.InterceptClientRequests requests) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_client_requests");
+        String updateConfig = updateInterceptClientRequests(config, requests);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+        return updateConfig;
+    }
+
+    static String updateInterceptClientRequests(String config, BurpConfig.InterceptClientRequests requests) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonObject intercept_json = proxy_json.getAsJsonObject("intercept_client_requests");
+        intercept_json.addProperty("do_intercept", requests.isDoIntercept());
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(requests.getRules(), true);
+        intercept_json.add("rules", updateJsonElemet.getAsJsonArray());
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class InterceptClientRequests {
+
+        @Expose
+        private boolean do_intercept;
+
+        @Expose
+        private final List<InterceptRule> rules = new ArrayList<>();
+
+        public InterceptClientRequests() {
+            this.do_intercept = true;
+        }
+
+        public InterceptClientRequests(boolean do_intercept) {
+            this.do_intercept = do_intercept;
+        }
+
+        /**
+         * @return the doIntercept
+         */
+        public boolean isDoIntercept() {
+            return do_intercept;
+        }
+
+        /**
+         * @param do_intercept
+         */
+        public void setDoIntercept(boolean do_intercept) {
+            this.do_intercept = do_intercept;
+        }
+
+        /**
+         * @return the rules
+         */
+        public List<InterceptRule> getRules() {
+            return rules;
+        }
+
+        /**
+         * @param rules the rules to set
+         */
+        public void setRules(List<InterceptRule> rules) {
+            this.rules.clear();
+            this.rules.addAll(rules);
+        }
+
+    }
+
+    public static BurpConfig.InterceptServerResponses getInterceptServerResponses(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_server_responses");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonObject requestJson = proxy_json.getAsJsonObject("intercept_server_responses");
+        JsonArray rules_json = requestJson.getAsJsonArray("rules");
+        Type listType = new TypeToken<List<BurpConfig.InterceptRule>>() {
+        }.getType();
+        List<InterceptRule> interceptRule = JsonUtil.jsonFromJsonElement(rules_json, listType, true);
+        BurpConfig.InterceptServerResponses response = new BurpConfig.InterceptServerResponses(requestJson.get("do_intercept").getAsBoolean());
+        response.setRules(interceptRule);
+        return response;
+    }
+
+    public static String configInterceptServerResponses(MontoyaApi api, BurpConfig.InterceptServerResponses response) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_server_responses");
+        String updateConfig = updateInterceptServerResponses(config, response);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+        return updateConfig;
+    }
+
+    static String updateInterceptServerResponses(String config, BurpConfig.InterceptServerResponses response) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonObject intercept_json = proxy_json.getAsJsonObject("intercept_server_responses");
+        intercept_json.addProperty("do_intercept", response.isDoIntercept());
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(response.getRules(), true);
+        intercept_json.add("rules", updateJsonElemet.getAsJsonArray());
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class InterceptServerResponses {
+
+        @Expose
+        private boolean do_intercept;
+
+        @Expose
+        private final List<InterceptRule> rules = new ArrayList<>();
+
+        public InterceptServerResponses() {
+            this.do_intercept = false;
+        }
+
+        public InterceptServerResponses(boolean do_intercept) {
+            this.do_intercept = do_intercept;
+        }
+
+        /**
+         * @return the doIntercept
+         */
+        public boolean isDoIntercept() {
+            return do_intercept;
+        }
+
+        /**
+         * @param do_intercept
+         */
+        public void setDoIntercept(boolean do_intercept) {
+            this.do_intercept = do_intercept;
+        }
+
+        /**
+         * @return the rules
+         */
+        public List<InterceptRule> getRules() {
+            return rules;
+        }
+
+        /**
+         * @param rules the rules to set
+         */
+        public void setRules(List<InterceptRule> rules) {
+            this.rules.clear();
+            this.rules.addAll(rules);
+        }
+
+    }
+
+    public static InterceptWebSocketsMessages getInterceptWebSocketsMessages(MontoyaApi api) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_web_sockets_messages");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject wsJson = root_json.getAsJsonObject("proxy").getAsJsonObject("intercept_web_sockets_messages");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(wsJson, true), InterceptWebSocketsMessages.class, true);
+    }
+
+    public static String configInterceptWebSocketsMessages(MontoyaApi api, BurpConfig.InterceptWebSocketsMessages ws) {
+        String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_web_sockets_messages");
+        String updateConfig = updateInterceptWebSocketsMessages(config, ws);
+        api.burpSuite().importProjectOptionsFromJson(updateConfig);
+        return updateConfig;
+    }
+
+    static String updateInterceptWebSocketsMessages(String config, BurpConfig.InterceptWebSocketsMessages ws) {
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject proxy_json = root_json.getAsJsonObject("proxy");
+        JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(ws, true);
+        proxy_json.add("intercept_web_sockets_messages", updateJsonElemet);
+        String updateConfig = JsonUtil.prettyJson(root_json, true);
+        return updateConfig;
+    }
+
+    public static class InterceptWebSocketsMessages {
+
+        @Expose
+        private boolean client_to_server_messages;
+
+        @Expose
+        private boolean server_to_client_messages;
+
+        @Expose
+        private boolean intercept_in_scope_only;
+
+        public InterceptWebSocketsMessages() {
+            this.client_to_server_messages = true;
+            this.server_to_client_messages = true;
+            this.intercept_in_scope_only = false;
+        }
+
+        public InterceptWebSocketsMessages(boolean client_to_server_messages, boolean server_to_client_messages, boolean intercept_in_scope_only) {
+            this.client_to_server_messages = client_to_server_messages;
+            this.server_to_client_messages = server_to_client_messages;
+            this.intercept_in_scope_only = intercept_in_scope_only;
+        }
+
+        /**
+         * @return the client_to_server_messages
+         */
+        public boolean isClientToServerMessages() {
+            return client_to_server_messages;
+        }
+
+        /**
+         * @param client_to_server_messages the client_to_server_messages to set
+         */
+        public void setClientToServerMessages(boolean client_to_server_messages) {
+            this.client_to_server_messages = client_to_server_messages;
+        }
+
+        /**
+         * @return the server_to_client_messages
+         */
+        public boolean isServerToClientMessages() {
+            return server_to_client_messages;
+        }
+
+        /**
+         * @param server_to_client_messages the server_to_client_messages to set
+         */
+        public void setServerToClientMessages(boolean server_to_client_messages) {
+            this.server_to_client_messages = server_to_client_messages;
+        }
+
+        /**
+         * @return the intercept_in_scope_only
+         */
+        public boolean isInterceptInScopeOnly() {
+            return intercept_in_scope_only;
+        }
+
+        /**
+         * @param intercept_in_scope_only the intercept_in_scope_only to set
+         */
+        public void setInterceptInScopeOnly(boolean intercept_in_scope_only) {
+            this.intercept_in_scope_only = intercept_in_scope_only;
+        }
+    }
+
+    public static class InterceptRule {
+
+        public enum BooleanOperator {
+            OR("Or"),
+            AND("And");
+
+            private final String text;
+
+            BooleanOperator(String text) {
+                this.text = text;
+            }
+
+            public String toText() {
+                return this.text;
+            }
+
+            public static BooleanOperator parseEnum(String s) {
+                String value = s.toUpperCase();
+                return Enum.valueOf(BooleanOperator.class, value);
+            }
+
+            @Override
+            public String toString() {
+                return this.name().toLowerCase();
+            }
+
+        };
+
+        public enum MatchType {
+            DOMAIN_NAME("Domain name"),
+            IP_ADDRESS("IP address"),
+            PROTOCOL("Protocol"),
+            HTTP_METHOD("HTTP method"),
+            URL("URL"),
+            FILE_EXTENSION("File extension"),
+            REQUEST("Request"),
+            COOKIE_NAME("Cookie name"),
+            COOKIE_VALUE("Cookie value"),
+            ANY_HEADER("Any header"),
+            BODY("Body"),
+            PARAM_NAME("Param name"),
+            PARAM_VALUE("Param value"),
+            LISTENER_PORT("Listener_port"),
+            /* response */
+            STATUS_CODE("status_code"),
+            CONTENT_TYPE_HEADER("Content type header"),
+            MIME_TYPE("Mime type"),
+            PAGE_TITLE("Page title");
+
+            private final String text;
+
+            MatchType(String text) {
+                this.text = text;
+            }
+
+            public String toText() {
+                return this.text;
+            }
+
+            public static MatchType parseEnum(String s) {
+                String value = s.toUpperCase();
+                return Enum.valueOf(MatchType.class, value);
+            }
+
+            @Override
+            public String toString() {
+                return this.name().toLowerCase();
+            }
+
+        };
+
+        public enum MatchRelationship {
+            MATCHES("Matches"),
+            DOES_NOT_MATCH("Does not match"),
+            IS_IN_RANGE("is in range"),
+            IS_NOT_IN_RANGE("is not in range"),
+            IS_HTTP("Is HTTP"),
+            IS_HTTPS("Is HTTPS"),
+            IS_IN_TARGET_SCOPE("Is in target scope"),
+            CONTAINS_PARAMETERS("Contains parameters"),
+            DOES_NOT_CONTAIN_PARAMETERS("Does not contain parameters"),
+            IS_TEXT("Is text"),
+            IS_NOT_TEXT("Is not text"),
+            IS_MEDIA("Is media"),
+            IS_NOT_MEDIA("Is not media"),
+            WAS_INTERCEPTED("Was intercepted"),
+            WAS_NOT_INTERCEPTED("Was not intercepted"),
+            WAS_MODIFIED("Wasa modified"),
+            WAS_NOT_MODIFIED("Was not modified"),
+            WAS_ANNOTATED("Was annotated"),
+            WAS_NOT_ANNOTATED("Was not annotated"),
+            IN_REQUEST_MATCHES("In request matches"),
+            IN_REQUEST_DOES_NOT_MATCH("In request does not match"),
+            IN_RESPONSE_MATCHES("In request matches"),
+            IN_RESPONSE_DOES_NOT_MATCH("In request does not match"),
+            OF_REQUEST_MATCHES("Of request matches"),
+            OF_REQUEST_DOES_NOT_MATCH("Of request does not match"),
+            OF_RESPONSE_MATCHES("Of request matches"),
+            OF_RESPONSE_DOES_NOT_MATCH("Of request does not match");
+
+            private final String text;
+
+            MatchRelationship(String text) {
+                this.text = text;
+            }
+
+            public String toText() {
+                return this.text;
+            }
+
+            public static MatchRelationship parseEnum(String s) {
+                String value = s.toUpperCase();
+                return Enum.valueOf(MatchRelationship.class, value);
+            }
+
+            @Override
+            public String toString() {
+                return this.name().toLowerCase();
+            }
+
+        };
+
+        public InterceptRule() {
+
+        }
+
+        public InterceptRule(boolean enabled, MatchType matchType, MatchRelationship matchRelationship, String match_condition) {
+            this.enabled = enabled;
+            this.match_type = matchType.toString();
+            this.match_relationship = matchRelationship.toString();
+            this.match_condition = match_condition;
+        }
+
+        @Expose
+        private boolean enabled = false;
+
+        @Expose
+        private String boolean_operator;
+
+        @Expose
+        private String match_type;
+
+        @Expose
+        private String match_relationship;
+
+        @Expose
+        private String match_condition = "";
+
+        /**
+         * @return the enabled
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * @param enabled the enabled to set
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * @return the boolean_operator
+         */
+        public String getBooleanOperator() {
+            return boolean_operator;
+        }
+
+        /**
+         * @param boolean_operator the boolean_operator to set
+         */
+        public void setBooleanOperator(String boolean_operator) {
+            this.boolean_operator = boolean_operator;
+        }
+
+        /**
+         * @return the boolean_operator
+         */
+        public BooleanOperator getBooleanOperatorAsEnum() {
+            return BooleanOperator.parseEnum(boolean_operator);
+        }
+
+        /**
+         * @return the match_type
+         */
+        public String getMatchType() {
+            return match_type;
+        }
+
+        /**
+         * @param match_type the match_type to set
+         */
+        public void setMatchType(String match_type) {
+            this.match_type = match_type;
+        }
+
+        /**
+         * @return the match_type
+         */
+        public MatchType getMatchTypeAsEnum() {
+            return MatchType.parseEnum(match_type);
+        }
+
+        /**
+         * @return the match_relationship
+         */
+        public String getMatchRelationship() {
+            return match_relationship;
+        }
+
+        /**
+         * @param match_relationship the match_relationship to set
+         */
+        public void setMatchRelationship(String match_relationship) {
+            this.match_relationship = match_relationship;
+        }
+
+        /**
+         * @return the match_type
+         */
+        public MatchRelationship getMatchRelationshipAsEnum() {
+            return MatchRelationship.parseEnum(match_relationship);
+        }
+
+        /**
+         * @return the match_condition
+         */
+        public String getMatchCondition() {
+            return match_condition;
+        }
+
+        /**
+         * @param match_condition the match_condition to set
+         */
+        public void setMatchCondition(String match_condition) {
+            this.match_condition = match_condition;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder buff = new StringBuilder();
+            BooleanOperator op = getBooleanOperatorAsEnum();
+            MatchType matchType = getMatchTypeAsEnum();
+            MatchRelationship relationShip = getMatchRelationshipAsEnum();
+            buff.append(op.toText());
+            buff.append(' ');
+            buff.append(matchType.toText());
+            buff.append(' ');
+            buff.append(relationShip.toText());
+            if (!match_condition.isEmpty()) {
+                buff.append(" - ");
+                buff.append(match_condition);
+            }
+            return buff.toString();
         }
 
     }

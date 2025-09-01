@@ -1092,4 +1092,11 @@ public class BoncyUtilTest {
         }
     }
 
+    @Test
+    public void testSubject_hash_old() {
+        System.out.println("testHashUtil");
+        String subject = "CN=PortSwigger CA,OU=PortSwigger CA,O=PortSwigger,L=PortSwigger,ST=PortSwigger,C=PortSwigger";
+        assertEquals("9a5ba575", BouncyUtil.X509_NAME_hash_old(subject));
+    }
+
 }
