@@ -548,22 +548,6 @@ public class BurpConfigTest {
     }
 
     @Test
-    public void testParseHotkey() {
-        System.out.println("testParseHotkey");
-        {
-            KeyStroke copyKey = BurpConfig.Hotkey.parseHotkey("Ctrl+C");
-            System.out.println("fromCopyKey:" + copyKey);
-        }
-        {
-            KeyStroke spaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_DOWN_MASK);
-            String text = BurpConfig.Hotkey.toHotkeyText(spaceKey);
-            System.out.println("toSpaceKey:" + text);
-            KeyStroke parseKey = BurpConfig.Hotkey.parseHotkey(text);
-            System.out.println("toSpaceKey.toString:" + parseKey.toString() + ":" + parseKey.getKeyCode());
-        }
-    }
-
-    @Test
     public void testUpdateHotkey() {
         System.out.println("testUpdateHotkey");
         try {

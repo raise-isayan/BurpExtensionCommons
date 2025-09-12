@@ -369,6 +369,11 @@ public class MockMontoya {
         public final BasicMenuItem basicMenuItemApi = Mockito.mock(BasicMenuItem.class);
         public final HttpRequestTemplate httpRequestTemplate = Mockito.mock(HttpRequestTemplate.class);
         public final RequestOptions requestOptions = Mockito.mock(RequestOptions.class);
+        public final ExecuteOptions executeOptions = Mockito.mock(ExecuteOptions.class);
+        public final SettingsPanelSetting settingsPanelSetting = Mockito.mock(SettingsPanelSetting.class);
+        public final SettingsPanelBuilder settingsPanelBuilder = Mockito.mock(SettingsPanelBuilder.class);
+        public final PromptOptions promptOptions = Mockito.mock(PromptOptions.class);;
+        public final Message message = Mockito.mock(Message.class);
 
         private MockMontoyaObjectFactory() {
 
@@ -1230,72 +1235,72 @@ public class MockMontoya {
 
         @Override
         public PromptOptions promptOptions() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.promptOptions;
         }
 
         @Override
         public Message systemMessage(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.message;
         }
 
         @Override
         public Message userMessage(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.message;
         }
 
         @Override
         public Message assistantMessage(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.message;
         }
 
         @Override
         public SettingsPanelBuilder settingsPanel() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelBuilder;
         }
 
         @Override
         public SettingsPanelSetting integerSetting(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting integerSetting(String string, int i) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting booleanSetting(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting booleanSetting(String string, boolean bln) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting stringSetting(String string) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting stringSetting(String string, String string1) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting listSetting(String string, String... strings) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public SettingsPanelSetting listSetting(String string, List<String> list, String string1) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.settingsPanelSetting;
         }
 
         @Override
         public ExecuteOptions executeOptions() {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            return this.executeOptions;
         }
 
         @Override
