@@ -3,7 +3,6 @@ package extension.helpers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
@@ -110,8 +109,19 @@ public class CertUtilTest {
     @Test
     public void testPemToCertificate() throws Exception {
         System.out.println("pemToCerficate");
-        String storeFileName = CertUtilTest.class.getResource("/resources/burpca.pem").getPath();
-        X509Certificate x509Cert = CertUtil.loadCertificate(FileUtil.stringFromFile(new File(storeFileName), StandardCharsets.UTF_8));
+        {
+            String storeFileName = CertUtilTest.class.getResource("/resources/burpca.pem").getPath();
+            X509Certificate x509Cert = CertUtil.loadCertificate(FileUtil.stringFromFile(new File(storeFileName), StandardCharsets.UTF_8));
+        }
+        {
+            String storeFileName = CertUtilTest.class.getResource("/resources/burpca.p12").getPath();
+            HashMap<String, Map.Entry<Key, X509Certificate>> certMap = CertUtil.loadFromPKCS12(new File(storeFileName), "testca");
+            for (String ailias : certMap.keySet()) {
+                System.out.println("ailias:" + ailias);
+                Map.Entry<Key, X509Certificate> cert = certMap.get(ailias);
+                X509Certificate x509Cert = CertUtil.loadCertificate(cert.getValue().getEncoded());
+            }
+        }
     }
 
     @Test

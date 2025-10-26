@@ -90,6 +90,14 @@ public class BurpUtil {
         return null;
     }
 
+    public static JTabbedPane repeterTabbedPane() {
+        Frame frame = suiteFrame();
+        if (frame != null) {
+            return findTabbedPane("secondarySuiteTabBar", frame);
+        }
+        return null;
+    }
+
     protected static JTabbedPane findTabbedPane(String name, Container container) {
         if (container instanceof JTabbedPane jTabbedPane) {
             if (name.equals(jTabbedPane.getName())) {

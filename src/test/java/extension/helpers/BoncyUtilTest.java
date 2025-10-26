@@ -3,6 +3,7 @@ package extension.helpers;
 import burp.BurpPreferences;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -11,7 +12,9 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.Security;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -28,6 +31,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import static org.junit.jupiter.api.Assertions.*;
 import org.bouncycastle.crypto.digests.*;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import org.junit.jupiter.api.Test;
 
@@ -115,23 +119,39 @@ public class BoncyUtilTest {
     }
 
     @Test
-    public void testBurpSign() {
-        System.out.println("testBurpSign");
+    public void testCSRtoSign() {
+        System.out.println("testCSRtoSign");
         try {
-            Security.addProvider(new BouncyCastleProvider());
             KeyStore burpKeyStore = BurpPreferences.loadCACeart();
             KeyPair burpKeyPair = BurpPreferences.loadCAKeyPair();
             X509Certificate burpCert = (X509Certificate) burpKeyStore.getCertificate(CertUtil.getFirstAlias(burpKeyStore));
 
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
-            KeyPair keyPair = keyGen.generateKeyPair();
-            System.out.println("subjectDN:");
-            X509Certificate cert = BouncyUtil.issueSignCert(burpKeyPair.getPrivate(), burpCert, keyPair, "www.example.com", new String[]{"www.example.com"}, 2);
-            System.out.println("createCA:" + cert.getSubjectX500Principal().getName());
-        } catch (NoSuchAlgorithmException | KeyStoreException | CertificateException ex) {
+            KeyPair subjectKeyPair = keyGen.generateKeyPair();
+
+            org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=www.example.com, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
+
+            PKCS10CertificationRequest csr = BouncyUtil.createCsr(subjectKeyPair, subjectDN, new String[]{"www.example.com"});
+
+            X509Certificate cert = BouncyUtil.signCsr(csr, burpCert, burpKeyPair.getPrivate(), 1);
+
+            File pem = File.createTempFile("pem", ".cer");
+            //pem.deleteOnExit();
+            System.out.println("testCSRtoSign => pem Path:" + pem.getAbsolutePath());
+
+            BouncyUtil.storeCertificatePem(cert, pem);
+
+            File p12 = File.createTempFile("p12", ".pfx");
+
+            System.out.println("testCSRtoSign => p12 Path:" + p12.getAbsolutePath());
+
+            CertUtil.storeToPKCS12(p12, "burp", "test", subjectKeyPair.getPrivate(), cert);
+
+        } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | IOException | UnrecoverableKeyException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
+
     }
 
     @Test
@@ -1097,6 +1117,43 @@ public class BoncyUtilTest {
         System.out.println("testHashUtil");
         String subject = "CN=PortSwigger CA,OU=PortSwigger CA,O=PortSwigger,L=PortSwigger,ST=PortSwigger,C=PortSwigger";
         assertEquals("9a5ba575", BouncyUtil.X509_NAME_hash_old(subject));
+    }
+
+    @Test
+    public void testRSAtoPEM() {
+        System.out.println("testRSAtoPEM");
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            keyGen.initialize(512);
+            KeyPair subjectKeyPair = keyGen.generateKeyPair();
+            StringWriter prisw = new StringWriter();
+            BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
+            System.out.println("rsaPrivatePem:\n" + prisw.toString());
+
+            StringWriter pubsw = new StringWriter();
+            BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
+            System.out.println("rsaPublicPem:\n" + pubsw.toString());
+        } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex);
+        }
+    }
+
+    @Test
+    public void testECtoPEM() {
+        System.out.println("testECtoPEM");
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
+            keyGen.initialize(256, SecureRandom.getInstanceStrong());
+            KeyPair subjectKeyPair = keyGen.generateKeyPair();
+            StringWriter prisw = new StringWriter();
+            BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
+            System.out.println("ECPrivatePem:\n" + prisw.toString());
+            StringWriter pubsw = new StringWriter();
+            BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
+            System.out.println("ECPublicPem:\n" + pubsw.toString());
+        } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex);
+        }
     }
 
 }

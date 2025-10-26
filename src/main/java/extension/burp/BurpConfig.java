@@ -2089,13 +2089,13 @@ public class BurpConfig {
         String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_server_responses");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject proxy_json = root_json.getAsJsonObject("proxy");
-        JsonObject requestJson = proxy_json.getAsJsonObject("intercept_server_responses");
-        JsonArray rules_json = requestJson.getAsJsonArray("rules");
+        JsonObject intercept_json = proxy_json.getAsJsonObject("intercept_server_responses");
+        JsonArray rules_json = intercept_json.getAsJsonArray("rules");
         Type listType = new TypeToken<List<BurpConfig.InterceptRule>>() {
         }.getType();
         List<InterceptRule> interceptRule = JsonUtil.jsonFromJsonElement(rules_json, listType, true);
-        BurpConfig.InterceptServerResponses response = new BurpConfig.InterceptServerResponses(requestJson.get("do_intercept").getAsBoolean());
-        response.setAutomaticallyUpdateContentLengthHeader(requestJson.get("automatically_update_content_length_header_when_the_response_is_edited").getAsBoolean());
+        BurpConfig.InterceptServerResponses response = new BurpConfig.InterceptServerResponses(intercept_json.get("do_intercept").getAsBoolean());
+        response.setAutomaticallyUpdateContentLengthHeader(intercept_json.get("automatically_update_content_length_header_when_the_response_is_edited").getAsBoolean());
         response.setRules(interceptRule);
         return response;
     }
@@ -2191,8 +2191,8 @@ public class BurpConfig {
     public static InterceptWebSocketsMessages getInterceptWebSocketsMessages(MontoyaApi api) {
         String config = api.burpSuite().exportProjectOptionsAsJson("proxy.intercept_web_sockets_messages");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject wsJson = root_json.getAsJsonObject("proxy").getAsJsonObject("intercept_web_sockets_messages");
-        return JsonUtil.jsonFromString(JsonUtil.jsonToString(wsJson, true), InterceptWebSocketsMessages.class, true);
+        JsonObject ws_json = root_json.getAsJsonObject("proxy").getAsJsonObject("intercept_web_sockets_messages");
+        return JsonUtil.jsonFromString(JsonUtil.jsonToString(ws_json, true), InterceptWebSocketsMessages.class, true);
     }
 
     public static String configInterceptWebSocketsMessages(MontoyaApi api, BurpConfig.InterceptWebSocketsMessages ws) {
@@ -2535,18 +2535,91 @@ public class BurpConfig {
         }
 
     }
+    public static class Misc {
+
+        @Expose
+        private boolean enable_proxy_interception_at_startup;
+
+        @Expose
+        private EmbeddedBrowser embeddedBrowser;
+
+        @Expose
+        private List<Hotkey> hotkeys = new ArrayList<Hotkey>();
+
+        /**
+         * @return the enable_proxy_interception_at_startup
+         */
+        public boolean isEnableProxyInterceptionAtStartup() {
+            return enable_proxy_interception_at_startup;
+        }
+
+        /**
+         * @param enable_proxy_interception_at_startup the enable_proxy_interception_at_startup to set
+         */
+        public void setEnableProxyInterceptionAtStartup(boolean enable_proxy_interception_at_startup) {
+            this.enable_proxy_interception_at_startup = enable_proxy_interception_at_startup;
+        }
+
+        /**
+         * @return the embeddedBrowser
+         */
+        public EmbeddedBrowser getEmbeddedBrowser() {
+            return embeddedBrowser;
+        }
+
+        /**
+         * @param embeddedBrowser the embeddedBrowser to set
+         */
+        public void setEmbeddedBrowser(EmbeddedBrowser embeddedBrowser) {
+            this.embeddedBrowser = embeddedBrowser;
+        }
+
+        /**
+         * @return the hotkeys
+         */
+        public List<Hotkey> getHotkeys() {
+            return hotkeys;
+        }
+
+        /**
+         * @param hotkeys the hotkeys to set
+         */
+        public void setHotkeys(List<Hotkey> hotkeys) {
+            this.hotkeys.clear();
+            this.hotkeys.addAll(hotkeys);
+        }
+
+    }
 
     /**
      *
      * @param api
      * @return
      */
+    public static Misc getMisc(MontoyaApi api) {
+        String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc");
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        JsonObject misc_json = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        Misc misc = JsonUtil.jsonFromJsonElement(misc_json, Misc.class, true);
+        EmbeddedBrowser embeddedBrowser = getEmbeddedBrowser(api);
+        misc.setEmbeddedBrowser(embeddedBrowser);
+        List<Hotkey> hotkeys = getHotkey(api);
+        misc.setHotkeys(hotkeys);
+        return misc;
+    }
+
+
+    /**
+     *
+     * @param api
+     * @return
+     **/
     public static EmbeddedBrowser getEmbeddedBrowser(MontoyaApi api) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         JsonObject misc_json = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
-        JsonObject embeddedBrowserJson = misc_json.getAsJsonObject("embedded_browser");
-        EmbeddedBrowser embeddedBrowser = JsonUtil.jsonFromJsonElement(embeddedBrowserJson, EmbeddedBrowser.class, true);
+        JsonObject embedded_browser_json = misc_json.getAsJsonObject("embedded_browser");
+        EmbeddedBrowser embeddedBrowser = JsonUtil.jsonFromJsonElement(embedded_browser_json, EmbeddedBrowser.class, true);
         return embeddedBrowser;
     }
 
@@ -2703,10 +2776,10 @@ public class BurpConfig {
     public static List<Hotkey> getHotkey(MontoyaApi api) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc.hotkeys");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject miscJson = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        JsonObject misc_json = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
         Type listType = new TypeToken<List<Hotkey>>() {
         }.getType();
-        JsonArray jsonArray = miscJson.getAsJsonArray("hotkeys");
+        JsonArray jsonArray = misc_json.getAsJsonArray("hotkeys");
         List<Hotkey> hotkeys = JsonUtil.jsonFromJsonElement(jsonArray, listType, true);
         return hotkeys;
     }
@@ -2725,9 +2798,9 @@ public class BurpConfig {
 
     static String updateHotkey(String config, List<Hotkey> hotkeys) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject miscJson = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
+        JsonObject misc_json = root_json.getAsJsonObject("user_options").getAsJsonObject("misc");
         JsonElement updateJsonElemet = JsonUtil.jsonToJsonElement(hotkeys, true);
-        miscJson.add("hotkeys", updateJsonElemet);
+        misc_json.add("hotkeys", updateJsonElemet);
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;
     }

@@ -59,7 +59,11 @@ public class CertUtil {
         PKCS12, JKS
     };
 
-    public static PrivateKey pemToPrivateKey(String pemData) throws UnsupportedEncodingException {
+    public static String getSubjectName(X509Certificate cert) {
+        return cert.getSubjectX500Principal().getName();
+    }
+
+    public static PrivateKey pemToPrivateKey(String pemData) throws CertificateEncodingException {
         pemData = pemData.replaceAll("\r\n", "\n");
         Matcher m = PEM_PKCS8_PRIVATE.matcher(pemData);
         if (m.find()) {
@@ -70,20 +74,20 @@ public class CertUtil {
                 PrivateKey privateKey = keyFactory.generatePrivate(pkcs8Key);
                 return privateKey;
             } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-                throw new UnsupportedEncodingException(ex.getMessage());
+                throw new CertificateEncodingException(ex.getMessage(), ex);
             }
         }
-        throw new UnsupportedEncodingException("PEM format was not found");
+        throw new CertificateEncodingException("PEM format was not found");
     }
 
-    public static String exportToPem(Key privateKey, X509Certificate x509cert) throws UnsupportedEncodingException, CertificateEncodingException {
+    public static String exportToPem(Key privateKey, X509Certificate x509cert) throws CertificateEncodingException {
         StringBuilder pemCert = new StringBuilder();
         pemCert.append(exportToPem(privateKey));
         pemCert.append(exportToPem(x509cert));
         return pemCert.toString();
     }
 
-    public static String exportToPem(Key privateKey) throws UnsupportedEncodingException {
+    public static String exportToPem(Key privateKey) {
         StringBuilder pemKey = new StringBuilder();
         byte[] derKey = privateKey.getEncoded();
         String pemKeyPre = ConvertUtil.newLine("\n", ConvertUtil.toBase64Encode(StringUtil.getBytesRawString(derKey), StandardCharsets.ISO_8859_1, true), 64);
@@ -94,7 +98,7 @@ public class CertUtil {
         return pemKey.toString();
     }
 
-    public static String exportToPem(X509Certificate x509cert) throws UnsupportedEncodingException, CertificateEncodingException {
+    public static String exportToPem(X509Certificate x509cert) throws CertificateEncodingException {
         StringBuilder pemCert = new StringBuilder();
         byte[] derCert = x509cert.getEncoded();
         String pemCertPre = ConvertUtil.newLine("\n", ConvertUtil.toBase64Encode(StringUtil.getBytesRawString(derCert), StandardCharsets.ISO_8859_1, true), 64);
@@ -262,14 +266,22 @@ public class CertUtil {
         if (m.find()) {
             try {
                 String encoded = m.group(1);
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(Base64.getMimeDecoder().decode(encoded)));
-                return cert;
+                return loadCertificate(new ByteArrayInputStream(Base64.getMimeDecoder().decode(encoded)));
             } catch (CertificateException ex) {
                 throw new UnsupportedEncodingException(ex.getMessage());
             }
         }
         throw new UnsupportedEncodingException("PEM format was not found");
+    }
+
+    public static X509Certificate loadCertificate(byte [] certByte) throws CertificateException {
+        return loadCertificate(new ByteArrayInputStream(certByte));
+    }
+
+    public static X509Certificate loadCertificate(InputStream certStm) throws CertificateException {
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        X509Certificate cert = (X509Certificate) cf.generateCertificate(certStm);
+        return cert;
     }
 
     private static PrivateKey readPkcs8PrivateKey(byte[] pkcs8Bytes) throws GeneralSecurityException {

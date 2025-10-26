@@ -32,8 +32,7 @@ public class BurpPreferences {
 
     public static KeyStore loadCACeart() throws KeyStoreException {
         try {
-            final KeyStore ks;
-            ks = KeyStore.getInstance("PKCS12");
+            final KeyStore ks = KeyStore.getInstance("PKCS12");
             Preferences prefs = Preferences.userNodeForPackage(burp.BurpPreferences.class);
             byte[] caCartByte = Base64.getDecoder().decode(prefs.get("caCert", ""));
             ks.load(new ByteArrayInputStream(caCartByte), CA_PASSWORD.toCharArray());

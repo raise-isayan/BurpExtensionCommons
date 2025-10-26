@@ -475,7 +475,7 @@ public class IpUtilTest {
 
         }
         catch (MalformedURLException ex) {
-            ex.printStackTrace();
+            fail(ex);
         }
 
     }

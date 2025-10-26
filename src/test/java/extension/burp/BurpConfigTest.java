@@ -529,6 +529,22 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testGetMisc() {
+        System.out.println("testGetMisc");
+        try {
+            BurpConfig.Misc misc = BurpConfig.getMisc(api);
+            System.out.println("isEnableProxyInterceptionAtStartup:" + misc.isEnableProxyInterceptionAtStartup());
+            BurpConfig.EmbeddedBrowser browser = misc.getEmbeddedBrowser();
+            System.out.println("isAllowSavingBrowserSettings:" + browser.isAllowSavingBrowserSettings());
+            System.out.println("getBrowserDataDirectory:" + browser.getBrowserDataDirectory());
+            List<BurpConfig.Hotkey> hostKeys = misc.getHotkeys();
+            System.out.println("hotKeys.size:" + hostKeys.size());
+        } catch (Exception ex) {
+            fail(ex);
+        }
+    }
+
+    @Test
     public void testGetEmbeddedBrowser() {
         System.out.println("testGetEmbeddedBrowser");
         try {

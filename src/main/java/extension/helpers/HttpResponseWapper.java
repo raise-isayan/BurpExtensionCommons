@@ -10,6 +10,7 @@ import burp.api.montoya.http.message.responses.HttpResponse;
 import burp.api.montoya.http.message.responses.analysis.Attribute;
 import burp.api.montoya.http.message.responses.analysis.AttributeType;
 import burp.api.montoya.http.message.responses.analysis.KeywordCount;
+import java.nio.charset.Charset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -176,6 +177,12 @@ public class HttpResponseWapper extends HttpMessageWapper implements HttpRespons
     public String getGuessCharset(String defaultCharset) {
         String guessCharset = getGuessCharset(this.response);
         return guessCharset == null ? defaultCharset : guessCharset;
+    }
+
+    public Charset getGuessCharset(Charset defaultCharset) {
+        String guessCharset = getGuessCharset(this.response);
+        Charset suppoertCharset = Charset.isSupported(guessCharset) ? Charset.forName(guessCharset) : defaultCharset;
+        return guessCharset == null ? defaultCharset : suppoertCharset;
     }
 
     private final static Pattern RESPONSE_META_SET = Pattern.compile("<meta (?:.*?)charset=[\"\']?([\\w_-]+)[\"\']?\\W+", Pattern.CASE_INSENSITIVE);

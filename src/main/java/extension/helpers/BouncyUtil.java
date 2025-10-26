@@ -7,14 +7,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
 import java.security.cert.Certificate;
 import java.security.Key;
 import java.security.KeyPair;
@@ -23,11 +24,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
-import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPrivateKey;
 import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,23 +36,23 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.x500.X500Principal;
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Encoding;
-import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DLSet;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.ExtensionsGenerator;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
-import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.asn1.x509.TBSCertificate;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -67,6 +68,7 @@ import org.bouncycastle.crypto.digests.PhotonBeetleDigest;
 import org.bouncycastle.crypto.digests.SparkleDigest;
 import org.bouncycastle.crypto.digests.XoodyakDigest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openssl.PEMException;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
@@ -91,6 +93,28 @@ public class BouncyUtil {
     static {
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(BC_PROVIDER_INSTANCE);
+        }
+    }
+
+    public static PrivateKey loadPrivateKeyFromPem(String pemData) throws PEMException {
+        try {
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+            PemReader pemParser = new PemReader(new StringReader(pemData));
+            PemObject pemObject = pemParser.readPemObject();
+            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(pemObject);
+            PrivateKey privateKey = converter.getPrivateKey(privateKeyInfo);
+            return privateKey;
+        } catch (IOException ex) {
+            throw new PEMException(ex.getMessage(), ex);
+        }
+    }
+
+    public static ECPrivateKey loadECPrivateKeyFromPem(String pemData) throws PEMException {
+        try {
+            PrivateKey privateKey = loadPrivateKeyFromPem(pemData);
+            return (ECPrivateKey) privateKey;
+        } catch (IOException ex) {
+            throw new PEMException(ex.getMessage(), ex);
         }
     }
 
@@ -128,14 +152,33 @@ public class BouncyUtil {
         }
     }
 
+    public static void storeCertificatePem(Key key, Writer to) throws IOException {
+        try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
+            pw.writeObject(key);
+        }
+    }
+
     public static void storeCertificatePem(Certificate cert, File to) throws IOException {
         try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
             pw.writeObject(cert);
         }
     }
 
+    public static void storeCertificatePem(Certificate cert, Writer to) throws IOException {
+        try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
+            pw.writeObject(cert);
+        }
+    }
+
     public static void storeCertificatePem(Key key, Certificate cert, File to) throws IOException {
         try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
+            pw.writeObject(key);
+            pw.writeObject(cert);
+        }
+    }
+
+    public static void storeCertificatePem(Key key, Certificate cert, Writer to) throws IOException {
+        try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
             pw.writeObject(key);
             pw.writeObject(cert);
         }
@@ -246,7 +289,6 @@ public class BouncyUtil {
      * @param charset エンコーディング
      * @param upperCase 大文字で出力
      * @return ハッシュ値
-     * @throws java.security.NoSuchAlgorithmException
      */
     public static String toMessageDigest(Digest digest, String str, Charset charset, boolean upperCase) {
         return toMessageDigest(digest, StringUtil.getBytesCharset(str, charset), upperCase);
@@ -261,7 +303,6 @@ public class BouncyUtil {
      * @param upperCase
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
-     * @throws java.security.NoSuchAlgorithmException
      */
     public static String toMessageDigest(Digest digest, String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
@@ -3240,7 +3281,7 @@ public class BouncyUtil {
     /////
     // https://downloads.bouncycastle.org/java/docs/bcprov-jdk14-javadoc/org/bouncycastle/crypto/digests/package-summary.html
     ////
-    
+
     /**
      * AsconXofA値の取得
      *
@@ -3506,69 +3547,105 @@ public class BouncyUtil {
         }
     }
 
-    public static X509Certificate issueSignCert(PrivateKey caPrivateKey, X509Certificate caCert, KeyPair keyPair, String hostname, int numberOfYears) throws CertificateException {
-        return issueSignCert(caPrivateKey, caCert, keyPair, hostname, new String[]{hostname}, numberOfYears);
-    }
-
-    public static X509Certificate issueSignCert(PrivateKey caPrivateKey, X509Certificate caCert, KeyPair keyPair, String subjectCN, String[] hostnames, int numberOfYears) throws CertificateException {
+    public static PKCS10CertificationRequest createCsr(KeyPair keyPair, org.bouncycastle.asn1.x500.X500Name subjectDN, String[] hostnames) throws CertificateException {
         try {
-            long now = System.currentTimeMillis();
-            Date startDate = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
-            Date endDate = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
-            // Generate a new KeyPair and sign it using the Root Cert Private Key
-            // by generating a CSR (Certificate Signing Request)
-            BigInteger issuedCertSerialNum = BigInteger.valueOf(System.currentTimeMillis());;
-
-            org.bouncycastle.asn1.x500.X500Name issueName = new org.bouncycastle.asn1.x500.X500Name(caCert.getIssuerX500Principal().getName());
-            org.bouncycastle.asn1.x500.X500NameBuilder subjectDN = new org.bouncycastle.asn1.x500.X500NameBuilder();
-
-            for (RDN rdn : issueName.getRDNs()) {
-                if (rdn.getFirst().getType().equals(BCStyle.CN)) {
-                    subjectDN.addRDN(BCStyle.CN, subjectCN);
-                } else {
-                    subjectDN.addRDN(rdn.getFirst().getType(), rdn.getFirst().getValue());
-                }
-            }
-            PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(subjectDN.build(), caCert.getPublicKey());
-            JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BC_PROVIDER);
-
-            // Sign the new KeyPair with the root cert Private Key
-            ContentSigner csrContentSigner = csrBuilder.build(caPrivateKey);
-            PKCS10CertificationRequest csr = p10Builder.build(csrContentSigner);
-
-            // Use the Signed KeyPair and CSR to generate an issued Certificate
-            // Here serial number is randomly generated. In general, CAs use
-            // a sequence to generate Serial number and avoid collisions
-            X509v3CertificateBuilder issuedCertBuilder = new X509v3CertificateBuilder(subjectDN.build(), issuedCertSerialNum, startDate, endDate, csr.getSubject(), csr.getSubjectPublicKeyInfo());
-
-            JcaX509ExtensionUtils issuedCertExtUtils = new JcaX509ExtensionUtils();
-
-            // Add Extensions
-            // Use BasicConstraints to say that this Cert is not a CA
-            issuedCertBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-
-            // Add Issuer cert identifier as Extension
-            issuedCertBuilder.addExtension(Extension.authorityKeyIdentifier, false, issuedCertExtUtils.createAuthorityKeyIdentifier(caCert));
-            issuedCertBuilder.addExtension(Extension.subjectKeyIdentifier, false, issuedCertExtUtils.createSubjectKeyIdentifier(csr.getSubjectPublicKeyInfo()));
-
-            // Add intended key usage extension if needed
-            issuedCertBuilder.addExtension(Extension.keyUsage, false, new KeyUsage(KeyUsage.keyEncipherment));
-
-            // Add DNS name is cert is to used for SSL
             GeneralName[] generalNames = new GeneralName[hostnames.length];
             for (int i = 0; i < hostnames.length; ++i) {
                 generalNames[i] = new GeneralName(GeneralName.dNSName, hostnames[i]);
             }
-            issuedCertBuilder.addExtension(Extension.subjectAlternativeName, false, new GeneralNames(generalNames));
+            GeneralNames subjectAltNames = new GeneralNames(generalNames);
 
-            X509CertificateHolder issuedCertHolder = issuedCertBuilder.build(csrContentSigner);
-            X509Certificate issuedCert = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(issuedCertHolder);
+            ExtensionsGenerator extensionsGenerator = new ExtensionsGenerator();
+            extensionsGenerator.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
 
-            // Verify the issued cert signature against the root (issuer) cert
-            issuedCert.verify(caCert.getPublicKey(), BC_PROVIDER);
+            Extensions extensions = extensionsGenerator.generate();
 
-            return issuedCert;
-        } catch (OperatorCreationException | NoSuchAlgorithmException | CertIOException | InvalidKeyException | NoSuchProviderException | SignatureException ex) {
+            PKCS10CertificationRequestBuilder p10Builder
+                    = new JcaPKCS10CertificationRequestBuilder(subjectDN, keyPair.getPublic());
+
+            p10Builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensions);
+
+            JcaContentSignerBuilder csBuilder
+                    = new JcaContentSignerBuilder("SHA256withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME);
+            ContentSigner signer = csBuilder.build(keyPair.getPrivate());
+
+            // csr
+            PKCS10CertificationRequest csr = p10Builder.build(signer);
+
+            return csr;
+        } catch (OperatorCreationException | CertIOException ex) {
+            throw new CertificateException(ex);
+        } catch (IOException ex) {
+            throw new CertificateException(ex);
+        }
+    }
+
+    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYears) throws CertificateException {
+        try {
+            long now = System.currentTimeMillis();
+            Date notBefore = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
+            Date notAfter = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
+            // シリアル番号
+            BigInteger serialNumber = BigInteger.valueOf(System.currentTimeMillis());
+
+            // CA証明書から発行者情報（Issuer）を取得します
+            X500Name issuer = new X509CertificateHolder(caCert.getEncoded()).getSubject();
+
+            // CSRからSubjectと公開鍵情報を取得
+            X500Name subject = csr.getSubject();
+            SubjectPublicKeyInfo subjectPublicKeyInfo = csr.getSubjectPublicKeyInfo();
+
+            // X509v3CertificateBuilderの構築
+            X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(
+                    issuer,
+                    serialNumber,
+                    notBefore,
+                    notAfter,
+                    subject,
+                    subjectPublicKeyInfo
+            );
+
+            Extensions extensions = csr.getRequestedExtensions();
+            if (extensions != null) {
+                // 拡張機能のOID（Object Identifier）のリストを取得
+                java.util.Enumeration<org.bouncycastle.asn1.ASN1ObjectIdentifier> oids = extensions.oids();
+
+                // 各OIDをループして、対応するExtensionを取得し、certBuilderに追加
+                while (oids.hasMoreElements()) {
+                    org.bouncycastle.asn1.ASN1ObjectIdentifier oid = oids.nextElement();
+
+                    // OIDからExtensionオブジェクトを取得
+                    org.bouncycastle.asn1.x509.Extension extension = extensions.getExtension(oid);
+
+                    // 新しい証明書ビルダーに拡張機能を追加
+                    certBuilder.addExtension(extension);
+                }
+            }
+
+            // キー使用法
+            // certBuilder.addExtension(Extension.keyUsage, true, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyEncipherment));
+            // 拡張キー使用法
+            certBuilder.addExtension(Extension.extendedKeyUsage, false, new ExtendedKeyUsage(KeyPurposeId.id_kp_serverAuth));
+            // 機関キー識別子
+            //certBuilder.addExtension(Extension.authorityKeyIdentifier, false, issuedCertExtUtils.createAuthorityKeyIdentifier(caCert));
+            // サブジェクト識別子
+            //certBuilder.addExtension(Extension.subjectKeyIdentifier, false, issuedCertExtUtils.createSubjectKeyIdentifier(csr.getSubjectPublicKeyInfo()));
+
+            // CAの秘密鍵で署名
+            ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM)
+                    .setProvider(BC_PROVIDER)
+                    .build(caPrivateKey);
+
+            // 証明書の発行 (署名)
+            X509CertificateHolder certHolder = certBuilder.build(signer);
+
+            // Java標準のX509Certificateオブジェクトに変換して返す
+            return new JcaX509CertificateConverter()
+                    .setProvider(BC_PROVIDER)
+                    .getCertificate(certHolder);
+        } catch (OperatorCreationException | CertIOException | CertificateEncodingException ex) {
+            throw new CertificateException(ex);
+        } catch (IOException ex) {
             throw new CertificateException(ex);
         }
     }

@@ -225,7 +225,7 @@ public class ExtensionHelper {
      * @param multilineURL
      * @param ignoreExists
      */
-    public void addIncludeTopURLTargetScope(String multilineURL, boolean ignoreExists) {
+    public void addIncludeRootURLTargetScope(String multilineURL, boolean ignoreExists) {
         String[] urls = HttpUtil.parseMultiLineTopURL(multilineURL, true);
         addIncludeTargetScope(urls, ignoreExists);
     }
