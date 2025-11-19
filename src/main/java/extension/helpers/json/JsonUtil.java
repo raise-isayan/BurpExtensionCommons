@@ -49,7 +49,7 @@ public class JsonUtil {
         return json.getAsJsonObject();
     }
 
-    public static String prettyJson(String jsonString) throws IOException {
+    public static String prettyJson(String jsonString) throws JsonSyntaxException {
         return prettyJson(jsonString, true);
     }
 
@@ -64,6 +64,16 @@ public class JsonUtil {
         } else {
             Gson gson = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
             return gson.toJson(jsonElement);
+        }
+    }
+
+    public static String prettyJson(Map jsonMap, boolean pretty) {
+        if (pretty) {
+            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
+            return gson.toJson(jsonMap);
+        } else {
+            Gson gson = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
+            return gson.toJson(jsonMap);
         }
     }
 

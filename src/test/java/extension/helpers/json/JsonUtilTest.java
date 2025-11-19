@@ -108,7 +108,15 @@ public class JsonUtilTest {
             boolean pretty = false;
             String expResult = "{\"abc\":123,\"def\":\"test\"}";
             String result = JsonUtil.prettyJson(jsonElementString, pretty);
+            System.out.println("prettyJSON:" + result);
             assertEquals(expResult, result);
+        }
+        {
+            String jsonElementString = "{ \n \"abc\": 123, \n \"def\": \"test\" }";
+            boolean pretty = true;
+//            String expResult = "{\"abc\":123,\"def\":\"test\"}";
+            String result = JsonUtil.prettyJson(jsonElementString, pretty);
+            System.out.println("prettyJSON:" + result);
         }
         {
             try {

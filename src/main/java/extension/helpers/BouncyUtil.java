@@ -1,9 +1,7 @@
 package extension.helpers;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,15 +19,12 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.ECPrivateKey;
-import java.util.AbstractMap;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +36,6 @@ import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.BasicConstraints;
@@ -69,7 +63,8 @@ import org.bouncycastle.crypto.digests.SparkleDigest;
 import org.bouncycastle.crypto.digests.XoodyakDigest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMException;
-import org.bouncycastle.util.io.pem.PemReader;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
@@ -78,7 +73,14 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
-import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.crypto.Mac;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.digests.SHA384Digest;
+import org.bouncycastle.crypto.digests.SHA512Digest;
+import org.bouncycastle.crypto.macs.HMac;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.openssl.jcajce.JcaPKCS8Generator;
 
 /**
  *
@@ -98,63 +100,87 @@ public class BouncyUtil {
 
     public static PrivateKey loadPrivateKeyFromPem(String pemData) throws PEMException {
         try {
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-            PemReader pemParser = new PemReader(new StringReader(pemData));
-            PemObject pemObject = pemParser.readPemObject();
-            PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(pemObject);
-            PrivateKey privateKey = converter.getPrivateKey(privateKeyInfo);
-            return privateKey;
-        } catch (IOException ex) {
-            throw new PEMException(ex.getMessage(), ex);
-        }
-    }
-
-    public static ECPrivateKey loadECPrivateKeyFromPem(String pemData) throws PEMException {
-        try {
-            PrivateKey privateKey = loadPrivateKeyFromPem(pemData);
-            return (ECPrivateKey) privateKey;
-        } catch (IOException ex) {
-            throw new PEMException(ex.getMessage(), ex);
-        }
-    }
-
-    public static Map.Entry<Key, X509Certificate> loadFromPem(File storeFile, String password) {
-        try {
-            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
-            PemReader pemParser = new PemReader(new FileReader(storeFile));
-            PemObject pemObject = pemParser.readPemObject();
-            PrivateKey privateKey = null;
-            X509Certificate x509Certificate = null;
-            while (pemObject != null) {
-                if ("TYPE_CERTIFICATE".equals(pemObject.getType())) {
-                    byte cert[] = pemObject.getContent();
-                    try (ByteArrayInputStream inStream = new ByteArrayInputStream(cert)) {
-                        CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
-                        Certificate certificate = certificateFactory.generateCertificate(inStream);
-                        x509Certificate = (X509Certificate) certificate;
-                    }
-                } else {
-                    PrivateKeyInfo privateKeyInfo = PrivateKeyInfo.getInstance(pemObject);
-                    privateKey = converter.getPrivateKey(privateKeyInfo);
-                }
-                pemObject = pemParser.readPemObject();
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
+            PEMParser pemParser = new PEMParser(new StringReader(pemData));
+            Object pemObject = pemParser.readObject();
+            if (pemObject instanceof PEMKeyPair pemKeyPair) {
+                PrivateKeyInfo privateKeyInfo = pemKeyPair.getPrivateKeyInfo();
+                return converter.getPrivateKey(privateKeyInfo);
+            } else if (pemObject instanceof PrivateKeyInfo pemInfo) {
+                // PKCS#8 形式
+                return converter.getPrivateKey(pemInfo);
             }
-            return new AbstractMap.SimpleEntry(privateKey, x509Certificate);
-        } catch (IOException | CertificateException | NoSuchProviderException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        } catch (IOException ex) {
+            throw new PEMException(ex.getMessage(), ex);
         }
-        return null;
+        throw new UnsupportedOperationException();
     }
 
-    public static void storeCertificatePem(Key key, File to) throws IOException {
+    public static PublicKey loadPublicKeyFromPem(String pemData) throws PEMException {
+        try {
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
+            PEMParser pemParser = new PEMParser(new StringReader(pemData));
+            Object pemObject = pemParser.readObject();
+            if (pemObject instanceof PEMKeyPair pemKeyPair) {
+                SubjectPublicKeyInfo publicKeyInfo = pemKeyPair.getPublicKeyInfo();
+                return converter.getPublicKey(publicKeyInfo);
+            } else if (pemObject instanceof SubjectPublicKeyInfo pemInfo) {
+                // PKCS#8 形式
+                return converter.getPublicKey(pemInfo);
+            }
+        } catch (IOException ex) {
+            throw new PEMException(ex.getMessage(), ex);
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public static KeyPair loadKeyPairFromPem(String pemData) throws PEMException {
+        try {
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
+            PEMParser pemParser = new PEMParser(new StringReader(pemData));
+            PrivateKey privateKey = null;
+            PublicKey publicKey = null;
+            Object pemObject = null;
+            while ((pemObject = pemParser.readObject()) != null) {
+                if (pemObject instanceof PEMKeyPair pemKeyPair) {
+                    return converter.getKeyPair(pemKeyPair);
+                } else if (pemObject instanceof PrivateKeyInfo pemInfo) {
+                    privateKey = converter.getPrivateKey(pemInfo);
+                } else if (pemObject instanceof SubjectPublicKeyInfo pemInfo) {
+                    publicKey = converter.getPublicKey(pemInfo);
+                }
+            }
+            return new KeyPair(publicKey, privateKey);
+        } catch (IOException ex) {
+            throw new PEMException(ex.getMessage(), ex);
+        }
+    }
+
+    public static void storeCertificatePem(PrivateKey key, File to) throws IOException {
+        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
         try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(key);
+            pw.writeObject(pkcs8Gen.generate());
         }
     }
 
-    public static void storeCertificatePem(Key key, Writer to) throws IOException {
+    public static void storeCertificatePem(PublicKey key, File to) throws IOException {
+        SubjectPublicKeyInfo spki = SubjectPublicKeyInfo.getInstance(key.getEncoded());
+        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
+            pw.writeObject(spki);
+        }
+    }
+
+    public static void storeCertificatePem(PrivateKey key, Writer to) throws IOException {
+        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
         try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
-            pw.writeObject(key);
+            pw.writeObject(pkcs8Gen.generate());
+        }
+    }
+
+    public static void storeCertificatePem(PublicKey key, Writer to) throws IOException {
+        SubjectPublicKeyInfo spki = SubjectPublicKeyInfo.getInstance(key.getEncoded());
+        try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
+            pw.writeObject(spki);
         }
     }
 
@@ -170,17 +196,35 @@ public class BouncyUtil {
         }
     }
 
-    public static void storeCertificatePem(Key key, Certificate cert, File to) throws IOException {
+    public static void storeCertificatePem(PrivateKey key, Certificate cert, File to) throws IOException {
+        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
         try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(key);
+            pw.writeObject(pkcs8Gen.generate());
             pw.writeObject(cert);
         }
     }
 
-    public static void storeCertificatePem(Key key, Certificate cert, Writer to) throws IOException {
+    public static void storeCertificatePem(PrivateKey key, Certificate cert, Writer to) throws IOException {
+        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
         try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
-            pw.writeObject(key);
+            pw.writeObject(pkcs8Gen.generate());
             pw.writeObject(cert);
+        }
+    }
+
+    public static void storeKeyPairPem(KeyPair keyPair, File to) throws IOException {
+        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
+            JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(keyPair.getPrivate(), null);
+            pw.writeObject(pkcs8Gen.generate());
+            pw.writeObject(keyPair.getPublic());
+        }
+    }
+
+    public static void storeKeyPairPem(KeyPair keyPair, Writer to) throws IOException {
+        try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
+            JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(keyPair.getPrivate(), null);
+            pw.writeObject(pkcs8Gen.generate());
+            pw.writeObject(keyPair.getPublic());
         }
     }
 
@@ -192,10 +236,11 @@ public class BouncyUtil {
         return sw.toString();
     }
 
-    public static String exportCertificatePem(Key key, Certificate cert) throws IOException {
+    public static String exportCertificatePem(PrivateKey key, Certificate cert) throws IOException {
         StringWriter sw = new StringWriter();
         try (JcaPEMWriter pw = new JcaPEMWriter(sw)) {
-            pw.writeObject(key);
+            JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
+            pw.writeObject(pkcs8Gen.generate());
             pw.writeObject(cert);
         }
         return sw.toString();
@@ -206,6 +251,11 @@ public class BouncyUtil {
         try (FileOutputStream fos = new FileOutputStream(to)) {
             fos.write(keyBytes);
         }
+    }
+
+    public static void storeCertificateDer(Key key, OutputStream ostm) throws IOException {
+        byte[] keyBytes = key.getEncoded();
+        ostm.write(keyBytes);
     }
 
     public static void storeCertificateDer(Certificate cert, File to) throws IOException {
@@ -219,7 +269,16 @@ public class BouncyUtil {
         }
     }
 
-    public static byte[] exportPrivateKeyDer(Key key) throws IOException {
+    public static void storeCertificateDer(Certificate cert, OutputStream ostm) throws IOException {
+        try {
+            byte[] certBytes = cert.getEncoded();
+            ostm.write(certBytes);
+        } catch (CertificateEncodingException ex) {
+            throw new IOException(ex);
+        }
+    }
+
+    public static byte[] exportPrivateKeyDer(PrivateKey key) throws IOException {
         return key.getEncoded();
     }
 
@@ -239,6 +298,8 @@ public class BouncyUtil {
         }
         return null;
     }
+
+
 
     // https://github.com/bcgit/bc-java/tree/main/prov/src/main/java/org/bouncycastle/jcajce/provider/digest
     /**
@@ -3514,19 +3575,46 @@ public class BouncyUtil {
         }
     }
 
+    private final static SHA256Digest SHA256_DIGEST = new SHA256Digest();
+
+    public static byte[] hmacSHA256(byte[] key, byte[] message) {
+        return hmac(SHA256_DIGEST, key, message);
+    }
+
+    private final static SHA384Digest SHA384_DIGEST = new SHA384Digest();
+
+    public static byte[] hmacSHA384(byte[] key, byte[] message) {
+        return hmac(SHA384_DIGEST, key, message);
+    }
+
+    private final static SHA512Digest SHA512_DIGEST = new SHA512Digest();
+
+    public static byte[] hmacSHA512(byte[] key, byte[] message) {
+        return hmac(SHA512_DIGEST, key, message);
+    }
+
+    // HMAC 署名
+    protected static byte[] hmac(Digest digest, byte[] key, byte[] message) {
+        Mac hmac = new HMac(digest);
+        hmac.init(new KeyParameter(key));
+        hmac.update(message, 0, message.length);
+        byte[] out = new byte[hmac.getMacSize()];
+        hmac.doFinal(out, 0);
+        return out;
+    }
+
     // https://github.com/bcgit/bc-java/tree/main/core/src/test/java/org/bouncycastle/crypto/test
     /**
      * 証明書 https://gist.github.com/vivekkr12/c74f7ee08593a8c606ed96f4b62a208a
      * https://magnus-k-karlsson.blogspot.com/2020/03/creating-x509-certificate-with-bouncy.html
      */
-    private static final String BC_PROVIDER = "BC";
     private static final String KEY_ALGORITHM = "RSA";
     private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
 
     public static X509Certificate createRootCA(KeyPair rootKeyPair, org.bouncycastle.asn1.x500.X500Name rootCertSubject, int numberOfYears) throws CertificateException {
         try {
             BigInteger rootSerialNum = BigInteger.valueOf(System.currentTimeMillis());
-            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BC_PROVIDER).build(rootKeyPair.getPrivate());
+            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
             long now = System.currentTimeMillis();
             Date startDate = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
             Date endDate = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
@@ -3540,7 +3628,7 @@ public class BouncyUtil {
 
             // Create a cert holder and export to X509Certificate
             X509CertificateHolder rootCertHolder = rootCertBuilder.build(rootCertContentSigner);
-            X509Certificate rootCert = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(rootCertHolder);
+            X509Certificate rootCert = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(rootCertHolder);
             return rootCert;
         } catch (OperatorCreationException | NoSuchAlgorithmException | CertIOException ex) {
             throw new CertificateException(ex);
@@ -3566,7 +3654,7 @@ public class BouncyUtil {
             p10Builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensions);
 
             JcaContentSignerBuilder csBuilder
-                    = new JcaContentSignerBuilder("SHA256withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME);
+                    = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BouncyCastleProvider.PROVIDER_NAME);
             ContentSigner signer = csBuilder.build(keyPair.getPrivate());
 
             // csr
@@ -3633,7 +3721,7 @@ public class BouncyUtil {
 
             // CAの秘密鍵で署名
             ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM)
-                    .setProvider(BC_PROVIDER)
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                     .build(caPrivateKey);
 
             // 証明書の発行 (署名)
@@ -3641,7 +3729,7 @@ public class BouncyUtil {
 
             // Java標準のX509Certificateオブジェクトに変換して返す
             return new JcaX509CertificateConverter()
-                    .setProvider(BC_PROVIDER)
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                     .getCertificate(certHolder);
         } catch (OperatorCreationException | CertIOException | CertificateEncodingException ex) {
             throw new CertificateException(ex);

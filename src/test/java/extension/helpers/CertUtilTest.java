@@ -188,10 +188,10 @@ public class CertUtilTest {
 
     @Test
     public void testRSAPem() throws Exception {
-        String privateFile = CertUtilTest.class.getResource("/resources/private-key.pem").getPath();
+        String privateFile = CertUtilTest.class.getResource("/resources/private-rsa-key.pem").getPath();
         String privaeData = FileUtil.stringFromFile(new File(privateFile), StandardCharsets.UTF_8);
         PrivateKey privateKey = CertUtil.loadPrivateKey(privaeData);
-        String publicFile = CertUtilTest.class.getResource("/resources/public-key.pem").getPath();
+        String publicFile = CertUtilTest.class.getResource("/resources/public-rsa-key.pem").getPath();
         String publicData = FileUtil.stringFromFile(new File(publicFile), StandardCharsets.UTF_8);
         PublicKey publicKey = CertUtil.loadPublicKey(publicData);
     }
