@@ -3,7 +3,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'  
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -33,13 +33,14 @@ clean.doFirst {
 }
 
 jar {
-  destinationDirectory = file('release')
+   destinationDirectory = file('release')
    archiveVersion =  "v${release_version_major}.${release_version_minor}"
 }
 
 shadowJar {
+//   archiveClassifier.set('')
    destinationDirectory = file('release')
-   archiveVersion =  "v${release_version_major}.${release_version_minor}"
+   archiveVersion.set("v${release_version_major}.${release_version_minor}")
 }
 
 task release(type: Zip, dependsOn: ['build']) {
@@ -89,6 +90,9 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
     //testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+
+    // If using JUnit 4
+    testImplementation 'junit:junit:4.13.2'
 
     // https://mvnrepository.com/artifact/net.portswigger.burp.extensions/montoya-api
     testImplementation 'net.portswigger.burp.extensions:montoya-api:2025.10'
