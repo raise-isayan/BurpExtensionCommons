@@ -79,6 +79,7 @@ import burp.api.montoya.sitemap.SiteMap;
 import burp.api.montoya.sitemap.SiteMapFilter;
 import burp.api.montoya.ui.Selection;
 import burp.api.montoya.ui.UserInterface;
+import burp.api.montoya.ui.hotkey.HotKey;
 import burp.api.montoya.ui.menu.BasicMenuItem;
 import burp.api.montoya.ui.menu.Menu;
 import burp.api.montoya.ui.settings.SettingsPanelBuilder;
@@ -1335,6 +1336,11 @@ public class MockMontoya {
 
         @Override
         public SettingsPanelSetting listSetting(String string, String string1, List<String> list, String string2) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public HotKey hotkey(String string, String string1) {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }

@@ -63,7 +63,7 @@ public final class HashUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd2Sum(byte[] binary, boolean upperCase) {
+    public static String toMD2Sum(byte[] binary, boolean upperCase) {
         try {
             return toMessageDigest("MD2", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -78,7 +78,7 @@ public final class HashUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd2Sum(String str, boolean upperCase) {
+    public static String toMD2Sum(String str, boolean upperCase) {
         try {
             return toMessageDigest("MD2", str, StandardCharsets.ISO_8859_1, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -95,9 +95,9 @@ public final class HashUtil {
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toMd2Sum(String str, String charset, boolean upperCase)
+    public static String toMD2Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return toMd2Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return HashUtil.toMD2Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -107,7 +107,7 @@ public final class HashUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd5Sum(byte[] binary, boolean upperCase) {
+    public static String toMD5Sum(byte[] binary, boolean upperCase) {
         try {
             return toMessageDigest("MD5", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -122,7 +122,7 @@ public final class HashUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toMd5Sum(String str, boolean upperCase) {
+    public static String toMD5Sum(String str, boolean upperCase) {
         try {
             return toMessageDigest("MD5", str, StandardCharsets.ISO_8859_1, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -139,9 +139,9 @@ public final class HashUtil {
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toMd5Sum(String str, String charset, boolean upperCase)
+    public static String toMD5Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return toMd5Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return HashUtil.toMD5Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**

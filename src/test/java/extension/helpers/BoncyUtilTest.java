@@ -19,6 +19,7 @@ import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
 import java.security.interfaces.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,7 +28,6 @@ import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -91,18 +91,20 @@ public class BoncyUtilTest {
     }
 
     @Test
-    public void testBouncyUtil() {
-        System.out.println("testBouncyUtil");
-        String storeFileName = BoncyUtilTest.class.getResource("/resources/burpca.p12").getPath();
+    public void testCertUtilToBouncy() {
+        System.out.println("testCertUtilToBouncy");
+        String storeFileName = CertUtilTest.class.getResource("/resources/burpca.p12").getPath();
         HashMap<String, Map.Entry<Key, X509Certificate>> certMap = CertUtil.loadFromPKCS12(new File(storeFileName), "testca");
         try {
             for (String key : certMap.keySet()) {
                 Map.Entry<Key, X509Certificate> pair = certMap.get(key);
                 System.out.println(pair.getValue().getType());
                 System.out.println(pair.getValue().getSubjectX500Principal().getName());
+                assertTrue(pair.getKey() instanceof PrivateKey);
+                assertNotNull(pair.getValue());
                 StringWriter sw = new StringWriter();
-                BouncyUtil.storeCertificatePem((PrivateKey)pair.getKey(), pair.getValue(), sw);
-                System.out.println("testBouncyUtil:\n" + sw.toString());
+                BouncyUtil.storeCertificatePem((PrivateKey) pair.getKey(), pair.getValue(), sw);
+                System.out.println("testCertUtilToBouncy:\n" + sw.toString());
             }
         } catch (IOException ex) {
             fail(ex.getMessage(), ex);
@@ -110,8 +112,8 @@ public class BoncyUtilTest {
     }
 
     @Test
-    public void testCN() {
-        System.out.println("testCN");
+    public void testBouncyCN() {
+        System.out.println("testBouncyCN");
         System.out.println("CN ->" + BCStyle.CN);
         org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=hoge, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
         for (RDN rdn : subjectDN.getRDNs()) {
@@ -128,15 +130,15 @@ public class BoncyUtilTest {
             Security.addProvider(new BouncyCastleProvider());
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
-            KeyPair caKeyPair = keyGen.generateKeyPair();
+            KeyPair genKeyPair = keyGen.generateKeyPair();
             org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=hoge, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
             System.out.println("subjectDN:");
-            X509Certificate cert = BouncyUtil.createRootCA(caKeyPair, subjectDN, 2);
+            X509Certificate cert = BouncyUtil.createRootCA(genKeyPair, subjectDN, 2);
             System.out.println("createCA:" + cert.getSubjectX500Principal().getName());
             File pem = File.createTempFile("pem", ".cer");
             pem.deleteOnExit();
             System.out.println("pem:" + pem.getAbsolutePath());
-            BouncyUtil.storeCertificatePem(caKeyPair.getPrivate(), cert, pem);
+            BouncyUtil.storeCertificatePem(genKeyPair.getPrivate(), cert, pem);
         } catch (NoSuchAlgorithmException | CertificateException ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -154,26 +156,17 @@ public class BoncyUtilTest {
 
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
-            KeyPair subjectKeyPair = keyGen.generateKeyPair();
-
+            KeyPair genKeyPair = keyGen.generateKeyPair();
             org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=www.example.com, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
-
-            PKCS10CertificationRequest csr = BouncyUtil.createCsr(subjectKeyPair, subjectDN, new String[]{"www.example.com"});
-
+            PKCS10CertificationRequest csr = BouncyUtil.createCsr(genKeyPair, subjectDN, new String[]{"www.example.com"});
             X509Certificate cert = BouncyUtil.signCsr(csr, burpCert, burpKeyPair.getPrivate(), 1);
-
             File pem = File.createTempFile("pem", ".cer");
             //pem.deleteOnExit();
             System.out.println("testCSRtoSign => pem Path:" + pem.getAbsolutePath());
-
             BouncyUtil.storeCertificatePem(cert, pem);
-
             File p12 = File.createTempFile("p12", ".pfx");
-
             System.out.println("testCSRtoSign => p12 Path:" + p12.getAbsolutePath());
-
-            CertUtil.storeToPKCS12(p12, "burp", "test", subjectKeyPair.getPrivate(), cert);
-
+            CertUtil.storeToPKCS12(p12, "burp", "test", genKeyPair.getPrivate(), cert);
         } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | IOException | UnrecoverableKeyException ex) {
             fail(ex.getMessage(), ex);
         }
@@ -219,7 +212,6 @@ public class BoncyUtilTest {
                 fail(ex.getMessage(), ex);
             }
         }
-
         {
             try {
                 String hash = BouncyUtil.toSHA1Sum("hello world", true);
@@ -1146,19 +1138,187 @@ public class BoncyUtilTest {
     }
 
     @Test
+    public void testFromPEM() {
+        System.out.println("testFromPEM");
+        try {
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                keyGen.initialize(1024, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                StringWriter prisw = new StringWriter();
+                try (JcaPEMWriter pw = new JcaPEMWriter(prisw)) {
+                    pw.writeObject(genKeyPair.getPrivate());
+                } catch (IOException ex) {
+                    fail(ex.getMessage(), ex);
+                }
+                System.out.println("parseRSA_PEM:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof RSAPrivateKey);
+            }
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+                keyGen.initialize(256, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                StringWriter prisw = new StringWriter();
+                try (JcaPEMWriter pw = new JcaPEMWriter(prisw)) {
+                    pw.writeObject(genKeyPair.getPrivate());
+                } catch (IOException ex) {
+                    fail(ex.getMessage(), ex);
+                }
+                System.out.println("parseEC_PEM:\n" + prisw.toString());
+//                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+//                assertTrue(priKey instanceof ECPrivateKey);
+            }
+        } catch (NoSuchAlgorithmException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (PEMException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
     public void testRSAtoPEM() {
         System.out.println("testRSAtoPEM");
         try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(512);
-            KeyPair subjectKeyPair = keyGen.generateKeyPair();
-            StringWriter prisw = new StringWriter();
-            BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-            System.out.println("rsaPrivatePem:\n" + prisw.toString());
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                keyGen.initialize(512);
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("RSA 512 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof RSAPrivateKey);
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("RSA 512 PublicPem:\n" + pubsw.toString());
 
-            StringWriter pubsw = new StringWriter();
-            BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-            System.out.println("rsaPublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof RSAPublicKey);
+
+            }
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                keyGen.initialize(1024, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("RSA 1024 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof RSAPrivateKey);
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("RSA 1024 PublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof RSAPublicKey);
+            }
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                keyGen.initialize(2048, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("RSA 2048 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof RSAPrivateKey);
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("RSA 2048 PublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof RSAPublicKey);
+                // export
+                String exportKeyPair = BouncyUtil.exportKeyPairPem(genKeyPair);
+                System.out.println("RSA 2048 KeyPairPem:\n" + exportKeyPair);
+                assertNotNull(exportKeyPair);
+                KeyPair keyPair = BouncyUtil.loadKeyPairFromPem(exportKeyPair);
+                assertTrue(keyPair.getPublic() instanceof RSAPublicKey);
+                assertTrue(keyPair.getPrivate() instanceof RSAPrivateKey);
+
+            }
+        } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void tesDSAToPEM() {
+        System.out.println("tesDSAToPEM");
+        try {
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+                keyGen.initialize(1024, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("DSA 1024 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof DSAPrivateKey);
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("DSA 1024 PublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof DSAPublicKey);
+            }
+        } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void tesECToPEM() {
+        System.out.println("tesECToPEM");
+        try {
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+                keyGen.initialize(256, SecureRandom.getInstanceStrong());
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("EC 256 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof ECPrivateKey);
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("EC 256 PublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof ECPublicKey);
+            }
+        } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void tesEDToPEM() {
+        System.out.println("tesEDToPEM");
+        try {
+            {
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
+                KeyPair genKeyPair = keyGen.generateKeyPair();
+                // private
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(genKeyPair.getPrivate(), prisw);
+                System.out.println("Ed25519 PrivatePem:\n" + prisw.toString());
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(prisw.toString());
+                assertTrue(priKey instanceof EdECPrivateKey);
+
+                // public
+                StringWriter pubsw = new StringWriter();
+                BouncyUtil.storePublicKeyPem(genKeyPair.getPublic(), pubsw);
+                System.out.println("Ed25519 PublicPem:\n" + pubsw.toString());
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pubsw.toString());
+                assertTrue(pubKey instanceof EdECPublicKey);
+            }
         } catch (NoSuchAlgorithmException | IOException ex) {
             fail(ex.getMessage(), ex);
         }
@@ -1166,15 +1326,23 @@ public class BoncyUtilTest {
 
     @Test
     public void testLoadKeyPairFromPem() {
+        System.out.println("testLoadKeyPairFromPem");
         try {
-            System.out.println("testLoadKeyPairFromPem");
-            String keyPairPath = BoncyUtilTest.class.getResource("/resources/keypair.pem").getPath();
-            String pemData = FileUtil.stringFromFile(new File(keyPairPath), StandardCharsets.UTF_8);
-            KeyPair keyPair = BouncyUtil.loadKeyPairFromPem(pemData);
-            assertNotNull(keyPair.getPrivate());
-            assertNotNull(keyPair.getPublic());
-            assertTrue(keyPair.getPrivate() instanceof RSAPrivateKey);
-            assertTrue(keyPair.getPublic() instanceof RSAPublicKey);
+            {
+                String keyPairPath = BoncyUtilTest.class.getResource("/resources/burpca_certificate.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(keyPairPath), StandardCharsets.UTF_8);
+                Certificate cert = BouncyUtil.loadCertificateFromPem(pemData);
+                assertNotNull(cert);
+            }
+            {
+                String keyPairPath = BoncyUtilTest.class.getResource("/resources/keypair.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(keyPairPath), StandardCharsets.UTF_8);
+                KeyPair keyPair = BouncyUtil.loadKeyPairFromPem(pemData);
+                assertNotNull(keyPair.getPrivate());
+                assertNotNull(keyPair.getPublic());
+                assertTrue(keyPair.getPrivate() instanceof RSAPrivateKey);
+                assertTrue(keyPair.getPublic() instanceof RSAPublicKey);
+            }
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -1189,9 +1357,9 @@ public class BoncyUtilTest {
             String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-rsa-key.pem").getPath();
             String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
             {
-                PrivateKey key = BouncyUtil.loadPrivateKeyFromPem(pemData);
-                assertNotNull(key);
-                assertTrue(key instanceof RSAPrivateKey);
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+                assertNotNull(priKey);
+                assertTrue(priKey instanceof RSAPrivateKey);
             }
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
@@ -1207,45 +1375,9 @@ public class BoncyUtilTest {
             String pubKeyPath = BoncyUtilTest.class.getResource("/resources/public-rsa-key.pem").getPath();
             String pemData = FileUtil.stringFromFile(new File(pubKeyPath), StandardCharsets.UTF_8);
             {
-                PublicKey key = BouncyUtil.loadPublicKeyFromPem(pemData);
-                assertNotNull(key);
-                assertTrue(key instanceof RSAPublicKey);
-            }
-        } catch (PEMException ex) {
-            fail(ex.getMessage(), ex);
-        } catch (IOException ex) {
-            fail(ex.getMessage(), ex);
-        }
-    }
-
-    @Test
-    public void testLoadEDPrivateKeyFromPem() {
-        try {
-            System.out.println("testLoadEDPrivateKeyFromPem");
-            String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ed-key.pem").getPath();
-            String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
-            {
-                PrivateKey key = BouncyUtil.loadPrivateKeyFromPem(pemData);
-                assertNotNull(key);
-                assertTrue(key instanceof EdDSAPrivateKey);
-            }
-        } catch (PEMException ex) {
-            fail(ex.getMessage(), ex);
-        } catch (IOException ex) {
-            fail(ex.getMessage(), ex);
-        }
-    }
-
-    @Test
-    public void testLoadEDPublicKeyFromPem() {
-        try {
-            System.out.println("testLoadEDPublicKeyFromPem");
-            String pubKeyPath = BoncyUtilTest.class.getResource("/resources/public-ed-key.pem").getPath();
-            String pemData = FileUtil.stringFromFile(new File(pubKeyPath), StandardCharsets.UTF_8);
-            {
-                PublicKey key = BouncyUtil.loadPublicKeyFromPem(pemData);
-                assertNotNull(key);
-                assertTrue(key instanceof EdDSAPublicKey);
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pemData);
+                assertNotNull(pubKey);
+                assertTrue(pubKey instanceof RSAPublicKey);
             }
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
@@ -1256,12 +1388,32 @@ public class BoncyUtilTest {
 
     @Test
     public void testLoadECPrivateKeyFromPem() {
+        System.out.println("testLoadECPrivateKeyFromPem");
         try {
-            System.out.println("testLoadECPrivateKeyFromPem");
-            String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ec256-key.pem").getPath();
-            String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
-            PrivateKey key = BouncyUtil.loadPrivateKeyFromPem(pemData);
-            assertTrue(key instanceof ECPrivateKey);
+            {
+                String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ec256-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+                assertTrue(priKey instanceof ECPrivateKey);
+                ECPrivateKey ecKey = (ECPrivateKey) priKey;
+                assertEquals(256, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
+            {
+                String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ec384-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+                assertTrue(priKey instanceof ECPrivateKey);
+                ECPrivateKey ecKey = (ECPrivateKey) priKey;
+                assertEquals(384, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
+            {
+                String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ec521-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+                assertTrue(priKey instanceof ECPrivateKey);
+                ECPrivateKey ecKey = (ECPrivateKey) priKey;
+                assertEquals(521, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -1271,12 +1423,70 @@ public class BoncyUtilTest {
 
     @Test
     public void testLoadECPublicKeyFromPem() {
+        System.out.println("testLoadECPublicKeyFromPem");
         try {
-            System.out.println("testLoadECPublicKeyFromPem");
-            String pubKeyPath = BoncyUtilTest.class.getResource("/resources/public-ec256-key.pem").getPath();
+            {
+                String pubKeyPath = BoncyUtilTest.class.getResource("/resources/public-ec256-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(pubKeyPath), StandardCharsets.UTF_8);
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pemData);
+                assertTrue(pubKey instanceof ECPublicKey);
+                ECPublicKey ecKey = (ECPublicKey) pubKey;
+                assertEquals(256, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
+            {
+                String priKeyPath = BoncyUtilTest.class.getResource("/resources/public-ec384-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pemData);
+                assertTrue(pubKey instanceof ECPublicKey);
+                ECPublicKey ecKey = (ECPublicKey) pubKey;
+                assertEquals(384, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
+            {
+                String priKeyPath = BoncyUtilTest.class.getResource("/resources/public-ec521-key.pem").getPath();
+                String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+                PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pemData);
+                assertTrue(pubKey instanceof ECPublicKey);
+                ECPublicKey ecKey = (ECPublicKey) pubKey;
+                assertEquals(521, ecKey.getParams().getCurve().getField().getFieldSize());
+            }
+        } catch (PEMException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void testLoadEDPrivateKeyFromPem() {
+        System.out.println("testLoadEDPrivateKeyFromPem");
+        try {
+            String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-ed-key.pem").getPath();
+            String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
+            {
+                PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+                assertNotNull(priKey);
+                assertTrue(priKey instanceof EdDSAPrivateKey);
+                assertTrue(priKey instanceof EdECPrivateKey);
+            }
+        } catch (PEMException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void testLoadEDPublicKeyFromPem() {
+        System.out.println("testLoadEDPublicKeyFromPem");
+        try {
+            String pubKeyPath = BoncyUtilTest.class.getResource("/resources/public-ed-key.pem").getPath();
             String pemData = FileUtil.stringFromFile(new File(pubKeyPath), StandardCharsets.UTF_8);
-            PublicKey key = BouncyUtil.loadPublicKeyFromPem(pemData);
-            assertTrue(key instanceof ECPublicKey);
+            {
+                PublicKey key = BouncyUtil.loadPublicKeyFromPem(pemData);
+                assertNotNull(key);
+                assertTrue(key instanceof EdDSAPublicKey);
+                assertTrue(key instanceof EdECPublicKey);
+            }
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -1286,12 +1496,12 @@ public class BoncyUtilTest {
 
     @Test
     public void testLoadDSAPrivateKeyFromPem() {
+        System.out.println("testLoadDSAPrivateKeyFromPem");
         try {
-            System.out.println("testLoadDSAPrivateKeyFromPem");
             String priKeyPath = BoncyUtilTest.class.getResource("/resources/private-dsa-key.pem").getPath();
             String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
-            PrivateKey key = BouncyUtil.loadPrivateKeyFromPem(pemData);
-            assertTrue(key instanceof DSAPrivateKey);
+            PrivateKey priKey = BouncyUtil.loadPrivateKeyFromPem(pemData);
+            assertTrue(priKey instanceof DSAPrivateKey);
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -1301,12 +1511,12 @@ public class BoncyUtilTest {
 
     @Test
     public void testLoadDSAPublicKeyFromPem() {
+        System.out.println("testLoadDSAPublicKeyFromPem");
         try {
-            System.out.println("testLoadDSAPublicKeyFromPem");
             String priKeyPath = BoncyUtilTest.class.getResource("/resources/public-dsa-key.pem").getPath();
             String pemData = FileUtil.stringFromFile(new File(priKeyPath), StandardCharsets.UTF_8);
-            PublicKey key = BouncyUtil.loadPublicKeyFromPem(pemData);
-            assertTrue(key instanceof DSAPublicKey);
+            PublicKey pubKey = BouncyUtil.loadPublicKeyFromPem(pemData);
+            assertTrue(pubKey instanceof DSAPublicKey);
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
         } catch (IOException ex) {
@@ -1315,98 +1525,21 @@ public class BoncyUtilTest {
     }
 
     @Test
-    public void tesStorePEM() {
-        System.out.println("tesStorePEM");
-        try {
-            {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-                keyGen.initialize(1024, SecureRandom.getInstanceStrong());
-                KeyPair subjectKeyPair = keyGen.generateKeyPair();
-                StringWriter prisw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-                System.out.println("RSA 1024 PrivatePem:\n" + prisw.toString());
-                StringWriter pubsw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-                System.out.println("RSA 1024 PublicPem:\n" + pubsw.toString());
-            }
-            {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-                keyGen.initialize(2048, SecureRandom.getInstanceStrong());
-                KeyPair subjectKeyPair = keyGen.generateKeyPair();
-                StringWriter prisw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-                System.out.println("RSA 2048 PrivatePem:\n" + prisw.toString());
-                StringWriter pubsw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-                System.out.println("RSA 2048 PublicPem:\n" + pubsw.toString());
-            }
-            {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
-                keyGen.initialize(1024, SecureRandom.getInstanceStrong());
-                KeyPair subjectKeyPair = keyGen.generateKeyPair();
-                StringWriter prisw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-                System.out.println("DSA PrivatePem:\n" + prisw.toString());
-                StringWriter pubsw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-                System.out.println("DSA PublicPem:\n" + pubsw.toString());
-            }
-            {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
-                keyGen.initialize(256, SecureRandom.getInstanceStrong());
-                KeyPair subjectKeyPair = keyGen.generateKeyPair();
-                StringWriter prisw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-                System.out.println("EC PrivatePem:\n" + prisw.toString());
-                StringWriter pubsw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-                System.out.println("EC PublicPem:\n" + pubsw.toString());
-            }
-            {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
-                keyGen.initialize(256, SecureRandom.getInstanceStrong());
-                KeyPair subjectKeyPair = keyGen.generateKeyPair();
-                StringWriter prisw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPrivate(), prisw);
-                System.out.println("Ed25519 PrivatePem:\n" + prisw.toString());
-                StringWriter pubsw = new StringWriter();
-                BouncyUtil.storeCertificatePem(subjectKeyPair.getPublic(), pubsw);
-                System.out.println("Ed25519 PublicPem:\n" + pubsw.toString());
-            }
-        } catch (NoSuchAlgorithmException | IOException ex) {
-            fail(ex.getMessage(), ex);
-        }
-    }
-
-
-    @Test
-    public void testUnsupportPEM() {
-        System.out.println("testUnsupportPEM");
-        try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
-            keyGen.initialize(1024, SecureRandom.getInstanceStrong());
-            KeyPair subjectKeyPair = keyGen.generateKeyPair();
-            StringWriter sw = new StringWriter();
-            try (JcaPEMWriter pw = new JcaPEMWriter(sw)) {
-                pw.writeObject(subjectKeyPair.getPrivate());
-            } catch (IOException ex) {
-                fail(ex.getMessage(), ex);
-            }
-            System.out.println("testUnsupportPEM:\n" + sw.toString());
-        } catch (NoSuchAlgorithmException ex) {
-            fail(ex.getMessage(), ex);
-        }
-    }
-
-    @Test
-    public void testBouncyToPEM() {
-        System.out.println("tesBouncyToPEM");
+    public void testBouncyGenRSAToPEM() {
+        System.out.println("testBouncyGenRSAToPEM");
         try {
             KeyPairGenerator gen = org.bouncycastle.jcajce.provider.asymmetric.rsa.KeyPairGeneratorSpi.getInstance("RSA");
             KeyPair keyPair = gen.genKeyPair();
-            StringWriter prisw = new StringWriter();
-            BouncyUtil.storeCertificatePem(keyPair.getPrivate(), prisw);
-            System.out.println("Bouncy RSA PrivatePem:\n" + prisw.toString());
+            {
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storePrivateKeyPem(keyPair.getPrivate(), prisw);
+                System.out.println("Bouncy RSA PrivatePem:\n" + prisw.toString());
+            }
+            {
+                StringWriter prisw = new StringWriter();
+                BouncyUtil.storeKeyPairPem(keyPair, prisw);
+                System.out.println("Bouncy RSA KeyPairPem:\n" + prisw.toString());
+            }
         } catch (IOException | NoSuchAlgorithmException ex) {
             fail(ex.getMessage(), ex);
         }
@@ -1442,7 +1575,7 @@ public class BoncyUtilTest {
             try (JcaPEMWriter pw = new JcaPEMWriter(sw)) {
                 pw.writeObject(privateKey);
             } catch (IOException ex) {
-            fail(ex.getMessage(), ex);
+                fail(ex.getMessage(), ex);
             }
             System.out.println("Bouncy RSA PrivatePem2:\n" + sw.toString());
 
@@ -1458,19 +1591,19 @@ public class BoncyUtilTest {
         System.out.println("testBase64Urlsafe");
         String token3 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWluIjoieHh4eHh4Iiwic3ViIjoi44OG44K544OIIn0.BMJ5siOQ_3gJHbS3h4R76fmWluIpJoEAO_gCoKLWDQg";
         try {
-            byte decodeToke [] = org.bouncycastle.util.encoders.UrlBase64.decode(token3);
+            byte decodeToke[] = org.bouncycastle.util.encoders.UrlBase64.decode(token3);
             System.out.println("org.bouncycastle.util.encoders.UrlBase64:" + StringUtil.getStringRaw(decodeToke));
         } catch (org.bouncycastle.util.encoders.DecoderException ex) {
 //            fail(ex);
         }
         try {
-            byte decodeToke [] = java.util.Base64.getDecoder().decode(token3);
+            byte decodeToke[] = java.util.Base64.getDecoder().decode(token3);
             System.out.println("java.util.Base64:" + StringUtil.getStringRaw(decodeToke));
         } catch (java.lang.IllegalArgumentException ex) {
 //            fail(ex);
         }
         try {
-            byte decodeToke [] = org.apache.commons.codec.binary.Base64.decodeBase64(token3);
+            byte decodeToke[] = org.apache.commons.codec.binary.Base64.decodeBase64(token3);
             System.out.println("org.apache.commons.codec.binary.Base64:" + StringUtil.getStringRaw(decodeToke));
         } catch (Exception ex) {
 //            fail(ex);
@@ -1478,9 +1611,7 @@ public class BoncyUtilTest {
 
         String[] segment3 = SPLIT_SEGMENT.split(token3);
         System.out.println("token3:" + segment3.length);
-
         String token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWluIjoieHh4eHh4Iiwic3ViIjoi44OG44K544OIIn0.";
-
         String[] segment2 = SPLIT_SEGMENT.split(token2);
         System.out.println("token2:" + segment2.length);
 

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.AfterAll;
@@ -147,8 +146,8 @@ public class BurpConfigTest {
         try {
             List<BurpConfig.SSLPassThroughRule> rules = new ArrayList<>();
             BurpConfig.configSSLPassThroughRules(api, rules);
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -179,8 +178,8 @@ public class BurpConfigTest {
                 String updateConfig = BurpConfig.updateSSLPassThroughRules(config, rules, false);
                 System.out.println("updateConfig2:" + updateConfig);
             }
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -195,8 +194,8 @@ public class BurpConfigTest {
                 System.out.println("rule.getStringMatch:" + rule.getStringMatch());
                 System.out.println("rule.getRuleType:" + rule.getRuleType());
             }
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -214,8 +213,8 @@ public class BurpConfigTest {
                 System.out.println("rule.getStringMatch:" + rule.getStringMatch());
                 System.out.println("rule.getRuleType:" + rule.getRuleType());
             }
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -240,7 +239,7 @@ public class BurpConfigTest {
                 System.out.println("updateConfig:" + updateConfig);
             }
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -265,7 +264,7 @@ public class BurpConfigTest {
             config = BurpConfig.configRequestListeners(api, requestListenrs);
             System.out.println("updateConfig:" + config);
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -281,7 +280,7 @@ public class BurpConfigTest {
             config = BurpConfig.configRequestListeners(api, requestListenrs, true);
             System.out.println("updateConfig:" + config);
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -306,7 +305,7 @@ public class BurpConfigTest {
             assertEquals(8004, bindListener.getListenerPort());
             System.out.println("BindListener:" + bindListener.getListenerPort());
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -321,9 +320,34 @@ public class BurpConfigTest {
             assertEquals(8080, bindListener.getListenerPort());
             System.out.println("BindListener:" + bindListener.getListenerPort());
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
+
+    @Test
+    public void testPaserURL() {
+        try {
+            System.out.println("testPaserURL");
+            {
+                URL url = new URL("https://www.example.com");
+                System.out.println("Host:" + url.getHost());
+                System.out.println("File:" + url.getFile());
+            }
+            {
+                URL url = new URL("https://www.example.com/");
+                System.out.println("Host:" + url.getHost());
+                System.out.println("File:" + url.getFile());
+            }
+            {
+                URL url = new URL("https://www.example.com/logout?test");
+                System.out.println("Host:" + url.getHost());
+                System.out.println("File:" + url.getFile());
+            }
+        } catch (MalformedURLException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
 
     @Test
     public void testGetTargetScope() {
@@ -338,7 +362,7 @@ public class BurpConfigTest {
                 }
                 assertTrue(targetURL.contains(BurpConfig.TargetScopeURL.parseTargetURL("https://www.example,com/")));
             } catch (MalformedURLException ex) {
-                logger.log(Level.SEVERE, ex.getMessage(), ex);
+            fail(ex.getMessage(), ex);
             }
         }
     }
@@ -350,29 +374,47 @@ public class BurpConfigTest {
             {
                 BurpConfig.TargetScopeURL target_scope_url = BurpConfig.TargetScopeURL.parseTargetURL("https://www.example.com/path?search=test");
                 assertTrue(target_scope_url.isEnabled());
-                assertFalse(target_scope_url.getIncludeSubdomains());
+                assertFalse(target_scope_url.isIncludeSubdomains());
                 assertEquals("https://www.example.com/path", target_scope_url.getPrefix());
             }
             {
                 BurpConfig.TargetScopeURL target_scope_url = BurpConfig.TargetScopeURL.parseTargetURL("http://www.example.com/path?search=test");
                 assertTrue(target_scope_url.isEnabled());
-                assertFalse(target_scope_url.getIncludeSubdomains());
+                assertFalse(target_scope_url.isIncludeSubdomains());
                 assertEquals("http://www.example.com/path", target_scope_url.getPrefix());
             }
             {
                 BurpConfig.TargetScopeURL target_scope_url = BurpConfig.TargetScopeURL.parseTargetURL("https://www.example.com:8443/path/?search=test");
                 assertTrue(target_scope_url.isEnabled());
-                assertFalse(target_scope_url.getIncludeSubdomains());
+                assertFalse(target_scope_url.isIncludeSubdomains());
                 assertEquals("https://www.example.com:8443/path/", target_scope_url.getPrefix());
             }
+            {
+                BurpConfig.TargetScopeURL target_scope_url = new BurpConfig.TargetScopeURL(true, true, "https://www.example.com/");
+                assertTrue(target_scope_url.isEnabled());
+                assertTrue(target_scope_url.isIncludeSubdomains());
+                assertEquals("https://www.example.com/", target_scope_url.getPrefix());
+
+            }
         } catch (MalformedURLException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            fail(ex.getMessage(), ex);
         }
     }
 
     @Test
     public void testTargetScopeAdvance() {
         System.out.println("testTargetScopeAdvance");
+        BurpConfig.TargetScopeAdvance include_Advance = new BurpConfig.TargetScopeAdvance(true, "https", "^www\\.example\\.com$", "^443$", "^/path/.*");
+        assertTrue(include_Advance.isEnabled());
+        assertEquals("https", include_Advance.getProtocol());
+        assertEquals("^www\\.example\\.com$", include_Advance.getHost());
+        assertEquals("^443$", include_Advance.getPort());
+        assertEquals("^/path/.*", include_Advance.getFile());
+    }
+
+    @Test
+    public void testTargetScopeAdvanceURL() {
+        System.out.println("testTargetScopeAdvanceURL");
         try {
             {
                 BurpConfig.TargetScopeAdvance target_scope_url = BurpConfig.TargetScopeAdvance.parseTargetURL("https://www.example.com/path?search=test");
@@ -399,7 +441,7 @@ public class BurpConfigTest {
                 assertEquals("^/path/.*", target_scope_url.getFile());
             }
         } catch (MalformedURLException ex) {
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -411,10 +453,11 @@ public class BurpConfigTest {
             assertFalse(target_scope.isAdvancedMode());
             assertEquals(target_scope.getIncludeURL().size(), 2);
             System.out.println("GetTagetScope:" + JsonUtil.prettyJson(target_scope.getJson(), true));
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
+
 
     @Test
     public void testUpdateTargetScopeAdvance() {
@@ -425,14 +468,14 @@ public class BurpConfigTest {
             TargetScope targetScope = new TargetScope();
             targetScope.setAdvancedMode(true);
             List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
-            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "/*", "www.example.ne.jp", "80$", "http"));
+            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "https", "^www\\.example\\.com$", "^443$", "^/path/.*"));
             targetScope.setIncludeAdvance(include_Advance);
             List<BurpConfig.TargetScopeAdvance> exclude_Advance = new ArrayList<>();
             targetScope.setExcludeAdvance(exclude_Advance);
             String update_scope = BurpConfig.updateTargetScope(config, targetScope);
             System.out.println("updateTagetScope:" + update_scope);
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -451,8 +494,8 @@ public class BurpConfigTest {
             targetScope.setExcludeURL(exclude_URL);
             String update_scope = BurpConfig.updateTargetScope(config, targetScope);
             System.out.println("updateTagetScope:" + update_scope);
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -462,6 +505,205 @@ public class BurpConfigTest {
         targetScope.getIncludeURL().add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.com/"));
         BurpConfig.configTargetScope(api, targetScope);
     }
+
+
+    @Test
+    public void testIsInScopeHost() {
+        String configFile = BurpConfigTest.class.getResource("/resources/target_scope_url.json").getPath();
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.com/"));
+            targetScope.setIncludeURL(include_URL);
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+        }
+
+        // subdomain=fales
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.jp/logout"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.jp/"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, false, "https://www.example.jp"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        // subdomain=true
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://www.example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://www.example.jp/logout"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.jp/logout"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.com/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.jp/"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(false);
+            List<BurpConfig.TargetScopeURL> include_URL = new ArrayList<>();
+            include_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.com/test"));
+            include_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.jp/test"));
+            targetScope.setIncludeURL(include_URL);
+
+            List<BurpConfig.TargetScopeURL> exclude_URL = new ArrayList<>();
+            exclude_URL.add(new BurpConfig.TargetScopeURL(true, true, "https://example.jp"));
+            targetScope.setExcludeURL(exclude_URL);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.JP"));
+            assertFalse(targetScope.isInScopeHost("192.168.0.2"));
+        }
+
+        // Advanced
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(true);
+            List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
+            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "https", "^www\\.example\\.com$", "^443$", "^/path/.*"));
+            targetScope.setIncludeAdvance(include_Advance);
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("www.example.jp"));
+            assertFalse(targetScope.isInScopeHost("WWW.EXAMPLE.jp"));
+            assertFalse(targetScope.isInScopeHost("192.168.0.2"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(true);
+            List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
+            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "https", "^www\\.example\\.com$", "^443$", "^/path/.*"));
+            targetScope.setIncludeAdvance(include_Advance);
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertFalse(targetScope.isInScopeHost("192.168.0.2"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(true);
+            List<BurpConfig.TargetScopeAdvance> exclude_advance = new ArrayList<>();
+            exclude_advance.add(new BurpConfig.TargetScopeAdvance(true, "https", "^www\\.example\\.com$", "^443$", "^/path/.*"));
+            targetScope.setExcludeAdvance(exclude_advance);
+
+            List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
+            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "/*", "(.*)", "80$", "http"));
+            targetScope.setIncludeAdvance(include_Advance);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+
+            assertTrue(targetScope.isInScopeHost("www.example.jp"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.jp"));
+            assertTrue(targetScope.isInScopeHost("192.168.0.2"));
+        }
+        {
+            TargetScope targetScope = new TargetScope();
+            targetScope.setAdvancedMode(true);
+            List<BurpConfig.TargetScopeAdvance> include_Advance = new ArrayList<>();
+            include_Advance.add(new BurpConfig.TargetScopeAdvance(true, "https", "example", "^443$", "^/path/.*"));
+            targetScope.setIncludeAdvance(include_Advance);
+
+            // exluide はホスト名部分のみの場合除外扱い
+            assertTrue(targetScope.isInScopeHost("www.example.com"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.COM"));
+            assertTrue(targetScope.isInScopeHost("www.example.jp"));
+            assertTrue(targetScope.isInScopeHost("WWW.EXAMPLE.jp"));
+            assertFalse(targetScope.isInScopeHost("192.168.0.2"));
+        }
+
+    }
+
 
     @Test
     public void testGetHttpBambda() {
@@ -485,7 +727,7 @@ public class BurpConfigTest {
         String bambda = BurpConfig.getBambda(api, FilterCategory.SITE_MAP);
         System.out.println("getBambda:" + bambda);
     }
-    
+
     @Test
     public void testGetNullBambda() {
         System.out.println("testGetNullBambda");
@@ -523,8 +765,8 @@ public class BurpConfigTest {
                     + "}";
             System.out.println("updateFilter:" + update_filter);
             assertEquals(except, update_filter);
-        } catch (Exception e) {
-            fail();
+        } catch (Exception ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -540,7 +782,7 @@ public class BurpConfigTest {
             List<BurpConfig.Hotkey> hostKeys = misc.getHotkeys();
             System.out.println("hotKeys.size:" + hostKeys.size());
         } catch (Exception ex) {
-            fail(ex);
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -552,7 +794,7 @@ public class BurpConfigTest {
             System.out.println("isAllowSavingBrowserSettings:" + browser.isAllowSavingBrowserSettings());
             System.out.println("getBrowserDataDirectory:" + browser.getBrowserDataDirectory());
         } catch (Exception ex) {
-            fail(ex);
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -576,7 +818,7 @@ public class BurpConfigTest {
             String updateConfig = BurpConfig.updateHotkey(config, hotkeys);
             System.out.println("updateConfig:" + updateConfig);
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -672,7 +914,7 @@ public class BurpConfigTest {
                 System.out.println("updateConfig3-1:" + updateConfig);
             }
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
 
     }
@@ -691,7 +933,7 @@ public class BurpConfigTest {
                 System.out.println("updateConfig1-1:" + updateConfig);
             }
         } catch (IOException ex) {
-            fail();
+            fail(ex.getMessage(), ex);
         }
 
     }

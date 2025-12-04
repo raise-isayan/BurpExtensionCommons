@@ -19,11 +19,13 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.HashMap;
@@ -75,6 +77,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.crypto.Mac;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.digests.SHA512Digest;
@@ -134,6 +137,21 @@ public class BouncyUtil {
         throw new UnsupportedOperationException();
     }
 
+    public static Certificate loadCertificateFromPem(String pemData) throws PEMException {
+        try {
+            PEMParser pemParser = new PEMParser(new StringReader(pemData));
+            Object pemObject = pemParser.readObject();
+            if (pemObject instanceof X509CertificateHolder certHolder) {
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
+                X509Certificate cert = (X509Certificate) certFactory.generateCertificate(new java.io.ByteArrayInputStream(certHolder.getEncoded()));
+                return cert;
+            }
+        } catch (IOException | CertificateException | NoSuchProviderException ex) {
+            throw new PEMException(ex.getMessage(), ex);
+        }
+        throw new UnsupportedOperationException();
+    }
+
     public static KeyPair loadKeyPairFromPem(String pemData) throws PEMException {
         try {
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
@@ -156,38 +174,30 @@ public class BouncyUtil {
         }
     }
 
-    public static void storeCertificatePem(PrivateKey key, File to) throws IOException {
-        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
-        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(pkcs8Gen.generate());
-        }
+    public static void storePrivateKeyPem(PrivateKey priKey, File to) throws IOException {
+        storePrivateKeyPem(priKey, new FileWriter(to));
     }
 
-    public static void storeCertificatePem(PublicKey key, File to) throws IOException {
-        SubjectPublicKeyInfo spki = SubjectPublicKeyInfo.getInstance(key.getEncoded());
-        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(spki);
-        }
-    }
-
-    public static void storeCertificatePem(PrivateKey key, Writer to) throws IOException {
-        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
+    public static void storePrivateKeyPem(PrivateKey priKey, Writer to) throws IOException {
+        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(priKey, null);
         try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
             pw.writeObject(pkcs8Gen.generate());
         }
     }
 
-    public static void storeCertificatePem(PublicKey key, Writer to) throws IOException {
-        SubjectPublicKeyInfo spki = SubjectPublicKeyInfo.getInstance(key.getEncoded());
+    public static void storePublicKeyPem(PublicKey pubKey, File to) throws IOException {
+        storePublicKeyPem(pubKey, new FileWriter(to));
+    }
+
+    public static void storePublicKeyPem(PublicKey pubKey, Writer to) throws IOException {
+        SubjectPublicKeyInfo spki = SubjectPublicKeyInfo.getInstance(pubKey.getEncoded());
         try (JcaPEMWriter pw = new JcaPEMWriter(to)) {
             pw.writeObject(spki);
         }
     }
 
     public static void storeCertificatePem(Certificate cert, File to) throws IOException {
-        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(cert);
-        }
+        storeCertificatePem(cert, new FileWriter(to));
     }
 
     public static void storeCertificatePem(Certificate cert, Writer to) throws IOException {
@@ -196,12 +206,9 @@ public class BouncyUtil {
         }
     }
 
-    public static void storeCertificatePem(PrivateKey key, Certificate cert, File to) throws IOException {
-        JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
-        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            pw.writeObject(pkcs8Gen.generate());
-            pw.writeObject(cert);
-        }
+    public static void storeCertificatePem(PrivateKey priKey, Certificate cert, File to) throws IOException {
+        storePrivateKeyPem(priKey, new FileWriter(to));
+        storeCertificatePem(cert, new FileWriter(to));
     }
 
     public static void storeCertificatePem(PrivateKey key, Certificate cert, Writer to) throws IOException {
@@ -230,31 +237,51 @@ public class BouncyUtil {
 
     public static String exportCertificatePem(Certificate cert) throws IOException {
         StringWriter sw = new StringWriter();
-        try (JcaPEMWriter pw = new JcaPEMWriter(sw)) {
-            pw.writeObject(cert);
-        }
+        storeCertificatePem(cert, sw);
         return sw.toString();
     }
 
     public static String exportCertificatePem(PrivateKey key, Certificate cert) throws IOException {
         StringWriter sw = new StringWriter();
-        try (JcaPEMWriter pw = new JcaPEMWriter(sw)) {
-            JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(key, null);
-            pw.writeObject(pkcs8Gen.generate());
-            pw.writeObject(cert);
-        }
+        storePrivateKeyPem(key, sw);
+        storeCertificatePem(cert, sw);
         return sw.toString();
     }
 
-    public static void storeCertificateDer(Key key, File to) throws IOException {
-        byte[] keyBytes = key.getEncoded();
+    public static String exportKeyPairPem(PrivateKey priKey, PublicKey pubKey) throws IOException {
+        StringWriter sw = new StringWriter();
+        storePublicKeyPem(pubKey, sw);
+        storePrivateKeyPem(priKey, sw);
+        return sw.toString();
+    }
+
+    public static String exportKeyPairPem(KeyPair keyPair) throws IOException {
+        StringWriter sw = new StringWriter();
+        storeKeyPairPem(keyPair, sw);
+        return sw.toString();
+    }
+
+    public static void storePrivateKeyDer(PrivateKey priKey, File to) throws IOException {
+        byte[] keyBytes = priKey.getEncoded();
         try (FileOutputStream fos = new FileOutputStream(to)) {
             fos.write(keyBytes);
         }
     }
 
-    public static void storeCertificateDer(Key key, OutputStream ostm) throws IOException {
-        byte[] keyBytes = key.getEncoded();
+    public static void storePublicKeyDer(PrivateKey priKey, OutputStream ostm) throws IOException {
+        byte[] keyBytes = priKey.getEncoded();
+        ostm.write(keyBytes);
+    }
+
+    public static void storePrivateKeyDer(PublicKey pubKey, File to) throws IOException {
+        byte[] keyBytes = pubKey.getEncoded();
+        try (FileOutputStream fos = new FileOutputStream(to)) {
+            fos.write(keyBytes);
+        }
+    }
+
+    public static void storePublicKeyDer(PublicKey pubKey, OutputStream ostm) throws IOException {
+        byte[] keyBytes = pubKey.getEncoded();
         ostm.write(keyBytes);
     }
 
@@ -278,8 +305,12 @@ public class BouncyUtil {
         }
     }
 
-    public static byte[] exportPrivateKeyDer(PrivateKey key) throws IOException {
-        return key.getEncoded();
+    public static byte[] exportPrivateKeyDer(PrivateKey priKey) throws IOException {
+        return priKey.getEncoded();
+    }
+
+    public static byte[] exportPublicKeyDer(PublicKey pubKey) throws IOException {
+        return pubKey.getEncoded();
     }
 
     public static byte[] exportCertificateDer(Certificate cert) throws IOException {
@@ -298,8 +329,6 @@ public class BouncyUtil {
         }
         return null;
     }
-
-
 
     // https://github.com/bcgit/bc-java/tree/main/prov/src/main/java/org/bouncycastle/jcajce/provider/digest
     /**
@@ -3573,6 +3602,12 @@ public class BouncyUtil {
         } catch (NoSuchAlgorithmException e) {
             return null;
         }
+    }
+
+    private final static SHA1Digest SHA1_DIGEST = new SHA1Digest();
+
+    public static byte[] hmacSHA1(byte[] key, byte[] message) {
+        return hmac(SHA1_DIGEST, key, message);
     }
 
     private final static SHA256Digest SHA256_DIGEST = new SHA256Digest();

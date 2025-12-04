@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
@@ -1270,6 +1272,93 @@ public class BurpConfig {
             return root_json;
         }
 
+        private boolean isHostOnlyAdvance(TargetScopeAdvance scopeAdv){
+            return ((scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty()) &&
+                    (scopeAdv.getFile() != null && scopeAdv.getFile().isEmpty()));
+        }
+
+        private boolean isHostOnlyPrefix(URL urlParts){
+            return (!urlParts.getHost().isEmpty() && (urlParts.getFile().isEmpty() || urlParts.getFile().equals("/")));
+        }
+
+        public boolean isInScopeHost(String hostname) {
+            if (this.isAdvancedMode()) {
+                // AdvancedMode
+                final List<TargetScopeAdvance> exluddeAdv = getExcludeAdvance();
+                final List<TargetScopeAdvance> includeAdv = getIncludeAdvance();
+                // exludde
+                for (TargetScopeAdvance scopeAdv : exluddeAdv) {
+                    if (scopeAdv.isEnabled() && isHostOnlyAdvance(scopeAdv)) {
+                        Pattern p = Pattern.compile(scopeAdv.getHost(), Pattern.CASE_INSENSITIVE);
+                        Matcher m = p.matcher(hostname);
+                        if (m.find()) {
+                            return false;
+                        }
+                    }
+                }
+                // include
+                for (TargetScopeAdvance scopeAdv : includeAdv) {
+                    if (scopeAdv.isEnabled()
+                        && scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty()) {
+                        Pattern p = Pattern.compile(scopeAdv.getHost(), Pattern.CASE_INSENSITIVE);
+                        Matcher m = p.matcher(hostname);
+                        if (m.find()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                List<TargetScopeURL> exluddeURL = getExcludeURL();
+                List<TargetScopeURL> includeURL = getIncludeURL();
+                try {
+                    // exludde
+                    for (TargetScopeURL scopeUrl : exluddeURL) {
+                        if (scopeUrl.isEnabled()) {
+                            URL urlParts = new URL(scopeUrl.getPrefix());
+                            if (isHostOnlyPrefix(urlParts)) {
+                                String hostMatchRule = urlParts.getHost().toLowerCase();
+                                if (scopeUrl.isIncludeSubdomains()) {
+                                    String subdomain_host = hostname.toLowerCase();
+                                    if (subdomain_host.endsWith(hostMatchRule)) {
+                                        return false;
+                                    }
+                                }
+                                else {
+                                    if (hostMatchRule.equals(hostname.toLowerCase())) {
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // include
+                    for (TargetScopeURL scopeUrl : includeURL) {
+                        if (scopeUrl.isEnabled()) {
+                            URL urlParts = new URL(scopeUrl.getPrefix());
+                            if (!urlParts.getHost().isEmpty()) {
+                                String hostMatchRule = urlParts.getHost().toLowerCase();
+                                if (scopeUrl.isIncludeSubdomains()) {
+                                    String subdomain_host = hostname.toLowerCase();
+                                    if (subdomain_host.endsWith(hostMatchRule)) {
+                                        return true;
+                                    }
+                                }
+                                else {
+                                    if (hostMatchRule.equals(hostname.toLowerCase())) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (MalformedURLException ex) {
+                    return false;
+                }
+            }
+            return false;
+        }
+
     }
 
     public static class TargetScopeURL {
@@ -1309,8 +1398,8 @@ public class BurpConfig {
         /**
          * @return the include_subdomains
          */
-        public boolean getIncludeSubdomains() {
-            return this.include_subdomains;
+        public boolean isIncludeSubdomains() {
+            return include_subdomains;
         }
 
         /**
@@ -1338,7 +1427,7 @@ public class BurpConfig {
         public boolean equals(Object value) {
             if (value instanceof TargetScopeURL url) {
                 return this.enabled == url.enabled
-                        && this.include_subdomains == url.include_subdomains
+                        && this.isIncludeSubdomains() == url.isIncludeSubdomains()
                         && (this.prefix == null ? url.prefix == null : this.prefix.equals(url.prefix));
             } else {
                 return false;
@@ -2769,7 +2858,7 @@ public class BurpConfig {
     }
 
     /**
-     *
+     * HotKey 取得
      * @param api
      * @return
      */
@@ -2785,8 +2874,7 @@ public class BurpConfig {
     }
 
     /**
-     * *
-     *
+     * HotKey 設定
      * @param api
      * @param hotkeys
      */

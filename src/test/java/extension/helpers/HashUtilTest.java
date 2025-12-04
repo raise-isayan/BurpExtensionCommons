@@ -41,7 +41,7 @@ public class HashUtilTest {
         byte[] body = new byte[]{(byte) 0xe3, (byte) 0x83, (byte) 0x86, (byte) 0xe3, (byte) 0x82, (byte) 0xb9, (byte) 0xe3, (byte) 0x83, (byte) 0x88};
         boolean upperCase = false;
         String expResult = "95f20caa6709cbbaed9991ba9a104b81";
-        String result = HashUtil.toMd2Sum(body, upperCase);
+        String result = HashUtil.toMD2Sum(body, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -54,7 +54,7 @@ public class HashUtilTest {
         String str = "test";
         boolean upperCase = false;
         String expResult = "dd34716876364a02d0195e2fb9ae2d1b";
-        String result = HashUtil.toMd2Sum(str, upperCase);
+        String result = HashUtil.toMD2Sum(str, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -68,7 +68,7 @@ public class HashUtilTest {
         String enc = "UTF-8";
         boolean upperCase = false;
         String expResult = "95f20caa6709cbbaed9991ba9a104b81";
-        String result = HashUtil.toMd2Sum(str, enc, upperCase);
+        String result = HashUtil.toMD2Sum(str, enc, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -81,7 +81,7 @@ public class HashUtilTest {
         byte[] body = new byte[]{(byte) 0xe3, (byte) 0x83, (byte) 0x86, (byte) 0xe3, (byte) 0x82, (byte) 0xb9, (byte) 0xe3, (byte) 0x83, (byte) 0x88};
         boolean upperCase = false;
         String expResult = "b0f1c5a480f416234a803b35d9932c57";
-        String result = HashUtil.toMd5Sum(body, upperCase);
+        String result = HashUtil.toMD5Sum(body, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -94,7 +94,7 @@ public class HashUtilTest {
         String str = "test";
         boolean upperCase = false;
         String expResult = "098f6bcd4621d373cade4e832627b4f6";
-        String result = HashUtil.toMd5Sum(str, upperCase);
+        String result = HashUtil.toMD5Sum(str, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -108,7 +108,7 @@ public class HashUtilTest {
         String enc = "UTF-8";
         boolean upperCase = false;
         String expResult = "b0f1c5a480f416234a803b35d9932c57";
-        String result = HashUtil.toMd5Sum(str, enc, upperCase);
+        String result = HashUtil.toMD5Sum(str, enc, upperCase);
         assertEquals(expResult, result);
     }
 
@@ -328,8 +328,8 @@ public class HashUtilTest {
     @Test
     public void testToMd5Sum() {
         System.out.println("toMd5Sum");
-        assertEquals("098f6bcd4621d373cade4e832627b4f6", HashUtil.toMd5Sum("test", false));
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", HashUtil.toMd5Sum("", false));
+        assertEquals("098f6bcd4621d373cade4e832627b4f6", HashUtil.toMD5Sum("test", false));
+        assertEquals("d41d8cd98f00b204e9800998ecf8427e", HashUtil.toMD5Sum("", false));
     }
 
     /**

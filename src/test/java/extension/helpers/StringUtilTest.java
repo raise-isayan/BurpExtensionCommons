@@ -85,12 +85,25 @@ public class StringUtilTest {
     }
 
     @Test
-    public void testPrinterble() {
-        System.out.println("isPrinterble");
-        assertTrue(StringUtil.isPrinterble("abcdef0123456789"));
-        assertTrue(StringUtil.isPrinterble(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n", true)));
-        assertTrue(StringUtil.isPrinterble(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n0123456789", true)));
-        assertFalse(StringUtil.isPrinterble("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u001a"));
+    public void testPrintable() {
+        System.out.println("isPrintable");
+        assertTrue(StringUtil.isPrintable("abcdef0123456789"));
+        assertTrue(StringUtil.isPrintable("\r\n\t "));
+        assertTrue(StringUtil.isPrintable(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n", true)));
+        assertTrue(StringUtil.isPrintable(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n0123456789", true)));
+        assertFalse(StringUtil.isPrintable("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u001a"));
+        assertTrue(StringUtil.isPrintable("あいうえお"));
+    }
+
+    @Test
+    public void testPrintableAscii() {
+        System.out.println("isPrintableAscii");
+        assertTrue(StringUtil.isPrintableAscii("abcdef0123456789"));
+        assertTrue(StringUtil.isPrintableAscii("\r\n\t "));
+        assertTrue(StringUtil.isPrintableAscii(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n", true)));
+        assertTrue(StringUtil.isPrintableAscii(ConvertUtil.encodeJsLangQuote("\tabcdef0123456789\r\n0123456789", true)));
+        assertFalse(StringUtil.isPrintableAscii("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u001a"));
+        assertFalse(StringUtil.isPrintableAscii("あいうえお"));
     }
 
     @Test

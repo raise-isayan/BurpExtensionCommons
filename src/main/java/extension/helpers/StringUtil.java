@@ -35,6 +35,18 @@ public class StringUtil {
         return String.join("", Collections.nCopies(n, str));
     }
 
+    public static boolean isPrintableChar(int codePoint) {
+        return Character.isWhitespace(codePoint) || (!Character.isISOControl(codePoint) && Character.isDefined(codePoint));
+    }
+
+    public static boolean isPrintable(String value) {
+        for (int i = 0; i < value.length(); i = value.offsetByCodePoints(i, 1)) {
+            int c = value.codePointAt(i);
+            if (!isPrintableChar(c)) return false;
+        }
+        return true;
+    }
+
     /**
      * 生のバイト文字列取得
      *
@@ -197,7 +209,7 @@ public class StringUtil {
 
     private final static Pattern PRINTERBLE_MATCH = Pattern.compile("[\\p{Graph}\\s]*", Pattern.DOTALL);
 
-    public static boolean isPrinterble(String value) {
+    public static boolean isPrintableAscii(String value) {
         Matcher m = PRINTERBLE_MATCH.matcher(value);
         return m.matches();
     }
