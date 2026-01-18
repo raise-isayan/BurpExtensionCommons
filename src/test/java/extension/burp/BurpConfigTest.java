@@ -85,6 +85,16 @@ public class BurpConfigTest {
     }
 
     @Test
+    public void testConfigPath() {
+        System.out.println("testConfigPath");
+        System.out.println("getUserConfig:" + BurpConfig.getUserConfig().getAbsolutePath());
+        System.out.println("getUserDirPath:" + BurpConfig.getUserDirPath());
+        System.out.println("getUserHomePath:" + BurpConfig.getUserHomePath());
+        System.out.println("getBurpSuiteUserPath:" + BurpConfig.getBurpSuiteUserPath());
+        System.out.println("getBambdaPath:" + BurpConfig.getBambdaUserPath());
+    }
+
+    @Test
     public void testSystemProperty() {
         System.out.println("SystemProperty");
         Properties p = System.getProperties();

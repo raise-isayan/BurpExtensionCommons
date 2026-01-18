@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -13,6 +15,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -31,8 +34,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javax.security.auth.x500.X500Principal;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.x500.AttributeTypeAndValue;
 import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.junit.jupiter.api.AfterEach;
@@ -1131,10 +1139,124 @@ public class BoncyUtilTest {
     }
 
     @Test
-    public void testSubject_hash_old() {
-        System.out.println("testHashUtil");
+    public void testX509_NAME_hash_old() {
+        System.out.println("testX509_NAME_hash_old");
         String subject = "CN=PortSwigger CA,OU=PortSwigger CA,O=PortSwigger,L=PortSwigger,ST=PortSwigger,C=PortSwigger";
         assertEquals("9a5ba575", BouncyUtil.X509_NAME_hash_old(subject));
+    }
+
+    @Test
+    public void testX509_NAME_hash() {
+        System.out.println("testX509_NAME_hash");
+        String subject = "CN=PortSwigger CA,OU=PortSwigger CA,O=PortSwigger,L=PortSwigger,ST=PortSwigger,C=PortSwigger";
+        System.out.println("testX509_NAME_hash:" + X509_NAME_hash(subject));
+    }
+
+    @Test
+    public void testSubject_hash() {
+        System.out.println("testHashUtil");
+        String subject = "CN=PortSwigger CA,OU=PortSwigger CA,O=PortSwigger,L=PortSwigger,ST=PortSwigger,C=PortSwigger";
+        System.out.println("testHashUtil:" + calculateSubjectHash(subject));
+        System.out.println("testHashUtil_old:" + calculateSubjectHash_old(subject));
+    }
+
+    public static String X509_NAME_hash(String subject) {
+        return X509_NAME_hash(new X500Principal(subject));
+    }
+
+    private static String X509_NAME_hash(X500Principal principal) {
+        try {
+            X500Name x500Name = X500Name.getInstance(principal.getEncoded());
+            X500Name canonicalName = convertToUTF8Canonical(x500Name);
+            byte[] enc = canonicalName.getEncoded();
+            byte[] digest = MessageDigest.getInstance("SHA1").digest(enc);
+            ByteBuffer buff = ByteBuffer.wrap(digest, 0, 4);
+            buff.order(ByteOrder.LITTLE_ENDIAN);
+            return Long.toUnsignedString(buff.getInt() & 0xffffffffL, 16);
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    public static String calculateSubjectHash(String subject) {
+        try {
+            return calculateSubjectHash(new X500Principal(subject));
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    public static String calculateSubjectHash(X500Principal principal) throws IOException {
+        X500Name x500Name = X500Name.getInstance(principal.getEncoded());
+        System.out.println("x500Name     :" + x500Name.toString());
+        X500Name canonicalName = convertToUTF8Canonical(x500Name);
+        System.out.println("canonicalName:" + canonicalName.toString());
+        return calculateOpenSSLHash(canonicalName.getEncoded(), "SHA-1");
+    }
+
+    public static String calculateSubjectHash_old(String subject) {
+        return calculateSubjectHash_old(new X500Principal(subject));
+    }
+
+    public static String calculateSubjectHash_old(X500Principal principal) {
+        // getEncoded() は DER 形式のバイト列を返します
+        return calculateOpenSSLHash(principal.getEncoded(), "MD5");
+    }
+
+    private static String calculateOpenSSLHash(byte[] derEncodedName, String alg) {
+        try {
+            // 1. SHA-1 ダイジェストの作成 (OpenSSL 1.0.0以降の仕様)
+            MessageDigest md = MessageDigest.getInstance(alg);
+            md.update(derEncodedName);
+            byte[] digest = md.digest();
+
+            long hash = 0;
+            // バイト操作でリトルエンディアンとして値を構成
+            hash |= (digest[0] & 0xFFL);       // 0 bit shift
+            hash |= (digest[1] & 0xFFL) << 8;  // 8 bit shift
+            hash |= (digest[2] & 0xFFL) << 16; // 16 bit shift
+            hash |= (digest[3] & 0xFFL) << 24; // 24 bit shift
+
+            // 3. 16進数文字列に変換 (8桁、ゼロ埋め)
+            return String.format("%08x", hash);
+
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-1 algorithm not found", e);
+        }
+    }
+
+
+    // ヘルパー: X500Nameの値をすべてUTF8Stringに強制変換する
+    private static X500Name convertToUTF8Canonical(X500Name name) {
+        RDN[] rdns = name.getRDNs();
+        RDN[] newRdns = new RDN[rdns.length];
+
+        for (int i = 0; i < rdns.length; i++) {
+            AttributeTypeAndValue[] atvs = rdns[i].getTypesAndValues();
+            AttributeTypeAndValue[] newAtvs = new AttributeTypeAndValue[atvs.length];
+
+            for (int j = 0; j < atvs.length; j++) {
+                ASN1ObjectIdentifier type = atvs[j].getType();
+                ASN1Encodable value = atvs[j].getValue();
+
+                String valueStr = org.bouncycastle.asn1.x500.style.IETFUtils.valueToString(value);
+                newAtvs[j] = new AttributeTypeAndValue(type, new DERUTF8String(valueStr));
+            }
+            newRdns[i] = new RDN(newAtvs);
+        }
+        return new X500Name(newRdns);
+    }
+
+    private static String toOpenSSLHex(byte[] digest) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 3; i >= 0; i--) {
+            String hex = Integer.toHexString(0xFF & digest[i]);
+            if (hex.length() == 1) sb.append('0');
+            sb.append(hex);
+        }
+        return sb.toString();
     }
 
     @Test

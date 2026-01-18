@@ -49,6 +49,8 @@ public final class HttpUtil {
 
     public final static Pattern HTTP_LINESEP = Pattern.compile("\\r\\n\\r\\n");
 
+    private final static Pattern HTTP2_VERSION_PATTERN = Pattern.compile("(\\S+) +(\\S+) +HTTP/2\r\n");
+
     public static String URL_ENCODED = "application/x-www-form-urlencoded";
 
     public static String MULTIPART_FORM_DATA = "multipart/form-data";

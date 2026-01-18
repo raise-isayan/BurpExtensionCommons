@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -73,6 +74,21 @@ public class BurpConfig {
     public static File getUserConfig() {
         final File userDir = new File(getUserDirPath());
         return userDir;
+    }
+
+    public static String getBurpSuiteUserPath() {
+        final File userHome = new File(getUserHomePath(), Path.of("AppData","Roaming","BurpSuite").toString());
+        return userHome.getAbsolutePath();
+    }
+
+    public static String getBambdaUserPath() {
+        File bambda = new File(getBurpSuiteUserPath(), "bambdas");
+        return bambda.getAbsolutePath();
+    }
+
+    public static String getBchecksUserPath() {
+        File bambda = new File(getBurpSuiteUserPath(), "bchecks");
+        return bambda.getAbsolutePath();
     }
 
     private static final String CHARACTER_SETS_MODE_RECOGNIZE = "recognize_automatically";

@@ -1,5 +1,7 @@
 package extension.helpers;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -327,9 +329,14 @@ public class HashUtilTest {
      */
     @Test
     public void testToMd5Sum() {
-        System.out.println("toMd5Sum");
-        assertEquals("098f6bcd4621d373cade4e832627b4f6", HashUtil.toMD5Sum("test", false));
-        assertEquals("d41d8cd98f00b204e9800998ecf8427e", HashUtil.toMD5Sum("", false));
+        try {
+            System.out.println("toMd5Sum");
+            assertEquals("098f6bcd4621d373cade4e832627b4f6", HashUtil.toMD5Sum("test", false));
+            assertEquals("098f6bcd4621d373cade4e832627b4f6", HashUtil.toMD5Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("d41d8cd98f00b204e9800998ecf8427e", HashUtil.toMD5Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -339,7 +346,12 @@ public class HashUtilTest {
     public void testToSHA1Sum() {
         System.out.println("toSHA1Sum");
         assertEquals("a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", HashUtil.toSHA1Sum("test", false));
-        assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709", HashUtil.toSHA1Sum("", false));
+        try {
+            assertEquals("a94a8fe5ccb19ba61c4c0873d391e987982fbbd3", HashUtil.toSHA1Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("da39a3ee5e6b4b0d3255bfef95601890afd80709", HashUtil.toSHA1Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -348,8 +360,13 @@ public class HashUtilTest {
     @Test
     public void testToSHA256Sum() {
         System.out.println("toSHA256Sum");
-        assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", HashUtil.toSHA256Sum("test", false));
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", HashUtil.toSHA256Sum("", false));
+        try {
+            assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", HashUtil.toSHA256Sum("test", false));
+            assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", HashUtil.toSHA256Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", HashUtil.toSHA256Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -358,8 +375,13 @@ public class HashUtilTest {
     @Test
     public void testToSHA384Sum() {
         System.out.println("toSHA384Sum");
-        assertEquals("768412320f7b0aa5812fce428dc4706b3cae50e02a64caa16a782249bfe8efc4b7ef1ccb126255d196047dfedf17a0a9", HashUtil.toSHA384Sum("test", false));
-        assertEquals("38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b", HashUtil.toSHA384Sum("", false));
+        try {
+            assertEquals("768412320f7b0aa5812fce428dc4706b3cae50e02a64caa16a782249bfe8efc4b7ef1ccb126255d196047dfedf17a0a9", HashUtil.toSHA384Sum("test", false));
+            assertEquals("768412320f7b0aa5812fce428dc4706b3cae50e02a64caa16a782249bfe8efc4b7ef1ccb126255d196047dfedf17a0a9", HashUtil.toSHA384Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("38b060a751ac96384cd9327eb1b1e36a21fdb71114be07434c0cc7bf63f6e1da274edebfe76f65fbd51ad2f14898b95b", HashUtil.toSHA384Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -368,8 +390,37 @@ public class HashUtilTest {
     @Test
     public void testToSHA512Sum() {
         System.out.println("toSHA512Sum");
-        assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", HashUtil.toSHA512Sum("test", false));
-        assertEquals("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e", HashUtil.toSHA512Sum("", false));
+        try {
+            assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", HashUtil.toSHA512Sum("test", false));
+            assertEquals("ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff", HashUtil.toSHA512Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e", HashUtil.toSHA512Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void testToSHA512_224Sum() {
+        System.out.println("toSHA512_224Sum");
+        try {
+            assertEquals("06001bf08dfb17d2b54925116823be230e98b5c6c278303bc4909a8c", HashUtil.toSHA512_224Sum("test", false));
+            assertEquals("06001bf08dfb17d2b54925116823be230e98b5c6c278303bc4909a8c", HashUtil.toSHA512_224Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("6ed0dd02806fa89e25de060c19d3ac86cabb87d6a0ddd05c333b84f4", HashUtil.toSHA512_224Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void testToSHA512_256Sum() {
+        System.out.println("toSHA512_256Sum");
+        try {
+            assertEquals("3d37fe58435e0d87323dee4a2c1b339ef954de63716ee79f5747f94d974f913f", HashUtil.toSHA512_256Sum("test", false));
+            assertEquals("3d37fe58435e0d87323dee4a2c1b339ef954de63716ee79f5747f94d974f913f", HashUtil.toSHA512_256Sum("test", StandardCharsets.UTF_8.name(), false));
+            assertEquals("c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a", HashUtil.toSHA512_256Sum("", false));
+        } catch (UnsupportedEncodingException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
 }

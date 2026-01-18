@@ -1,6 +1,5 @@
 package extension.helpers.jose;
 
-import extension.helpers.jose.WeakMACSigner;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -18,6 +17,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import extension.helpers.BouncyUtil;
 import extension.helpers.StringUtil;
+import extension.helpers.jose.WeakMACSigner;
 import extension.view.base.CaptureItem;
 import java.security.PrivateKey;
 import java.security.Security;

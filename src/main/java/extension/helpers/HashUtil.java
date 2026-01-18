@@ -320,6 +320,96 @@ public final class HashUtil {
         return toSHA512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
+
+    /**
+     * SHA-512/224値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toSHA512_224Sum(byte[] binary, boolean upperCase) {
+        try {
+            return toMessageDigest("SHA-512/224", binary, upperCase);
+        } catch (NoSuchAlgorithmException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * SHA-512/224値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toSHA512_224Sum(String str, boolean upperCase) {
+        try {
+            return toMessageDigest("SHA-512/224", str, StandardCharsets.ISO_8859_1, upperCase);
+        } catch (NoSuchAlgorithmException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * SHA-512/224値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toSHA512_224Sum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return toSHA512_224Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
+
+    /**
+     * SHA-512/256値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toSHA512_256Sum(byte[] binary, boolean upperCase) {
+        try {
+            return toMessageDigest("SHA-512/256", binary, upperCase);
+        } catch (NoSuchAlgorithmException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * SHA-512/256値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toSHA512_256Sum(String str, boolean upperCase) {
+        try {
+            return toMessageDigest("SHA-512/256", str, StandardCharsets.ISO_8859_1, upperCase);
+        } catch (NoSuchAlgorithmException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * SHA-512/256値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toSHA512_256Sum(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        return toSHA512_256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+    }
+
     /**
      * CRC-32値の取得
      *

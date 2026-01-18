@@ -90,10 +90,14 @@ public class BurpUtil {
         return null;
     }
 
-    public static JTabbedPane repeterTabbedPane() {
-        Frame frame = suiteFrame();
-        if (frame != null) {
-            return findTabbedPane("secondarySuiteTabBar", frame);
+    public static Component suiteTabbedPane(String tabName) {
+        JTabbedPane suiteTab = suiteTabbedPane();
+        if (suiteTab != null) {
+            for (int i = 0; i < suiteTab.getTabCount(); i++) {
+                if (tabName.equals(suiteTab.getTitleAt(i))) {
+                    return suiteTab.getTabComponentAt(i);
+                }
+            }
         }
         return null;
     }

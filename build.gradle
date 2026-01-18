@@ -60,9 +60,9 @@ task release(type: Zip, dependsOn: ['build']) {
 dependencies {
 
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-    compileOnly 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+    compileOnly 'org.bouncycastle:bcpkix-jdk18on:1.81'
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-    compileOnly 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    compileOnly 'org.bouncycastle:bcprov-jdk18on:1.81'
 
     // https://mvnrepository.com/artifact/org.brotli/dec
     compileOnly 'org.brotli:dec:0.1.2'
@@ -78,9 +78,9 @@ dependencies {
     // Unit Test
 
     // https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on
-    testImplementation 'org.bouncycastle:bcpkix-jdk18on:1.78.1'
+    testImplementation 'org.bouncycastle:bcpkix-jdk18on:1.81'
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-    testImplementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    testImplementation 'org.bouncycastle:bcprov-jdk18on:1.81'
 
     // https://mvnrepository.com/artifact/commons-codec/commons-codec
     testImplementation 'commons-codec:commons-codec:1.20.0'

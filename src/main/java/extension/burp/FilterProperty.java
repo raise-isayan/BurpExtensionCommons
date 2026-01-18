@@ -18,6 +18,7 @@ public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProper
         LOGGER_DISPLAY,
         REQUEST_REPLACE,
         RESPONSE_REPLACE,
+        INTERCEPT_RECEIVE,
     }
 
     public enum FilterMode {
