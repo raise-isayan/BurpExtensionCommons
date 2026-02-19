@@ -5,10 +5,10 @@ import java.util.logging.Logger;
 import javax.swing.KeyStroke;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-
 
 /**
  *
@@ -20,7 +20,6 @@ public class BurpHotKeyTest {
 
     public BurpHotKeyTest() {
     }
-
 
     @BeforeAll
     public static void setUpClass() {
@@ -39,6 +38,15 @@ public class BurpHotKeyTest {
     }
 
     @Test
+    public void testParseEmptyHotkey() {
+        System.out.println("testParseEmptyHotkey");
+        KeyStroke emptyKey = BurpHotKey.parseKeyText("");
+        System.out.println("fromEmptyKeyCode:" + emptyKey.getKeyChar());
+        assertEquals(emptyKey.getKeyChar(), KeyEvent.CHAR_UNDEFINED);
+        assertEquals(emptyKey.getModifiers(), 0);
+    }
+
+    @Test
     public void testParseHotkey() {
         System.out.println("testParseHotkey");
         {
@@ -53,5 +61,4 @@ public class BurpHotKeyTest {
             System.out.println("toSpaceKey.toString:" + parseKey.toString() + ":" + parseKey.getKeyCode());
         }
     }
-
 }

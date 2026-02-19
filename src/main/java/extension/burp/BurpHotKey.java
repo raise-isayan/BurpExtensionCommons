@@ -190,6 +190,19 @@ public class BurpHotKey {
 
     }
 
+    final static Map<String, Integer> uninitializedMap = new HashMap<>(8, 1.0f);
+
+    static {
+        uninitializedMap.put("Shift", Integer.valueOf(InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK));
+        uninitializedMap.put("Ctrl", Integer.valueOf(InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK));
+        uninitializedMap.put("Meta", Integer.valueOf(InputEvent.META_DOWN_MASK | InputEvent.META_MASK));
+        uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
+        uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK | InputEvent.ALT_GRAPH_MASK));
+        uninitializedMap.put("Button1", Integer.valueOf(InputEvent.BUTTON1_DOWN_MASK));
+        uninitializedMap.put("Button2", Integer.valueOf(InputEvent.BUTTON2_DOWN_MASK));
+        uninitializedMap.put("Button3", Integer.valueOf(InputEvent.BUTTON3_DOWN_MASK));
+    }
+
     public static KeyStroke parseKeyText(String hotkey) {
         Map<String, Integer> modifierKeywords = Collections.synchronizedMap(uninitializedMap);
         int mask = 0;
@@ -245,17 +258,13 @@ public class BurpHotKey {
         return buf.toString();
     }
 
-    final static Map<String, Integer> uninitializedMap = new HashMap<>(8, 1.0f);
+    public boolean isValid(KeyStroke ks) {
+        return (ks.getKeyCode() != KeyEvent.CHAR_UNDEFINED);
+    }
 
-    static {
-        uninitializedMap.put("Shift", Integer.valueOf(InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK));
-        uninitializedMap.put("Ctrl", Integer.valueOf(InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK));
-        uninitializedMap.put("Meta", Integer.valueOf(InputEvent.META_DOWN_MASK | InputEvent.META_MASK));
-        uninitializedMap.put("Alt", Integer.valueOf(InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK));
-        uninitializedMap.put("Alt Graph", Integer.valueOf(InputEvent.ALT_GRAPH_DOWN_MASK | InputEvent.ALT_GRAPH_MASK));
-        uninitializedMap.put("Button1", Integer.valueOf(InputEvent.BUTTON1_DOWN_MASK));
-        uninitializedMap.put("Button2", Integer.valueOf(InputEvent.BUTTON2_DOWN_MASK));
-        uninitializedMap.put("Button3", Integer.valueOf(InputEvent.BUTTON3_DOWN_MASK));
+    public boolean isValid(String ksText) {
+        KeyStroke ks = BurpHotKey.parseKeyText(ksText);
+        return (ks.getKeyCode() != KeyEvent.CHAR_UNDEFINED);
     }
 
 }
