@@ -252,11 +252,11 @@ public class SmartCodec {
         return value;
     }
 
-    public static String toUnocodeUrlEncode(String input, boolean upperCase) {
-        return toUnocodeUrlEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
+    public static String toUnicodeUrlEncode(String input, boolean upperCase) {
+        return toUnicodeUrlEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
     }
 
-    public static String toUnocodeUrlEncode(String input, Pattern pattern, boolean upperCase) {
+    public static String toUnicodeUrlEncode(String input, Pattern pattern, boolean upperCase) {
         StringBuilder buff = new StringBuilder();
         int length = input.length();
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
@@ -277,7 +277,7 @@ public class SmartCodec {
         return buff.toString();
     }
 
-    public static String toUnocodeEncode(String input, String prefix, Pattern pattern, boolean upperCase) {
+    public static String toUnicodeEncode(String input, String prefix, Pattern pattern, boolean upperCase) {
         StringBuilder buff = new StringBuilder();
         int length = input.length();
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
@@ -298,11 +298,11 @@ public class SmartCodec {
         return buff.toString();
     }
 
-    public static String toUnocodeEncode(String input, boolean upperCase) {
-        return toUnocodeEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
+    public static String toUnicodeEncode(String input, boolean upperCase) {
+        return toUnicodeEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
     }
 
-    public static String toUnocodeEncode(String input, Pattern pattern, boolean upperCase) {
+    public static String toUnicodeEncode(String input, Pattern pattern, boolean upperCase) {
         StringBuilder buff = new StringBuilder();
         int length = input.length();
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {

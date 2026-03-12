@@ -591,13 +591,13 @@ public class ConvertUtilTest {
         // metachar
         assertEquals("\\r\\nhost\\t", ConvertUtil.encodeSQLLangQuote("\r\nhost\t", true));
         assertEquals("ho\\st", ConvertUtil.encodeSQLLangQuote("ho\\st", true));
-        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLangQuote("\\\\123''456\\\\", true));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLLangQuote("\\\\123''456\\\\", true));
         assertEquals("\\123\"456\\", ConvertUtil.encodeSQLLangQuote("\\123\"456\\", true));
 
-        assertEquals("\r\nhost\t", ConvertUtil.decodeSQLangQuote("\\r\\nhost\\t", true));
-        assertEquals("ho\\st", ConvertUtil.decodeSQLangQuote("ho\\st", true));
-        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLangQuote("\\\\123''456\\\\", true));
-        assertEquals("\\123\"456\\", ConvertUtil.decodeSQLangQuote("\\123\"456\\", true));
+        assertEquals("\r\nhost\t", ConvertUtil.decodeSQLLangQuote("\\r\\nhost\\t", true));
+        assertEquals("ho\\st", ConvertUtil.decodeSQLLangQuote("ho\\st", true));
+        assertEquals("\\\\123'456\\\\", ConvertUtil.decodeSQLLangQuote("\\\\123''456\\\\", true));
+        assertEquals("\\123\"456\\", ConvertUtil.decodeSQLLangQuote("\\123\"456\\", true));
     }
 
     @Test

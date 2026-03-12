@@ -219,7 +219,7 @@ public class BurpHotKey {
                 if (token.length() == 1) {
                     keyCode = token.charAt(0);
                 } else {
-                    keyCode = mapRverseKey.get(token);
+                    keyCode = mapRverseKey.getOrDefault(token, (int)KeyEvent.CHAR_UNDEFINED);
                 }
             }
         }

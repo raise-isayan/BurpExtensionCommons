@@ -423,7 +423,7 @@ public class BurpConfig {
      HTTP match and replace rules with Bambdas
      */
     public enum SupportApi {
-        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT, BURPSUITE_AI
+        BURPSUITE_USEROPTION, BURPSUITE_BAMBDA, BURPSUITE_BAMBDA_SITEMAP, PROXY_IS_INTERCEPT, BURPSUITE_AI, BURPSUITE_HOTKEY
     }
 
     public static boolean isSupportApi(MontoyaApi api, SupportApi type) {
@@ -451,6 +451,9 @@ public class BurpConfig {
                 case BURPSUITE_AI: {
                     api.ai().isEnabled();
                     break;
+                }
+                case BURPSUITE_HOTKEY: {
+                    burp.api.montoya.ui.hotkey.HotKey hotKey = burp.api.montoya.ui.hotkey.HotKey.hotKey("", "");
                 }
                 default: {
                     logger.log(Level.WARNING, "no match:" + type.name());

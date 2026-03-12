@@ -1,5 +1,7 @@
 package extension.helpers.jws;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import extension.helpers.BouncyUtil;
 import extension.helpers.MatchUtil;
@@ -759,6 +761,16 @@ public class JWSToken implements JsonToken {
             }
         }
         return tokens.toArray(String[]::new);
+    }
+
+    public static long parseTokenExp(String value) {
+        long exp = -1;
+        JsonObject json = JsonUtil.parseJsonObject(value);
+        JsonElement json_exp = json.get("exp");
+        if (json_exp != null) {
+            exp = json_exp.getAsLong();
+        }
+        return exp;
     }
 
 }

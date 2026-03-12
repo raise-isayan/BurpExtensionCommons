@@ -1070,8 +1070,8 @@ public class ConvertUtil {
         return encode;
     }
 
-    public static String decodeSQLangQuote(String value) {
-        return decodeSQLangQuote(value, false);
+    public static String decodeSQLLangQuote(String value) {
+        return decodeSQLLangQuote(value, false);
     }
 
     /**
@@ -1081,7 +1081,7 @@ public class ConvertUtil {
      * @param metachar
      * @return デコードされた値
      */
-    public static String decodeSQLangQuote(String value, boolean metachar) {
+    public static String decodeSQLLangQuote(String value, boolean metachar) {
         String decode = value;
         if (metachar) {
             decode = decodeStandardLangMeta(decode);
