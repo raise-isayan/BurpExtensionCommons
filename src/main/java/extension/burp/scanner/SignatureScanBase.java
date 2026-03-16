@@ -9,6 +9,7 @@ import burp.api.montoya.core.Marker;
 import burp.api.montoya.core.Range;
 import burp.api.montoya.http.message.HttpRequestResponse;
 import burp.api.montoya.scanner.ScanCheck;
+import burp.api.montoya.scanner.scancheck.PassiveScanCheck;
 
 /**
  *
@@ -27,8 +28,16 @@ public class SignatureScanBase<M extends IssueItem> {
         return issueName;
     }
 
-    public ScanCheck passiveScanCheck() {
+    public ScanCheck scannerScanCheck() {
         return new ScannerCheckAdapter();
+    }
+
+    public PassiveScanCheck passiveScanCheck() {
+        return new PassiveScanCheckAdapter(this.issueName);
+    }
+
+    public ActiveScanCheckAdapter activeScanCheck() {
+        return new ActiveScanCheckAdapter(this.issueName);
     }
 
     public HttpRequestResponse applyMarkers(HttpRequestResponse baseRequestResponse, List<M> issueList) {
