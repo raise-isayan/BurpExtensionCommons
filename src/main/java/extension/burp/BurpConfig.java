@@ -437,7 +437,7 @@ public class BurpConfig {
                 case PROXY_IS_INTERCEPT: // supportApi burp 2024.7
                 {
 //                    api.proxy().isInterceptEnabled();
-                    supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null;
+                    supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null || BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame("Proxy")) != null;
                     break;
                 }
                 case BURPSUITE_BAMBDA: {

@@ -22,6 +22,7 @@ import burp.api.montoya.ui.contextmenu.ContextMenuEvent;
 import burp.api.montoya.ui.contextmenu.InvocationType;
 import burp.api.montoya.ui.contextmenu.MessageEditorHttpRequestResponse;
 import burp.api.montoya.ui.editor.EditorOptions;
+import static extension.burp.BurpExtensionImpl.api;
 import extension.helpers.ConvertUtil;
 import extension.helpers.StringUtil;
 import java.awt.Color;
@@ -33,9 +34,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 
 /**
@@ -63,12 +68,18 @@ public class BurpUtil {
             // 古いBurpには該当のメソッド存在しない
             suiteFrame = BurpExtensionImpl.api().userInterface().swingUtils().suiteFrame();
         } catch (java.lang.NoSuchMethodError | NullPointerException ex) {
-            Frame[] frames = Frame.getFrames();
-            for (Frame frame : frames) {
-                if (frame.isVisible() && frame.getTitle().startsWith("Burp Suite")) {
-                    suiteFrame = frame;
-                    break;
-                }
+            suiteFrame = suiteFrame("Burp Suite");
+        }
+        return suiteFrame;
+    }
+
+    public static Frame suiteFrame(String title) {
+        Frame suiteFrame = null;
+        Frame[] frames = Frame.getFrames();
+        for (Frame frame : frames) {
+            if (frame.isVisible() && frame.getTitle().startsWith(title)) {
+                suiteFrame = frame;
+                break;
             }
         }
         return suiteFrame;
@@ -102,19 +113,25 @@ public class BurpUtil {
         return null;
     }
 
+    public static JTabbedPane secondarySuiteTabbedPane(Container container) {
+        if (container != null) {
+            return findTabbedPane("secondarySuiteTabBar", container);
+        }
+        return null;
+    }
+
     protected static JTabbedPane findTabbedPane(String name, Container container) {
         if (container instanceof JTabbedPane jTabbedPane) {
             if (name.equals(jTabbedPane.getName())) {
                 return jTabbedPane;
             }
-        } else {
-            for (int i = 0; i < container.getComponentCount(); i++) {
-                Component c = container.getComponent(i);
-                if (c instanceof Container inner) {
-                    JTabbedPane tabbed = findTabbedPane(name, inner);
-                    if (tabbed != null) {
-                        return tabbed;
-                    }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JTabbedPane tabbed = findTabbedPane(name, inner);
+                if (tabbed != null) {
+                    return tabbed;
                 }
             }
         }
@@ -122,18 +139,17 @@ public class BurpUtil {
     }
 
     public static JButton findSuiteButton(String name, Container container) {
-        if (container instanceof JButton button) {
-            if (name.equals(button.getName())) {
-                return button;
+        if (container instanceof JButton jbutton) {
+            if (name.equals(jbutton.getName())) {
+                return jbutton;
             }
-        } else {
-            for (int i = 0; i < container.getComponentCount(); i++) {
-                Component c = container.getComponent(i);
-                if (c instanceof Container inner) {
-                    JButton button = findSuiteButton(name, inner);
-                    if (button != null) {
-                        return button;
-                    }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JButton button = findSuiteButton(name, inner);
+                if (button != null) {
+                    return button;
                 }
             }
         }
@@ -141,22 +157,74 @@ public class BurpUtil {
     }
 
     public static JToggleButton findSuiteIntercept(Container container) {
-        if (container instanceof JToggleButton button) {
-            if ("interceptToggleButton".equals(button.getName())) {
-                return button;
+        return findSuiteToggleButton("interceptToggleButton", container);
+    }
+
+    public static JToggleButton findSuiteToggleButton(String name, Container container) {
+        if (container instanceof JToggleButton jbutton) {
+            if (name.equals(jbutton.getName())) {
+                return jbutton;
             }
-        } else {
-            for (int i = 0; i < container.getComponentCount(); i++) {
-                Component c = container.getComponent(i);
-                if (c instanceof Container inner) {
-                    JToggleButton button = findSuiteIntercept(inner);
-                    if (button != null) {
-                        return button;
-                    }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JToggleButton button = findSuiteToggleButton(name, inner);
+                if (button != null) {
+                    return button;
                 }
             }
         }
         return null;
+    }
+
+    public static JTable findSuiteTable(String name, Container container) {
+        if (container instanceof JTable jtable) {
+            if (name.equals(jtable.getName())) {
+                return jtable;
+            }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JTable table = findSuiteTable(name, inner);
+                if (table != null) {
+                    return table;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void printComponents(Component comp, int indent) {
+        if (comp instanceof JMenuItem menu) {
+            api().logging().logToOutput("\t".repeat(indent) + "JMenuItem:" + menu.getName() + ":" + menu.getText());
+        } else if (comp instanceof JPopupMenu menu) {
+            api().logging().logToOutput("\t".repeat(indent) + "JPopupMenu: " + menu.getName() + ", Value: " + menu.getLabel());
+        } else if (comp instanceof JButton botton) {
+            api().logging().logToOutput("\t".repeat(indent) + "JButton: " + botton.getName() + ", Value: " + botton.getText());
+        } else if (comp instanceof JToggleButton botton) {
+            api().logging().logToOutput("\t".repeat(indent) + "JToggleButton: " + botton.getName() + ", Value: " + botton.getText());
+        } else if (comp instanceof AbstractButton botton) {
+            api().logging().logToOutput("\t".repeat(indent) + "AbstractButton: " + botton.getName() + ", Value: " + botton.getText());
+        } else if (comp instanceof JTable table) {
+            api().logging().logToOutput("\t".repeat(indent) + "JTable: " + table.getName());
+        } else if (comp instanceof JTabbedPane tab) {
+            String name = "";
+            for (int i = 0; i < tab.getTabCount(); i++) {
+                name += "[" + tab.getTitleAt(i) + "]";
+                Component c = tab.getTabComponentAt(i);
+                printComponents(c, indent + 1);
+            }
+            api().logging().logToOutput("\t".repeat(indent) + "Tabbet: " + tab.getName() + " -> " + name);
+        } else {
+            api().logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName());
+        }
+        if (comp instanceof Container) {
+            for (Component child : ((Container) comp).getComponents()) {
+                printComponents(child, indent + 1);
+            }
+        }
     }
 
     public static BurpVersion suiteVersion() {
