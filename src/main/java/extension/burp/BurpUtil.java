@@ -120,6 +120,30 @@ public class BurpUtil {
         return null;
     }
 
+    public static JTabbedPane secondarySuiteTabbedName(Container container, String tabName) {
+        return secondarySuiteTabbedName("secondarySuiteTabBar", container, tabName);
+    }
+
+    private static JTabbedPane secondarySuiteTabbedName(String name, Container container, String tabName) {
+        if (container instanceof JTabbedPane jTabbedPane) {
+            if (name.equals(jTabbedPane.getName())) {
+                if (0 <= jTabbedPane.indexOfTab(tabName)) {
+                    return jTabbedPane;
+                }
+            }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JTabbedPane tabbed = secondarySuiteTabbedName(name, inner, tabName);
+                if (tabbed != null) {
+                    return tabbed;
+                }
+            }
+        }
+        return null;
+    }
+
     protected static JTabbedPane findTabbedPane(String name, Container container) {
         if (container instanceof JTabbedPane jTabbedPane) {
             if (name.equals(jTabbedPane.getName())) {
@@ -213,10 +237,14 @@ public class BurpUtil {
             String name = "";
             for (int i = 0; i < tab.getTabCount(); i++) {
                 name += "[" + tab.getTitleAt(i) + "]";
+            }
+            api().logging().logToOutput("\t".repeat(indent) + "Tabbet: " + tab.getName() + " -> " + name);
+            for (int i = 0; i < tab.getTabCount(); i++) {
+                api().logging().logToOutput("\t".repeat(indent) + "Tab:[" + tab.getTitleAt(i) + "]");
                 Component c = tab.getTabComponentAt(i);
                 printComponents(c, indent + 1);
             }
-            api().logging().logToOutput("\t".repeat(indent) + "Tabbet: " + tab.getName() + " -> " + name);
+
         } else {
             api().logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName());
         }
