@@ -383,7 +383,7 @@ public class JWSToken implements JsonToken {
     }
 
     public byte[] getSignatureBytes() {
-        return this.signature.getsDecodeBase64Url();
+        return this.signature.getDecodeBase64UrlByte();
     }
 
     public boolean isSigned() {

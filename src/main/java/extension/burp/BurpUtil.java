@@ -202,6 +202,32 @@ public class BurpUtil {
         return null;
     }
 
+    /**
+        JMenuItem:mainSuiteMenu:Burp
+        JMenuItem:null:Project
+        JMenuItem:mainIntruderMenu:Intruder
+        JMenuItem:mainRepeaterMenu:Repeater
+        JMenuItem:mainViewMenu:View
+        JMenuItem:mainHelpMenu:Help     *
+     */
+    public static JMenuItem findSuiteMenuItem(String name, Container container) {
+        if (container instanceof JMenuItem menu) {
+            if (name.equals(menu.getName())) {
+                return menu;
+            }
+        }
+        for (int i = 0; i < container.getComponentCount(); i++) {
+            Component c = container.getComponent(i);
+            if (c instanceof Container inner) {
+                JMenuItem button = findSuiteMenuItem(name, inner);
+                if (button != null) {
+                    return button;
+                }
+            }
+        }
+        return null;
+    }
+
     public static JTable findSuiteTable(String name, Container container) {
         if (container instanceof JTable jtable) {
             if (name.equals(jtable.getName())) {

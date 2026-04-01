@@ -62,7 +62,7 @@ public class JWSTokenJoseTest {
             String[] token_HS256_parts = JWSUtil.splitSegment(except_token);
             JWSToken jws_token = new JWSToken(token_HS256_parts[0], token_HS256_parts[1], token_HS256_parts[2]);
             byte[] jws_sign = jws_token.sign(secretKey);
-            jws_token.getSignature().setEncodeBase64Url(jws_sign);
+            jws_token.getSignature().setEncodeBase64UrlByte(jws_sign);
             assertEquals(except_token, jws_token.getToken());
             boolean jws_verify = jws_token.verify(JWSToken.Algorithm.HS256, secretKey);
             assertTrue(jws_verify);
@@ -93,7 +93,7 @@ public class JWSTokenJoseTest {
             String[] token_RS256_parts = JWSUtil.splitSegment(except_token);
             JWSToken jws_token = new JWSToken(token_RS256_parts[0], token_RS256_parts[1], token_RS256_parts[2]);
             byte[] jws_sign = jws_token.sign(JWSToken.Algorithm.RS256, pemPrivateData);
-            jws_token.getSignature().setEncodeBase64Url(jws_sign);
+            jws_token.getSignature().setEncodeBase64UrlByte(jws_sign);
             assertEquals(except_token, jws_token.getToken());
             boolean jws_verify = jws_token.verify(JWSToken.Algorithm.RS256, pemPublicData);
             assertTrue(jws_verify);
@@ -121,7 +121,7 @@ public class JWSTokenJoseTest {
                 String[] token_PS256_parts = JWSUtil.splitSegment(except_token);
                 JWSToken jws_token = new JWSToken(token_PS256_parts[0], token_PS256_parts[1], token_PS256_parts[2]);
                 byte[] jws_sign = jws_token.sign(JWSToken.Algorithm.PS256, pemPrivateData);
-                jws_token.getSignature().setEncodeBase64Url(jws_sign);
+                jws_token.getSignature().setEncodeBase64UrlByte(jws_sign);
                 String result_token = jws_token.getToken();
 
                 JWSObject parsedJWS = JWSObject.parse(result_token);
@@ -165,7 +165,7 @@ public class JWSTokenJoseTest {
                 String[] token_ES256_parts = JWSUtil.splitSegment(except_token);
                 JWSToken jws_token = new JWSToken(token_ES256_parts[0], token_ES256_parts[1], token_ES256_parts[2]);
                 byte[] jws_sign = jws_token.sign(JWSToken.Algorithm.ES256, pemPrivateData);
-                jws_token.getSignature().setEncodeBase64Url(jws_sign);
+                jws_token.getSignature().setEncodeBase64UrlByte(jws_sign);
                 String result_token = jws_token.getToken();
 
                 JWSObject parsedJWT = JWSObject.parse(result_token);

@@ -1,11 +1,13 @@
 package extension.helpers.jws;
 
 import com.google.gson.JsonElement;
+import extension.helpers.BouncyUtil;
 import extension.helpers.ConvertUtil;
 import extension.helpers.StringUtil;
 import extension.helpers.json.JsonUtil;
 import extension.view.base.CaptureItem;
 import java.nio.ByteOrder;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +20,8 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -411,6 +415,30 @@ public class FlaskTokenTest {
                 assertEquals(expResult, result);
             }
         } catch (NoSuchAlgorithmException ex) {
+            fail(ex);
+        }
+    }
+
+
+
+    @Test
+    public void testFlaskHmac() {
+        try {
+            System.out.println("testFlaskHmac");
+            String except = "0KxUHImTzlIt9gMmU5pLpVJqy_M";
+            byte [] secret = StringUtil.getBytesRaw("qazwsx");
+            byte [] salt = StringUtil.getBytesRaw("cookie-session");
+            byte[] keys = BouncyUtil.hmacSHA1(secret, salt);
+            SecretKeySpec sk = new SecretKeySpec(keys, "HmacSHA1");
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(sk);
+            mac.update(StringUtil.getBytesRaw("eyJjb3VudGVyIjoxfQ.X8LPTw"));
+            String result = ConvertUtil.toBase64URLSafeEncode(mac.doFinal());
+            System.out.println("hmac:" + result);
+            assertEquals(except, result);
+        } catch (NoSuchAlgorithmException ex) {
+            fail(ex);
+        } catch (InvalidKeyException ex) {
             fail(ex);
         }
     }

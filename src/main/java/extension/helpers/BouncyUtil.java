@@ -3604,28 +3604,21 @@ public class BouncyUtil {
         }
     }
 
-    private final static SHA1Digest SHA1_DIGEST = new SHA1Digest();
-
+    /* HMac は Thread Safeではないため毎回インスタンス作成  */
     public static byte[] hmacSHA1(byte[] key, byte[] message) {
-        return hmac(SHA1_DIGEST, key, message);
+        return hmac(new SHA1Digest(), key, message);
     }
-
-    private final static SHA256Digest SHA256_DIGEST = new SHA256Digest();
 
     public static byte[] hmacSHA256(byte[] key, byte[] message) {
-        return hmac(SHA256_DIGEST, key, message);
+        return hmac(new SHA256Digest(), key, message);
     }
-
-    private final static SHA384Digest SHA384_DIGEST = new SHA384Digest();
 
     public static byte[] hmacSHA384(byte[] key, byte[] message) {
-        return hmac(SHA384_DIGEST, key, message);
+        return hmac(new SHA384Digest(), key, message);
     }
 
-    private final static SHA512Digest SHA512_DIGEST = new SHA512Digest();
-
     public static byte[] hmacSHA512(byte[] key, byte[] message) {
-        return hmac(SHA512_DIGEST, key, message);
+        return hmac(new SHA512Digest(), key, message);
     }
 
     // HMAC 署名

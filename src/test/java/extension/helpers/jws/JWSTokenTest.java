@@ -139,7 +139,7 @@ public class JWSTokenTest {
                 assertTrue(token_verify);
                 assertEquals(StringUtil.getStringUTF8(Base64.getUrlDecoder().decode(token_HS512_parts[0])), sign_token.getHeader().getsDecodeBase64Url());
                 assertEquals(StringUtil.getStringUTF8(Base64.getUrlDecoder().decode(token_HS512_parts[1])), sign_token.getPayload().getsDecodeBase64Url());
-                assertArrayEquals(Base64.getUrlDecoder().decode(token_HS512_parts[2]), sign_token.getSignature().getsDecodeBase64Url());
+                assertArrayEquals(Base64.getUrlDecoder().decode(token_HS512_parts[2]), sign_token.getSignature().getDecodeBase64UrlByte());
             }
         } catch (SignatureException ex) {
             fail(ex.getMessage(), ex);
@@ -358,7 +358,7 @@ public class JWSTokenTest {
             JWSToken.Payload payload = new JWSToken.Payload("");
             JWSToken sign_token = new JWSToken(header, payload);
             byte [] signature = sign_token.sign("");
-            sign_token.getSignature().setEncodeBase64Url(signature);;
+            sign_token.getSignature().setEncodeBase64UrlByte(signature);;
             fail();
         } catch (SignatureException ex) {
 //            System.out.println(ex.getMessage());
@@ -373,7 +373,7 @@ public class JWSTokenTest {
             JWSToken.Payload payload = new JWSToken.Payload("");
             JWSToken sign_token = new JWSToken(header, payload);
             byte [] signature = sign_token.sign("");
-            sign_token.getSignature().setEncodeBase64Url(signature);;
+            sign_token.getSignature().setEncodeBase64UrlByte(signature);;
             fail();
         } catch (SignatureException ex) {
 //            System.out.println(ex.getMessage());
@@ -780,7 +780,7 @@ public class JWSTokenTest {
                 byte[] sign = hs_token.sign(StringUtil.getStringRaw(publicKeyPem));
                 System.out.println("hsdata:" + hs_token.getData());
                 System.out.println("hssign:" + JsonToken.encodeBase64UrlSafe(sign));
-                hs_token.getSignature().setEncodeBase64Url(sign);
+                hs_token.getSignature().setEncodeBase64UrlByte(sign);
                 String result = hs_token.getToken();
                 assertEquals(rs_token.getPayloadPart(), hs_token.getPayloadPart());
                 System.out.println("result:" + result);

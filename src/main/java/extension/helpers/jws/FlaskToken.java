@@ -76,6 +76,26 @@ public class FlaskToken implements JsonToken {
             return this.compress;
         }
 
+        @Override
+        public String getsDecodeBase64Url() {
+            if (this.compress) {
+                return JsonToken.decompressZlibBase64(this.getPart());
+            }
+            else {
+                return JsonToken.decodeBase64UrlSafe(this.getPart());
+            }
+        }
+
+        @Override
+        public void setEncodeBase64Url(String value) {
+            if (this.compress) {
+                super.setEncodeBase64Url(StringUtil.getStringUTF8(ConvertUtil.compressZlib(StringUtil.getBytesUTF8(value))));
+           }
+            else {
+                super.setEncodeBase64Url(value);
+            }
+        }
+
         /**
          * @param pretty
          * @return the payload
@@ -316,7 +336,7 @@ public class FlaskToken implements JsonToken {
 
     @Override
     public boolean signatureEqual(final String secret) {
-        return signatureEqual(StringUtil.getBytesRaw(this.getData()), this.signature.getsDecodeBase64Url(), StringUtil.getBytesRaw(secret), StringUtil.getBytesRaw("cookie-session"));
+        return signatureEqual(StringUtil.getBytesRaw(this.getData()), this.signature.getDecodeBase64UrlByte(), StringUtil.getBytesRaw(secret), StringUtil.getBytesRaw("cookie-session"));
     }
 
     public static byte[] sign(String payload, String secret) throws NoSuchAlgorithmException {

@@ -73,6 +73,14 @@ public interface JsonToken {
             this.tokenPart = JsonToken.encodeBase64UrlSafe(value);
         }
 
+        public byte [] getsDecodeBase64UrlByte() {
+            return JsonToken.decodeBase64UrlSafeByte(this.tokenPart);
+        }
+
+        public void setEncodeBase64UrlByte(byte [] value) {
+            this.tokenPart = StringUtil.getStringUTF8(JsonToken.encodeBase64UrlSafeByte(value));
+        }
+
     }
 
     public static class Signature implements JsonSegment {
@@ -85,7 +93,7 @@ public interface JsonToken {
 
         public boolean isValid() {
             try {
-                getsDecodeBase64Url();
+                getDecodeBase64UrlByte();
                 return true;
             } catch (IllegalArgumentException ex) {
                 return false;
@@ -97,11 +105,11 @@ public interface JsonToken {
             return this.tokenPart;
         }
 
-        public byte[] getsDecodeBase64Url() {
+        public byte[] getDecodeBase64UrlByte() {
             return JsonToken.decodeBase64UrlSafeByte(this.tokenPart);
         }
 
-        public void setEncodeBase64Url(byte[] value) {
+        public void setEncodeBase64UrlByte(byte[] value) {
             this.tokenPart = JsonToken.encodeBase64UrlSafe(value);
         }
 
@@ -126,6 +134,11 @@ public interface JsonToken {
     public static String decompressZlibBase64(String content) {
         byte[] decode = decodeBase64UrlSafeByte(content);
         return StringUtil.getStringUTF8(ConvertUtil.decompressZlib(decode));
+    }
+
+    public static String compressZlibBase64(String content) {
+        byte[] compress = ConvertUtil.compressZlib(StringUtil.getBytesUTF8(content));
+        return encodeBase64UrlSafe(compress);
     }
 
     public static byte[] decodeBase64UrlSafeByte(String value) {
