@@ -1105,7 +1105,7 @@ public class BouncyUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHAKE256um(byte[] binary, boolean upperCase) {
+    public static String toSHAKE256Sum(byte[] binary, boolean upperCase) {
         try {
             return toMessageDigest("SHAKE256", binary, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -1121,7 +1121,7 @@ public class BouncyUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
-    public static String toSHAKE256um(String str, boolean upperCase) {
+    public static String toSHAKE256Sum(String str, boolean upperCase) {
         try {
             return toMessageDigest("SHAKE256", str, StandardCharsets.ISO_8859_1, upperCase);
         } catch (NoSuchAlgorithmException ex) {
@@ -1139,9 +1139,9 @@ public class BouncyUtil {
      * @return ハッシュ値
      * @throws UnsupportedEncodingException
      */
-    public static String toSHAKE256um(String str, String charset, boolean upperCase)
+    public static String toSHAKE256Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return toSHAKE256um(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toSHAKE256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3165,7 +3165,7 @@ public class BouncyUtil {
      */
     public static String toPARALLELHASH256_512Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toPARALLELHASH256_512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toPARALLELHASH256_512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3211,7 +3211,7 @@ public class BouncyUtil {
      */
     public static String toTUPLEHASH128_256Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toTUPLEHASH128_256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toTUPLEHASH128_256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3257,7 +3257,7 @@ public class BouncyUtil {
      */
     public static String toTUPLEHASH256_512Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toTUPLEHASH256_512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toTUPLEHASH256_512Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3293,7 +3293,7 @@ public class BouncyUtil {
      */
     public static String toAsconHash(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toAsconHash(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toAsconHash(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3329,7 +3329,7 @@ public class BouncyUtil {
      */
     public static String toAsconHashA(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toAsconHashA(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toAsconHashA(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3365,7 +3365,7 @@ public class BouncyUtil {
      */
     public static String toAsconXof(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toAsconXof(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toAsconXof(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /////
@@ -3405,7 +3405,7 @@ public class BouncyUtil {
      */
     public static String toAsconXofA(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toAsconXofA(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toAsconXofA(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3441,7 +3441,7 @@ public class BouncyUtil {
      */
     public static String toISAPSum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toISAPSum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toISAPSum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3477,7 +3477,7 @@ public class BouncyUtil {
      */
     public static String toESCH256Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toESCH256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toESCH256Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3513,7 +3513,7 @@ public class BouncyUtil {
      */
     public static String toESCH384Sum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toESCH384Sum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toESCH384Sum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3549,7 +3549,7 @@ public class BouncyUtil {
      */
     public static String toPhotonBeetleSum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toPhotonBeetleSum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toPhotonBeetleSum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     /**
@@ -3585,7 +3585,7 @@ public class BouncyUtil {
      */
     public static String toXoodyakSum(String str, String charset, boolean upperCase)
             throws UnsupportedEncodingException {
-        return BouncyUtil.toXoodyakSum(StringUtil.getBytesCharset(str, charset), upperCase);
+        return toXoodyakSum(StringUtil.getBytesCharset(str, charset), upperCase);
     }
 
     public static String X509_NAME_hash_old(String subject) {

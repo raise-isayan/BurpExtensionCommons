@@ -12,6 +12,8 @@ import java.util.List;
  *
  * @author raise.isayan
  */
+
+@Deprecated
 public class ScannerCheckAdapter implements ScanCheck {
 
     @Override

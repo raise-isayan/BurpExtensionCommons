@@ -874,11 +874,11 @@ public class BoncyUtilTest {
         }
         {
             try {
-                String hash = BouncyUtil.toSHAKE256um("hello world", true);
+                String hash = BouncyUtil.toSHAKE256Sum("hello world", true);
                 assertEquals("369771BB2CB9D2B04C1D54CCA487E372D9F187F73F7BA3F65B95C8EE7798C527F4F3C2D55C2D46A29F2E945D469C3DF27853A8735271F5CC2D9E889544357116", hash);
-                String hash2 = BouncyUtil.toSHAKE256um(StringUtil.getBytesRaw("hello world"), true);
+                String hash2 = BouncyUtil.toSHAKE256Sum(StringUtil.getBytesRaw("hello world"), true);
                 assertEquals("369771BB2CB9D2B04C1D54CCA487E372D9F187F73F7BA3F65B95C8EE7798C527F4F3C2D55C2D46A29F2E945D469C3DF27853A8735271F5CC2D9E889544357116", hash2);
-                String hash3 = BouncyUtil.toSHAKE256um("hello world", StandardCharsets.ISO_8859_1.name(), true);
+                String hash3 = BouncyUtil.toSHAKE256Sum("hello world", StandardCharsets.ISO_8859_1.name(), true);
                 assertEquals("369771BB2CB9D2B04C1D54CCA487E372D9F187F73F7BA3F65B95C8EE7798C527F4F3C2D55C2D46A29F2E945D469C3DF27853A8735271F5CC2D9E889544357116", hash3);
             } catch (UnsupportedEncodingException ex) {
                 fail(ex.getMessage(), ex);
