@@ -266,7 +266,7 @@ public class SmartCodec {
             Matcher m = pattern.matcher(Character.toString(c));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("%%U%04X", (int) c));
+                    buff.append(String.format("%%u%04X", (int) c));
                 } else {
                     buff.append(String.format("%%u%04x", (int) c));
                 }
@@ -312,9 +312,32 @@ public class SmartCodec {
             Matcher m = pattern.matcher(Character​.toString(c));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("\\U%04X", (int) c));
+                    buff.append(String.format("\\u%04X", (int) c));
                 } else {
                     buff.append(String.format("\\u%04x", (int) c));
+                }
+            } else {
+                buff.appendCodePoint(c);
+            }
+        }
+        return buff.toString();
+    }
+
+    public static String toUnicodePointEncode(String input, boolean upperCase) {
+        return toUnicodePointEncode(input, ENCODE_PATTERN_ALPHANUM, upperCase);
+    }
+
+    public static String toUnicodePointEncode(String input, Pattern pattern, boolean upperCase) {
+        StringBuilder buff = new StringBuilder();
+        int length = input.length();
+        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
+            int c = input.codePointAt(i);
+            Matcher m = pattern.matcher(Character​.toString(c));
+            if (m.matches()) {
+                if (upperCase) {
+                    buff.append(String.format("\\u{%04X}", (int) c));
+                } else {
+                    buff.append(String.format("\\u{%04x}", (int) c));
                 }
             } else {
                 buff.appendCodePoint(c);
@@ -327,8 +350,9 @@ public class SmartCodec {
      * Decode
      */
     private final static Pattern PTN_HTML_UNICODE = Pattern.compile("(&(?:(#\\d)|(#[xX][0-9a-fA-F]+));)+");
-    private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[uU]([0-9a-fA-F]{4})");
-    private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[uU]([0-9a-fA-F]{4})");
+    private final static Pattern PTN_URL_UNICODE = Pattern.compile("%[u]([0-9a-fA-F]{4})");
+    private final static Pattern PTN_UNICODE = Pattern.compile("\\\\[u]([0-9a-fA-F]{4})");
+    private final static Pattern PTN_UNICODE_POINT = Pattern.compile("\\\\[u]\\{([0-9a-fA-F]{4,6})\\}");
 
     private static String toHtmlEntiyDecode(String input, Pattern pattern) {
         StringBuilder buff = new StringBuilder();
@@ -491,38 +515,7 @@ public class SmartCodec {
         return value;
     }
 
-    private final static Pattern PTN_UNICODE_STR_SURROGATE = Pattern.compile("(\\\\[uU][dD][89abAB][0-9a-fA-F]{2}\\\\[uU][dD][c-fC-F][0-9a-fA-F]{2})|(\\\\[uU][0-9a-fA-F]{4})");
-
-    public static String toUnicodeDecode(String input) {
-        return toUnicodeDecode(input, ENCODE_PATTERN_ALL);
-    }
-
-    public static String toUnicodeDecode(String input, Pattern pattern) {
-        StringBuffer buff = new StringBuffer();
-        // 上位サロゲート(\uD800-\uDBFF)
-        // 下位サロゲート(\uDC00-\uDFFF)
-        Matcher m = PTN_UNICODE_STR_SURROGATE.matcher(input);
-        while (m.find()) {
-            String unicode = m.group(1);
-            if (unicode != null) {
-                int chHigh = Integer.parseInt(unicode.substring(2, 6), 16);
-                int chLow = Integer.parseInt(unicode.substring(8, 12), 16);
-                m.appendReplacement(buff, Matcher.quoteReplacement(String.valueOf(new char[]{(char) chHigh, (char) chLow})));
-            } else {
-                unicode = m.group(2);
-                int ch = Integer.parseInt(unicode.substring(2), 16);
-                String cpStr = Character.toString(ch);
-                Matcher m2 = pattern.matcher(cpStr);
-                if (m2.matches()) {
-                    m.appendReplacement(buff, Matcher.quoteReplacement(cpStr));
-                }
-            }
-        }
-        m.appendTail(buff);
-        return buff.toString();
-    }
-
-    private final static Pattern PTN_UNICODE_URL_SURROGATE = Pattern.compile("(%[uU][dD][89abAB][0-9a-fA-F]{2}%[uU][dD][c-fC-F][0-9a-fA-F]{2})|(%[uU][0-9a-fA-F]{4})");
+    private final static Pattern PTN_UNICODE_URL_SURROGATE = Pattern.compile("(%[u][dD][89abAB][0-9a-fA-F]{2}%[uU][dD][c-fC-F][0-9a-fA-F]{2})|(%[uU][0-9a-fA-F]{4})");
 
     public static String toUnicodeUrlDecode(String input) {
         return toUnicodeUrlDecode(input, ENCODE_PATTERN_ALL);
@@ -553,8 +546,57 @@ public class SmartCodec {
         return buff.toString();
     }
 
+    private final static Pattern PTN_UNICODE_STR_SURROGATE = Pattern.compile("(\\\\[u][dD][89abAB][0-9a-fA-F]{2}\\\\[uU][dD][c-fC-F][0-9a-fA-F]{2})|(\\\\[uU][0-9a-fA-F]{4})");
+
+    public static String toUnicodeDecode(String input) {
+        return toUnicodeDecode(input, ENCODE_PATTERN_ALL);
+    }
+
+    public static String toUnicodeDecode(String input, Pattern pattern) {
+        StringBuffer buff = new StringBuffer();
+        // 上位サロゲート(\uD800-\uDBFF)
+        // 下位サロゲート(\uDC00-\uDFFF)
+        Matcher m = PTN_UNICODE_STR_SURROGATE.matcher(input);
+        while (m.find()) {
+            String unicode = m.group(1);
+            if (unicode != null) {
+                int chHigh = Integer.parseInt(unicode.substring(2, 6), 16);
+                int chLow = Integer.parseInt(unicode.substring(8, 12), 16);
+                m.appendReplacement(buff, Matcher.quoteReplacement(String.valueOf(new char[]{(char) chHigh, (char) chLow})));
+            } else {
+                unicode = m.group(2);
+                int ch = Integer.parseInt(unicode.substring(2), 16);
+                String cpStr = Character.toString(ch);
+                Matcher m2 = pattern.matcher(cpStr);
+                if (m2.matches()) {
+                    m.appendReplacement(buff, Matcher.quoteReplacement(cpStr));
+                }
+            }
+        }
+        m.appendTail(buff);
+        return buff.toString();
+    }
+
+
+    public static String toUnicodePointDecode(String input) {
+        return toUnicodePointDecode(input, ENCODE_PATTERN_ALL);
+    }
+
+    public static String toUnicodePointDecode(String input, Pattern pattern) {
+        StringBuffer buff = new StringBuffer();
+        Matcher m = PTN_UNICODE_POINT.matcher(input);
+        while (m.find()) {
+            String unicode = m.group(1);
+            if (unicode != null) {
+                m.appendReplacement(buff, Matcher.quoteReplacement(Character.toString(Integer.parseInt(unicode, 16))));
+            }
+        }
+        m.appendTail(buff);
+        return buff.toString();
+    }
+
     public static String toUnocodeDecode(String input) {
-        return toUnocodeDecode(input, "\\\\[uU]");
+        return toUnocodeDecode(input, "\\\\[u]");
     }
 
     public static String toUnocodeDecode(String input, String prefix) {

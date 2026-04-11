@@ -157,18 +157,18 @@ public class SmartCodecTest {
         System.out.println("toUnocodeEncode");
         assertEquals("abcdef\\u000d\\u000a\\u0021\\u0022ghi\\u0023\\u0024\\u0025jkf", SmartCodec.toUnicodeEncode("abcdef\r\n!\"ghi#$%jkf", false));
         assertEquals("\\u0061\\u0062\\u0063\\u0064\\u0065\\u0066\\u000d\\u000a\\u0021\\u0022\\u0067\\u0068\\u0069\\u0023\\u0024\\u0025\\u006a\\u006b\\u0066", SmartCodec.toUnicodeEncode("abcdef\r\n!\"ghi#$%jkf", SmartCodec.ENCODE_PATTERN_ALL, false));
-        assertEquals("\\U0061\\U0062\\U0063\\U0064\\U0065\\U0066\\U000D\\U000A\\U0021\\U0022\\U0067\\U0068\\U0069\\U0023\\U0024\\U0025\\U006A\\U006B\\U0066", SmartCodec.toUnicodeEncode("abcdef\r\n!\"ghi#$%jkf", SmartCodec.ENCODE_PATTERN_ALL, true));
+        assertEquals("\\u0061\\u0062\\u0063\\u0064\\u0065\\u0066\\u000D\\u000A\\u0021\\u0022\\u0067\\u0068\\u0069\\u0023\\u0024\\u0025\\u006A\\u006B\\u0066", SmartCodec.toUnicodeEncode("abcdef\r\n!\"ghi#$%jkf", SmartCodec.ENCODE_PATTERN_ALL, true));
 
         assertEquals("\\u3042\\u3044\\u3046\\u3048\\u304a", SmartCodec.toUnicodeEncode("あいうえお", false));
-        assertEquals("\\U3042\\U3044\\U3046\\U3048\\U304A", SmartCodec.toUnicodeEncode("あいうえお", true));
+        assertEquals("\\u3042\\u3044\\u3046\\u3048\\u304A", SmartCodec.toUnicodeEncode("あいうえお", true));
 
         int ch[] = new int[]{(int) 'j', (int) 'k', (int) 'f', 0x2000B, 0x2123D, (int) 'g', (int) 'h', (int) 'i', 0x2131B, 0x2146E, 0x218BD, 0x20B9F, 0x216B4, 0x21E34, 0x231C4, 0x235C4, (int) 'a', (int) 'b', (int) 'z', (int) '0', (int) '1', (int) '9'};
         String x = new String(ch, 0, ch.length);
         assertEquals("jkf\\ud840\\udc0b\\ud844\\ude3dghi\\ud844\\udf1b\\ud845\\udc6e\\ud846\\udcbd\\ud842\\udf9f\\ud845\\udeb4\\ud847\\ude34\\ud84c\\uddc4\\ud84d\\uddc4abz019", SmartCodec.toUnicodeEncode(x, false));
-        assertEquals("jkf\\UD840\\UDC0B\\UD844\\UDE3Dghi\\UD844\\UDF1B\\UD845\\UDC6E\\UD846\\UDCBD\\UD842\\UDF9F\\UD845\\UDEB4\\UD847\\UDE34\\UD84C\\UDDC4\\UD84D\\UDDC4abz019", SmartCodec.toUnicodeEncode(x, true));
+        assertEquals("jkf\\uD840\\uDC0B\\uD844\\uDE3Dghi\\uD844\\uDF1B\\uD845\\uDC6E\\uD846\\uDCBD\\uD842\\uDF9F\\uD845\\uDEB4\\uD847\\uDE34\\uD84C\\uDDC4\\uD84D\\uDDC4abz019", SmartCodec.toUnicodeEncode(x, true));
 
         assertEquals("\\u006a\\u006b\\u0066\\ud840\\udc0b\\ud844\\ude3d\\u0067\\u0068\\u0069\\ud844\\udf1b\\ud845\\udc6e\\ud846\\udcbd\\ud842\\udf9f\\ud845\\udeb4\\ud847\\ude34\\ud84c\\uddc4\\ud84d\\uddc4\\u0061\\u0062\\u007a\\u0030\\u0031\\u0039", SmartCodec.toUnicodeEncode(x, SmartCodec.ENCODE_PATTERN_ALL, false));
-        assertEquals("\\U006A\\U006B\\U0066\\UD840\\UDC0B\\UD844\\UDE3D\\U0067\\U0068\\U0069\\UD844\\UDF1B\\UD845\\UDC6E\\UD846\\UDCBD\\UD842\\UDF9F\\UD845\\UDEB4\\UD847\\UDE34\\UD84C\\UDDC4\\UD84D\\UDDC4\\U0061\\U0062\\U007A\\U0030\\U0031\\U0039", SmartCodec.toUnicodeEncode(x, SmartCodec.ENCODE_PATTERN_ALL, true));
+        assertEquals("\\u006A\\u006B\\u0066\\uD840\\uDC0B\\uD844\\uDE3D\\u0067\\u0068\\u0069\\uD844\\uDF1B\\uD845\\uDC6E\\uD846\\uDCBD\\uD842\\uDF9F\\uD845\\uDEB4\\uD847\\uDE34\\uD84C\\uDDC4\\uD84D\\uDDC4\\u0061\\u0062\\u007A\\u0030\\u0031\\u0039", SmartCodec.toUnicodeEncode(x, SmartCodec.ENCODE_PATTERN_ALL, true));
 
         //
         String surrogatePairDecode = "𠀋𣜿𦹀𠈓𠠇";
@@ -201,22 +201,29 @@ public class SmartCodecTest {
     public void testToUnocodeDecode() {
         System.out.println("toUnocodeDecode");
         assertEquals("abcdef!\"#$%", SmartCodec.toUnocodeDecode("abcdef\\u0021\\u0022\\u0023\\u0024\\u0025"));
-        assertEquals("abcdef!\"#$%", SmartCodec.toUnocodeDecode("abcdef\\U0021\\U0022\\U0023\\U0024\\U0025"));
+        assertEquals("abcdef!\"#$%", SmartCodec.toUnocodeDecode("abcdef\\u0021\\u0022\\u0023\\u0024\\u0025"));
 
         assertEquals("あいうえお", SmartCodec.toUnocodeDecode("\\u3042\\u3044\\u3046\\u3048\\u304a"));
-        assertEquals("あいうえお", SmartCodec.toUnocodeDecode("\\U3042\\U3044\\U3046\\U3048\\U304A"));
+        assertEquals("あいうえお", SmartCodec.toUnocodeDecode("\\u3042\\u3044\\u3046\\u3048\\u304A"));
 
         int ch[] = new int[]{(int) 'j', (int) 'k', (int) 'f', 0x2000B, 0x2123D, (int) 'g', (int) 'h', (int) 'i', 0x2131B, 0x2146E, 0x218BD, 0x20B9F, 0x216B4, 0x21E34, 0x231C4, 0x235C4, (int) 'a', (int) 'b', (int) 'z', (int) '0', (int) '1', (int) '9'};
         String x = new String(ch, 0, ch.length);
         assertEquals(x, SmartCodec.toUnocodeDecode("jkf\\ud840\\udc0b\\ud844\\ude3dghi\\ud844\\udf1b\\ud845\\udc6e\\ud846\\udcbd\\ud842\\udf9f\\ud845\\udeb4\\ud847\\ude34\\ud84c\\uddc4\\ud84d\\uddc4abz019"));
-        assertEquals(x, SmartCodec.toUnocodeDecode("jkf\\UD840\\UDC0B\\UD844\\UDE3Dghi\\UD844\\UDF1B\\UD845\\UDC6E\\UD846\\UDCBD\\UD842\\UDF9F\\UD845\\UDEB4\\UD847\\UDE34\\UD84C\\UDDC4\\UD84D\\UDDC4abz019"));
-
-        //
-        String surrogatePairDecode = "𠀋𣜿𦹀𠈓𠠇";
-        String surrogatePairEncode = "\\ud840\\udc0b\\ud84d\\udf3f\\ud85b\\ude40\\ud840\\ude13\\ud842\\udc07"; // U+2000B
-        assertEquals(surrogatePairDecode, SmartCodec.toUnocodeDecode(surrogatePairEncode));
+        assertEquals(x, SmartCodec.toUnocodeDecode("jkf\\uD840\\uDC0B\\uD844\\uDE3Dghi\\uD844\\uDF1B\\uD845\\uDC6E\\uD846\\uDCBD\\uD842\\uDF9F\\uD845\\uDEB4\\uD847\\uDE34\\uD84C\\uDDC4\\uD84D\\uDDC4abz019"));
 
     }
+    /**
+     * Test of toUnocodePointEncode method, of class TransUtil.
+     */
+    @Test
+    public void testToUnocodePointEncode() {
+        System.out.println("testToUnocodePointEncode");
+        String surrogatePairDecode = "𠀋𣜿𦹀𠈓𠠇";
+        String surrogatePairEncode = "\\u{2000b}\\u{2373f}\\u{26e40}\\u{20213}\\u{20807}";
+        System.out.println("testToUnocodePointEncode:" + SmartCodec.toUnicodePointEncode(surrogatePairDecode, false));
+        assertEquals(surrogatePairEncode, SmartCodec.toUnicodePointEncode(surrogatePairDecode, false));
+    }
+
 
     /**
      * Test of toUnocodeDecode2 method, of class TransUtil.
@@ -239,11 +246,11 @@ public class SmartCodecTest {
         System.out.println("toUnocodeUrlEncode");
         assertEquals("abcdef%u000d%u000a%u0021%u0022%u0023%u0024%u0025", SmartCodec.toUnicodeUrlEncode("abcdef\r\n!\"#$%", false));
         assertEquals("%u3042%u3044%u3046%u3048%u304a", SmartCodec.toUnicodeUrlEncode("あいうえお", false));
-        assertEquals("%U3042%U3044%U3046%U3048%U304A", SmartCodec.toUnicodeUrlEncode("あいうえお", true));
+        assertEquals("%u3042%u3044%u3046%u3048%u304A", SmartCodec.toUnicodeUrlEncode("あいうえお", true));
         int ch[] = new int[]{(int) 'j', (int) 'k', (int) 'f', 0x2000B, 0x2123D, (int) 'g', (int) 'h', (int) 'i', 0x2131B, 0x2146E, 0x218BD, 0x20B9F, 0x216B4, 0x21E34, 0x231C4, 0x235C4, (int) 'a', (int) 'b', (int) 'z', (int) '0', (int) '1', (int) '9'};
         String x = new String(ch, 0, ch.length);
         assertEquals("jkf%ud840%udc0b%ud844%ude3dghi%ud844%udf1b%ud845%udc6e%ud846%udcbd%ud842%udf9f%ud845%udeb4%ud847%ude34%ud84c%uddc4%ud84d%uddc4abz019", SmartCodec.toUnicodeUrlEncode(x, false));
-        assertEquals("jkf%UD840%UDC0B%UD844%UDE3Dghi%UD844%UDF1B%UD845%UDC6E%UD846%UDCBD%UD842%UDF9F%UD845%UDEB4%UD847%UDE34%UD84C%UDDC4%UD84D%UDDC4abz019", SmartCodec.toUnicodeUrlEncode(x, true));
+        assertEquals("jkf%uD840%uDC0B%uD844%uDE3Dghi%uD844%uDF1B%uD845%uDC6E%uD846%uDCBD%uD842%uDF9F%uD845%uDEB4%uD847%uDE34%uD84C%uDDC4%uD84D%uDDC4abz019", SmartCodec.toUnicodeUrlEncode(x, true));
 //        assertEquals("%u006a%u006b%u0066%ud840%udc0b%ud844%ude3d%u0067%u0068%u0069%ud844%udf1b%ud845%udc6e%ud846%udcbd%ud842%udf9f%ud845%udeb4%ud847%ude34%ud84c%uddc4%ud84d%uddc4%u0061%u0062%u007a%u0030%u0031%u0039", TransUtil.toUnocodeUrlEncode(x, false));
     }
 
@@ -311,6 +318,19 @@ public class SmartCodecTest {
             String surrogatePair = "abc\\ud840\\udc0b\\ud84d\\udf3f\\ud85b\\ude40\\ud840\\ude13\\ud842\\udc07xyz";
             String decode = SmartCodec.toUnicodeDecode(surrogatePair);
             assertEquals(decode, "abc𠀋𣜿𦹀𠈓𠠇xyz");
+        }
+    }
+
+    /**
+     * Test of toUnocodePointEncode method, of class TransUtil.
+     */
+    @Test
+    public void testToUnocodePointDecode() {
+        System.out.println("testToUnocodePointDecode");
+        {
+            String surrogatePairEncode = "\\u{2000b}\\u{2373f}\\u{26e40}\\u{20213}\\u{20807}";
+            String surrogatePairDecode = "𠀋𣜿𦹀𠈓𠠇";
+            assertEquals(surrogatePairDecode, SmartCodec.toUnicodePointDecode(surrogatePairEncode));
         }
     }
 
