@@ -258,11 +258,11 @@ public class BurpHotKey {
         return buf.toString();
     }
 
-    public boolean isValid(KeyStroke ks) {
+    public static boolean isValid(KeyStroke ks) {
         return (ks.getKeyCode() != KeyEvent.CHAR_UNDEFINED);
     }
 
-    public boolean isValid(String ksText) {
+    public static boolean isValid(String ksText) {
         KeyStroke ks = BurpHotKey.parseKeyText(ksText);
         return (ks.getKeyCode() != KeyEvent.CHAR_UNDEFINED);
     }

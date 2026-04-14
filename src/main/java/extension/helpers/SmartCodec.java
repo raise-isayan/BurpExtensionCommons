@@ -262,16 +262,16 @@ public class SmartCodec {
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
 //            int c = input.codePointAt(i);
         for (int i = 0; i < length; i++) {
-            char c = input.charAt(i);
-            Matcher m = pattern.matcher(Character.toString(c));
+            char ch = input.charAt(i);
+            Matcher m = pattern.matcher(Character.toString(ch));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("%%u%04X", (int) c));
+                    buff.append(String.format("%%u%04X", (int) ch));
                 } else {
-                    buff.append(String.format("%%u%04x", (int) c));
+                    buff.append(String.format("%%u%04x", (int) ch));
                 }
             } else {
-                buff.appendCodePoint((int) c);
+                buff.appendCodePoint((int) ch);
             }
         }
         return buff.toString();
@@ -283,16 +283,16 @@ public class SmartCodec {
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
 //            int c = input.codePointAt(i);
         for (int i = 0; i < length; i++) {
-            char c = input.charAt(i);
-            Matcher m = pattern.matcher(Character​.toString(c));
+            char ch = input.charAt(i);
+            Matcher m = pattern.matcher(Character​.toString(ch));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("%s%04X", prefix, (int) c));
+                    buff.append(String.format("%s%04X", prefix, (int) ch));
                 } else {
-                    buff.append(String.format("%s%04x", prefix, (int) c));
+                    buff.append(String.format("%s%04x", prefix, (int) ch));
                 }
             } else {
-                buff.appendCodePoint(c);
+                buff.appendCodePoint(ch);
             }
         }
         return buff.toString();
@@ -308,16 +308,16 @@ public class SmartCodec {
 //        for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
 //            int c = input.codePointAt(i);
         for (int i = 0; i < length; i++) {
-            char c = input.charAt(i);
-            Matcher m = pattern.matcher(Character​.toString(c));
+            char ch = input.charAt(i);
+            Matcher m = pattern.matcher(Character​.toString(ch));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("\\u%04X", (int) c));
+                    buff.append(String.format("\\u%04X", (int) ch));
                 } else {
-                    buff.append(String.format("\\u%04x", (int) c));
+                    buff.append(String.format("\\u%04x", (int) ch));
                 }
             } else {
-                buff.appendCodePoint(c);
+                buff.appendCodePoint(ch);
             }
         }
         return buff.toString();
@@ -331,16 +331,16 @@ public class SmartCodec {
         StringBuilder buff = new StringBuilder();
         int length = input.length();
         for (int i = 0; i < length; i = input.offsetByCodePoints(i, 1)) {
-            int c = input.codePointAt(i);
-            Matcher m = pattern.matcher(Character​.toString(c));
+            int codePoint = input.codePointAt(i);
+            Matcher m = pattern.matcher(Character​.toString(codePoint));
             if (m.matches()) {
                 if (upperCase) {
-                    buff.append(String.format("\\u{%04X}", (int) c));
+                    buff.append(String.format("\\u{%04X}", (int) codePoint));
                 } else {
-                    buff.append(String.format("\\u{%04x}", (int) c));
+                    buff.append(String.format("\\u{%04x}", (int) codePoint));
                 }
             } else {
-                buff.appendCodePoint(c);
+                buff.appendCodePoint(codePoint);
             }
         }
         return buff.toString();
