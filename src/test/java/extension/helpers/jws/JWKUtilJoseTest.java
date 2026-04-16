@@ -84,7 +84,7 @@ public class JWKUtilJoseTest {
         try {
             System.out.println("testToJWK");
             {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 kpg.initialize(2048);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
@@ -96,7 +96,7 @@ public class JWKUtilJoseTest {
                 assertTrue(rsaKeyPair.getPrivate() instanceof RSAPrivateKey);
             }
             {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
                 kpg.initialize(256);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
@@ -108,7 +108,7 @@ public class JWKUtilJoseTest {
                 assertTrue(ecKeyPair.getPrivate() instanceof ECPrivateKey);
             }
             {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
                 kpg.initialize(384);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
@@ -120,7 +120,7 @@ public class JWKUtilJoseTest {
                 assertTrue(ecKeyPair.getPrivate() instanceof ECPrivateKey);
             }
             {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
                 kpg.initialize(521);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
@@ -132,7 +132,7 @@ public class JWKUtilJoseTest {
                 assertTrue(ecKeyPair.getPrivate() instanceof ECPrivateKey);
             }
             if (OctetKeyPairGenerator.SUPPORTED_CURVES.contains(Curve.Ed25519)) {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("Ed25519","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider.PROVIDER_NAME);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
                 JWK jwk = JWK.parse(jsonJWK);
@@ -141,7 +141,7 @@ public class JWKUtilJoseTest {
                 assertEquals(edKeyPair.getCurve(),Curve.Ed25519);
             }
             if (OctetKeyPairGenerator.SUPPORTED_CURVES.contains(Curve.Ed448)) {
-                KeyPairGenerator kpg = KeyPairGenerator.getInstance("Ed448","BC");
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("Ed448", BouncyCastleProvider.PROVIDER_NAME);
                 KeyPair genKeyPair = kpg.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
                 JWK jwk = JWK.parse(jsonJWK);

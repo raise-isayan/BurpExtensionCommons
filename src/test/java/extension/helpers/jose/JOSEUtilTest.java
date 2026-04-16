@@ -23,12 +23,15 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.text.ParseException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -48,11 +51,16 @@ public class JOSEUtilTest {
 
     private final static Logger logger = Logger.getLogger(JOSEUtilTest.class.getName());
 
+    private final static BouncyCastleProvider BC_PROVIDER = new BouncyCastleProvider();
+
     public JOSEUtilTest() {
     }
 
     @BeforeAll
     public static void setUpClass() {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(BC_PROVIDER);
+        }
     }
 
     @AfterAll
@@ -287,7 +295,7 @@ public class JOSEUtilTest {
     public void testRS256Alg() {
         System.out.println("testRS256Alg");
         try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
             keyGen.initialize(512);
             KeyPair keyPair = keyGen.generateKeyPair();
             RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
@@ -327,6 +335,8 @@ public class JOSEUtilTest {
             fail(ex.getMessage(), ex);
         } catch (ParseException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -335,7 +345,7 @@ public class JOSEUtilTest {
         System.out.println("testES256Alg");
         try {
             // 🔐 EC 鍵ペアを生成（P-256）
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
             keyGen.initialize(new ECGenParameterSpec("secp256r1"));
             KeyPair keyPair = keyGen.generateKeyPair();
             ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate();
@@ -370,6 +380,8 @@ public class JOSEUtilTest {
         } catch (JOSEException ex) {
             fail(ex.getMessage(), ex);
         } catch (ParseException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
             fail(ex.getMessage(), ex);
         }
     }

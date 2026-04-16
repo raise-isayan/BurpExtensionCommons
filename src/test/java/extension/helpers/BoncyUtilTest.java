@@ -18,6 +18,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -139,7 +140,7 @@ public class BoncyUtilTest {
         System.out.println("testSelfCA");
         try {
             Security.addProvider(new BouncyCastleProvider());
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
             keyGen.initialize(2048);
             KeyPair genKeyPair = keyGen.generateKeyPair();
             org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=hoge, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
@@ -154,6 +155,8 @@ public class BoncyUtilTest {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         } catch (IOException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -165,7 +168,7 @@ public class BoncyUtilTest {
             KeyPair burpKeyPair = BurpPreferences.loadCAKeyPair();
             X509Certificate burpCert = (X509Certificate) burpKeyStore.getCertificate(CertUtil.getFirstAlias(burpKeyStore));
 
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
             keyGen.initialize(2048);
             KeyPair genKeyPair = keyGen.generateKeyPair();
             org.bouncycastle.asn1.x500.X500Name subjectDN = new org.bouncycastle.asn1.x500.X500Name("cn=www.example.com, ou=fuga, o=\"Foo Co., Ltd.\", c=JP");
@@ -179,6 +182,8 @@ public class BoncyUtilTest {
             System.out.println("testCSRtoSign => p12 Path:" + p12.getAbsolutePath());
             CertUtil.storeToPKCS12(p12, "burp", "test", genKeyPair.getPrivate(), cert);
         } catch (NoSuchAlgorithmException | CertificateException | KeyStoreException | IOException | UnrecoverableKeyException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
             fail(ex.getMessage(), ex);
         }
 
@@ -1268,7 +1273,7 @@ public class BoncyUtilTest {
         System.out.println("testFromPEM");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(1024, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 StringWriter prisw = new StringWriter();
@@ -1282,7 +1287,7 @@ public class BoncyUtilTest {
                 assertTrue(priKey instanceof RSAPrivateKey);
             }
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(256, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 StringWriter prisw = new StringWriter();
@@ -1299,6 +1304,8 @@ public class BoncyUtilTest {
             fail(ex.getMessage(), ex);
         } catch (PEMException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -1307,7 +1314,7 @@ public class BoncyUtilTest {
         System.out.println("testRSAtoPEM");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(512);
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
@@ -1326,7 +1333,7 @@ public class BoncyUtilTest {
 
             }
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(1024, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
@@ -1343,7 +1350,7 @@ public class BoncyUtilTest {
                 assertTrue(pubKey instanceof RSAPublicKey);
             }
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(2048, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
@@ -1369,6 +1376,8 @@ public class BoncyUtilTest {
             }
         } catch (NoSuchAlgorithmException | IOException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -1377,7 +1386,7 @@ public class BoncyUtilTest {
         System.out.println("tesDSAToPEM");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(1024, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
@@ -1395,6 +1404,8 @@ public class BoncyUtilTest {
             }
         } catch (NoSuchAlgorithmException | IOException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -1403,7 +1414,7 @@ public class BoncyUtilTest {
         System.out.println("tesECToPEM");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(256, SecureRandom.getInstanceStrong());
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
@@ -1421,6 +1432,8 @@ public class BoncyUtilTest {
             }
         } catch (NoSuchAlgorithmException | IOException ex) {
             fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
+            fail(ex.getMessage(), ex);
         }
     }
 
@@ -1429,7 +1442,7 @@ public class BoncyUtilTest {
         System.out.println("tesEDToPEM");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider.PROVIDER_NAME);
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 // private
                 StringWriter prisw = new StringWriter();
@@ -1446,6 +1459,8 @@ public class BoncyUtilTest {
                 assertTrue(pubKey instanceof EdECPublicKey);
             }
         } catch (NoSuchAlgorithmException | IOException ex) {
+            fail(ex.getMessage(), ex);
+        } catch (NoSuchProviderException ex) {
             fail(ex.getMessage(), ex);
         }
     }

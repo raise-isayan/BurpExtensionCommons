@@ -147,7 +147,7 @@ public class JWKUtilTest {
                 fail(ex.getMessage(), ex);
             }
             try {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519", "BC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider.PROVIDER_NAME);
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
                 System.out.println("toEd25519JWK:" + jsonJWK);
@@ -165,7 +165,7 @@ public class JWKUtilTest {
                 fail(ex.getMessage(), ex);
             }
             try {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed448", "BC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed448", BouncyCastleProvider.PROVIDER_NAME);
                 KeyPair genKeyPair = keyGen.generateKeyPair();
                 String jsonJWK = JWKToken.toJWK(genKeyPair, false);
                 System.out.println("toEd448JWK:" + jsonJWK);
@@ -346,7 +346,7 @@ public class JWKUtilTest {
     {
         System.out.println("testGenRSA_JWK");
         try {
-            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
             kpg.initialize(2048);
             KeyPair keyPair = kpg.generateKeyPair();
             String jwk = toRSA_JWK(keyPair);

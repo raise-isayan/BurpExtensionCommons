@@ -27,6 +27,14 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.DSAPrivateKey;
+import java.security.interfaces.DSAPublicKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.EdECPrivateKey;
+import java.security.interfaces.EdECPublicKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -3637,12 +3645,33 @@ public class BouncyUtil {
      * https://magnus-k-karlsson.blogspot.com/2020/03/creating-x509-certificate-with-bouncy.html
      */
     private static final String KEY_ALGORITHM = "RSA";
-    private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
+    private static final String SIGNATURE_ALGORITHM_SHA256_RSA = "SHA256withRSA";
+    private static final String SIGNATURE_ALGORITHM_SHA256_DSA = "SHA256withDSA";
+    private static final String SIGNATURE_ALGORITHM_SHA256_EC = "SHA256withECDSA";
+    private static final String SIGNATURE_ALGORITHM_ED25519 = "Ed25519";
+    private static final String SIGNATURE_ALGORITHM_ED448 = "Ed448";
 
     public static X509Certificate createRootCA(KeyPair rootKeyPair, org.bouncycastle.asn1.x500.X500Name rootCertSubject, int numberOfYears) throws CertificateException {
+        if (rootKeyPair.getPrivate() instanceof RSAPrivateKey && rootKeyPair.getPublic() instanceof RSAPublicKey) {
+            return createRootCA(rootKeyPair, rootCertSubject, numberOfYears, SIGNATURE_ALGORITHM_SHA256_RSA);
+        }
+        else if (rootKeyPair.getPrivate() instanceof DSAPrivateKey && rootKeyPair.getPublic() instanceof DSAPublicKey) {
+            return createRootCA(rootKeyPair, rootCertSubject, numberOfYears, SIGNATURE_ALGORITHM_SHA256_DSA);
+        }
+        else if (rootKeyPair.getPrivate() instanceof ECPrivateKey && rootKeyPair.getPublic() instanceof ECPublicKey) {
+            return createRootCA(rootKeyPair, rootCertSubject, numberOfYears, SIGNATURE_ALGORITHM_SHA256_EC);
+        }
+        else if (rootKeyPair.getPrivate() instanceof EdECPrivateKey && rootKeyPair.getPublic() instanceof EdECPublicKey) {
+            // Bouncry castle利用前提(Java標準だとAlgorithmが期待値と異なる)
+            return createRootCA(rootKeyPair, rootCertSubject, numberOfYears, rootKeyPair.getPublic().getAlgorithm());
+        }
+        throw new CertificateException("Not support algorithm:" + rootKeyPair.getPrivate().getAlgorithm());
+    }
+
+    public static X509Certificate createRootCA(KeyPair rootKeyPair, org.bouncycastle.asn1.x500.X500Name rootCertSubject, int numberOfYears, String signatureAlgorithm) throws CertificateException {
         try {
             BigInteger rootSerialNum = BigInteger.valueOf(System.currentTimeMillis());
-            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
+            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
             long now = System.currentTimeMillis();
             Date startDate = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
             Date endDate = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
@@ -3664,6 +3693,23 @@ public class BouncyUtil {
     }
 
     public static PKCS10CertificationRequest createCsr(KeyPair keyPair, org.bouncycastle.asn1.x500.X500Name subjectDN, String[] hostnames) throws CertificateException {
+        if (keyPair.getPrivate() instanceof RSAPrivateKey && keyPair.getPublic() instanceof RSAPublicKey) {
+            return createCsr(keyPair, subjectDN, hostnames, SIGNATURE_ALGORITHM_SHA256_RSA);
+        }
+        else if (keyPair.getPrivate() instanceof DSAPrivateKey && keyPair.getPublic() instanceof DSAPublicKey) {
+            return createCsr(keyPair, subjectDN, hostnames, SIGNATURE_ALGORITHM_SHA256_DSA);
+        }
+        else if (keyPair.getPrivate() instanceof ECPrivateKey && keyPair.getPublic() instanceof ECPublicKey) {
+            return createCsr(keyPair, subjectDN, hostnames, SIGNATURE_ALGORITHM_SHA256_EC);
+        }
+        else if (keyPair.getPrivate() instanceof EdECPrivateKey && keyPair.getPublic() instanceof EdECPublicKey) {
+            // Bouncry castle利用前提(Java標準だとAlgorithmが期待値と異なる)
+            return createCsr(keyPair, subjectDN, hostnames, keyPair.getPublic().getAlgorithm());
+        }
+        throw new CertificateException("Not support algorithm:" + keyPair.getPrivate().getAlgorithm());
+    }
+
+    public static PKCS10CertificationRequest createCsr(KeyPair keyPair, org.bouncycastle.asn1.x500.X500Name subjectDN, String[] hostnames, String signatureAlgorithm) throws CertificateException {
         try {
             GeneralName[] generalNames = new GeneralName[hostnames.length];
             for (int i = 0; i < hostnames.length; ++i) {
@@ -3682,7 +3728,7 @@ public class BouncyUtil {
             p10Builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensions);
 
             JcaContentSignerBuilder csBuilder
-                    = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM).setProvider(BouncyCastleProvider.PROVIDER_NAME);
+                    = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME);
             ContentSigner signer = csBuilder.build(keyPair.getPrivate());
 
             // csr
@@ -3697,6 +3743,23 @@ public class BouncyUtil {
     }
 
     public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYears) throws CertificateException {
+        if (caPrivateKey instanceof RSAPrivateKey) {
+            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_RSA);
+        }
+        else if (caPrivateKey instanceof DSAPrivateKey) {
+            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_DSA);
+        }
+        else if (caPrivateKey instanceof ECPrivateKey) {
+            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_EC);
+        }
+        else if (caPrivateKey instanceof EdECPrivateKey) {
+            // Bouncry castle利用前提(Java標準だとAlgorithmが期待値と異なる)
+            return signCsr(csr, caCert, caPrivateKey, numberOfYears, caPrivateKey.getAlgorithm());
+        }
+        throw new CertificateException("Not support algorithm:" + caPrivateKey.getAlgorithm());
+    }
+
+    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYears, String signatureAlgorithm) throws CertificateException {
         try {
             long now = System.currentTimeMillis();
             Date notBefore = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
@@ -3748,7 +3811,7 @@ public class BouncyUtil {
             //certBuilder.addExtension(Extension.subjectKeyIdentifier, false, issuedCertExtUtils.createSubjectKeyIdentifier(csr.getSubjectPublicKeyInfo()));
 
             // CAの秘密鍵で署名
-            ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM)
+            ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm)
                     .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                     .build(caPrivateKey);
 

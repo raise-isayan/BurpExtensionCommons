@@ -276,7 +276,7 @@ public class JWSUtilTest {
         System.out.println("testEdDSA");
         try {
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519", "BC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed25519", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(255);
                 KeyPair keyPair = keyGen.generateKeyPair();
 
@@ -289,7 +289,7 @@ public class JWSUtilTest {
                 }
             }
             {
-                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed448", "BC");
+                KeyPairGenerator keyGen = KeyPairGenerator.getInstance("Ed448", BouncyCastleProvider.PROVIDER_NAME);
                 keyGen.initialize(448);
                 KeyPair keyPair = keyGen.generateKeyPair();
 
