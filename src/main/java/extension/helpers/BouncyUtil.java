@@ -3387,6 +3387,7 @@ public class BouncyUtil {
      * @param upperCase 大文字で出力
      * @return ハッシュ値
      */
+
     public static String toAsconXofA(byte[] binary, boolean upperCase) {
         return toMessageDigest(new AsconXof(AsconXof.AsconParameters.AsconXofA), binary, upperCase);
     }
@@ -3671,7 +3672,8 @@ public class BouncyUtil {
     public static X509Certificate createRootCA(KeyPair rootKeyPair, org.bouncycastle.asn1.x500.X500Name rootCertSubject, int numberOfYears, String signatureAlgorithm) throws CertificateException {
         try {
             BigInteger rootSerialNum = BigInteger.valueOf(System.currentTimeMillis());
-            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
+            ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(signatureAlgorithm)
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
             long now = System.currentTimeMillis();
             Date startDate = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
             Date endDate = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
@@ -3722,13 +3724,12 @@ public class BouncyUtil {
 
             Extensions extensions = extensionsGenerator.generate();
 
-            PKCS10CertificationRequestBuilder p10Builder
-                    = new JcaPKCS10CertificationRequestBuilder(subjectDN, keyPair.getPublic());
+            PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(subjectDN, keyPair.getPublic());
 
             p10Builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensions);
 
-            JcaContentSignerBuilder csBuilder
-                    = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME);
+            JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder(signatureAlgorithm)
+                            .setProvider(BouncyCastleProvider.PROVIDER_NAME);
             ContentSigner signer = csBuilder.build(keyPair.getPrivate());
 
             // csr

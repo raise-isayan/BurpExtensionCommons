@@ -77,7 +77,7 @@ public class BurpConfig {
     }
 
     public static String getBurpSuiteUserPath() {
-        final File userHome = new File(getUserHomePath(), Path.of("AppData","Roaming","BurpSuite").toString());
+        final File userHome = new File(getUserHomePath(), Path.of("AppData", "Roaming", "BurpSuite").toString());
         return userHome.getAbsolutePath();
     }
 
@@ -1291,12 +1291,12 @@ public class BurpConfig {
             return root_json;
         }
 
-        private boolean isHostOnlyAdvance(TargetScopeAdvance scopeAdv){
-            return ((scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty()) &&
-                    (scopeAdv.getFile() != null && scopeAdv.getFile().isEmpty()));
+        private boolean isHostOnlyAdvance(TargetScopeAdvance scopeAdv) {
+            return ((scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty())
+                    && (scopeAdv.getFile() != null && scopeAdv.getFile().isEmpty()));
         }
 
-        private boolean isHostOnlyPrefix(URL urlParts){
+        private boolean isHostOnlyPrefix(URL urlParts) {
             return (!urlParts.getHost().isEmpty() && (urlParts.getFile().isEmpty() || urlParts.getFile().equals("/")));
         }
 
@@ -1318,7 +1318,7 @@ public class BurpConfig {
                 // include
                 for (TargetScopeAdvance scopeAdv : includeAdv) {
                     if (scopeAdv.isEnabled()
-                        && scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty()) {
+                            && scopeAdv.getHost() != null && !scopeAdv.getHost().isEmpty()) {
                         Pattern p = Pattern.compile(scopeAdv.getHost(), Pattern.CASE_INSENSITIVE);
                         Matcher m = p.matcher(hostname);
                         if (m.find()) {
@@ -1326,8 +1326,7 @@ public class BurpConfig {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 List<TargetScopeURL> exluddeURL = getExcludeURL();
                 List<TargetScopeURL> includeURL = getIncludeURL();
                 try {
@@ -1342,8 +1341,7 @@ public class BurpConfig {
                                     if (subdomain_host.endsWith(hostMatchRule)) {
                                         return false;
                                     }
-                                }
-                                else {
+                                } else {
                                     if (hostMatchRule.equals(hostname.toLowerCase())) {
                                         return false;
                                     }
@@ -1362,8 +1360,7 @@ public class BurpConfig {
                                     if (subdomain_host.endsWith(hostMatchRule)) {
                                         return true;
                                     }
-                                }
-                                else {
+                                } else {
                                     if (hostMatchRule.equals(hostname.toLowerCase())) {
                                         return true;
                                     }
@@ -2643,6 +2640,7 @@ public class BurpConfig {
         }
 
     }
+
     public static class Misc {
 
         @Expose
@@ -2662,7 +2660,8 @@ public class BurpConfig {
         }
 
         /**
-         * @param enable_proxy_interception_at_startup the enable_proxy_interception_at_startup to set
+         * @param enable_proxy_interception_at_startup the
+         * enable_proxy_interception_at_startup to set
          */
         public void setEnableProxyInterceptionAtStartup(boolean enable_proxy_interception_at_startup) {
             this.enable_proxy_interception_at_startup = enable_proxy_interception_at_startup;
@@ -2716,12 +2715,12 @@ public class BurpConfig {
         return misc;
     }
 
-
     /**
      *
      * @param api
      * @return
-     **/
+     *
+     */
     public static EmbeddedBrowser getEmbeddedBrowser(MontoyaApi api) {
         String config = api.burpSuite().exportUserOptionsAsJson("user_options.misc");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
@@ -2773,34 +2772,120 @@ public class BurpConfig {
         public enum HotkeyAction {
             SEND_TO_REPEATER,
             SEND_TO_INTRUDER,
+            SEND_TO_COMPARER,
+            SEND_REQUEST_TO_COMPARER,
+            SEND_RESPONSE_TO_COMPARER,
+            SEND_TO_DECODER,
             SEND_TO_ORGANIZER,
+            SEND_TO_SEQUENCER,
+            ADD_TO_SCOPE,
+            REMOVE_FROM_SCOPE,
+            COPY_URL,
+            COPY_AS_CURL_COMMAND_BASH,
+            COPY_LINKS,
+            CREATE_COLLECTION,
+            RENAME_COLLECTION,
+            DELETE_COLLECTION,
+            DELETE_ITEMS,
+            SAVE_ITEMS,
+            SAVE_HISTORY,
+            ADD_TO_SITE_MAP,
+            SHOW_RESPONSE_IN_BROWSER,
+            REQUEST_IN_BROWSER_ORIGINAL_SESSION,
+            REQUEST_IN_BROWSER_CURRENT_SESSION,
+            ADD_NOTES,
+            ADD_HIGHLIGHT,
+            ADD_PAYLOAD_POSITION,
+            SELECT_SCROLLING_TAB_LAYOUT,
+            SELECT_WRAPPED_TAB_LAYOUT,
+            RENAME_TAB,
+            CREATE_NEW_TAB_GROUP,
+            SEARCH_TABS,
             FORWARD_INTERCEPTED_PROXY_MESSAGE,
+            FORWARD_ALL_INTERCEPTED_PROXY_MESSAGES,
+            FORWARD_INTERCEPTED_PROXY_REQUEST_AND_INTERCEPT_THE_RESPONSE,
+            DROP_INTERCEPTED_PROXY_MESSAGE,
+            DROP_ALL_INTERCEPTED_PROXY_MESSAGES,
             TOGGLE_PROXY_INTERCEPTION,
+            OPEN_EMBEDDED_BROWSER,
             ISSUE_REPEATER_REQUEST,
+            GO_BACK_IN_REPEATER_HISTORY,
+            GO_FORWARD_IN_REPEATER_HISTORY,
+            START_INTRUDER_ATTACK,
             SWITCH_TO_DASHBOARD,
             SWITCH_TO_TARGET,
+            SWITCH_TO_TARGET_SITE_MAP,
+            SWITCH_TO_TARGET_SCOPE,
+            SWITCH_TO_TARGET_ISSUES,
             SWITCH_TO_PROXY,
+            SWITCH_TO_PROXY_INTERCEPT,
+            SWITCH_TO_PROXY_HTTP_HISTORY,
+            SWITCH_TO_PROXY_WS_HISTORY,
+            SWITCH_TO_PROXY_MATCH_AND_REPLACE,
             SWITCH_TO_INTRUDER,
             SWITCH_TO_REPEATER,
+            SWITCH_TO_COLLABORATOR,
+            SWITCH_TO_SEQUENCER,
+            SWITCH_TO_SEQUENCER_LIVE_CAPTURE,
+            SWITCH_TO_SEQUENCER_MANUAL_LOAD,
+            SWITCH_TO_DECODER,
+            SWITCH_TO_COMPARER,
             SWITCH_TO_LOGGER,
             SWITCH_TO_ORGANIZER,
+            SWITCH_TO_EXTENSIONS,
+            SWITCH_TO_EXTENSIONS_INSTALLED,
+            SWITCH_TO_EXTENSIONS_BAPP_STORE,
+            SWITCH_TO_EXTENSIONS_APIS,
+            SWITCH_TO_EXTENSIONS_CUSTOM_SCAN_CHECKS,
+            SWITCH_TO_EXTENSIONS_BAMBDA_LIBRARY,
+            SHOW_SETTINGS,
             GO_TO_PREVIOUS_TAB,
             GO_TO_NEXT_TAB,
+            CLOSE_TAB,
+            CLOSE_OTHER_TABS,
+            REOPEN_CLOSED_TAB,
+            DUPLICATE_TAB,
+            OPEN_EVENT_LOG_TAB,
+            OPEN_ALL_ISSUES_TAB,
+            TOGGLE_TAB_LAYOUT,
+            OPEN_COMMAND_PALETTE,
             EDITOR_CUT,
             EDITOR_COPY,
+            EDITOR_COPY_PRETTIFIED,
             EDITOR_PASTE,
+            EDITOR_COPY_TO_FILE,
+            EDITOR_PASTE_FROM_FILE,
+            EDITOR_PASTE_HOST_URL_AS_REQUEST("editor_paste_host_/_url_as_reques"),
             EDITOR_UNDO,
             EDITOR_REDO,
             EDITOR_SELECT_ALL,
             EDITOR_SEARCH,
             EDITOR_GO_TO_PREVIOUS_SEARCH_MATCH,
             EDITOR_GO_TO_NEXT_SEARCH_MATCH,
+            EDITOR_CHANGE_REQUEST_METHOD,
+            EDITOR_TOGGLE_BODY_ENCODING,
+            EDITOR_CHANGE_BODY_ENCODING_TO_URL_ENCODED,
+            EDITOR_CHANGE_BODY_ENCODING_TO_MULTIPART,
+            EDITOR_CHANGE_BODY_ENCODING_TO_JSON,
             EDITOR_URL_DECODE,
             EDITOR_URL_ENCODE_KEY_CHARACTERS,
+            EDITOR_URL_ENCODE_KEY_CHARACTERS_UNICODE,
+            EDITOR_URL_ENCODE_ALL_CHARACTERS,
+            EDITOR_URL_ENCODE_ALL_CHARACTERS_UNICODE,
+            EDITOR_TOGGLE_URL_ENCODING_AS_YOU_TYPE,
             EDITOR_HTML_DECODE,
             EDITOR_HTML_ENCODE_KEY_CHARACTERS,
+            EDITOR_HTML_ENCODE_ALL_CHARACTERS,
+            EDITOR_HTML_ENCODE_ALL_CHARACTERS_NUMERIC_ENTITIES,
+            EDITOR_HTML_ENCODE_ALL_CHARACTERS_HEX_ENTITIES,
             EDITOR_BASE64_DECODE,
+            EDITOR_BASE64_URL_DECODE,
             EDITOR_BASE64_ENCODE,
+            EDITOR_BASE64_URL_ENCODE,
+            EDITOR_CONSTRUCT_STRING_IN_JAVASCRIPT,
+            EDITOR_CONSTRUCT_STRING_IN_MICROSOFT_SQL_SERVER,
+            EDITOR_CONSTRUCT_STRING_IN_ORACLE,
+            EDITOR_CONSTRUCT_STRING_IN_MYSQL,
             EDITOR_BACKSPACE_WORD,
             EDITOR_DELETE_WORD,
             EDITOR_DELETE_LINE,
@@ -2815,12 +2900,63 @@ public class BurpConfig {
             EDITOR_GO_TO_START_OF_DOCUMENT,
             EDITOR_GO_TO_START_OF_DOCUMENT_EXTEND_SELECTION,
             EDITOR_GO_TO_END_OF_DOCUMENT,
-            EDITOR_GO_TO_END_OF_DOCUMENT_EXTEND_SELECTION;
+            EDITOR_GO_TO_END_OF_DOCUMENT_EXTEND_SELECTION,
+            EDITOR_GO_TO_START_OF_LINE,
+            EDITOR_GO_TO_START_OF_LINE_EXTEND_SELECTION,
+            EDITOR_GO_TO_END_OF_LINE,
+            EDITOR_GO_TO_END_OF_LINE_EXTEND_SELECTION,
+            EDITOR_TOGGLE_PRETTIFY,
+            EDITOR_TOGGLE_DISPLAY_NON_PRINTABLE_CHARACTERS,
+            EDITOR_TOGGLE_HIDE_UNINTERESTING_HEADERS,
+            EDITOR_TOGGLE_LINE_WRAPPING,
+            EDITOR_SWITCH_REQUEST_RESPONSE_LAYOUT("editor_switch_request/response_layou"),
+            EDITOR_TOGGLE_MESSAGE_EDITOR_SIDEBAR,
+            REQUEST_RESPONSE_VIEWER_SELECT_REQUEST_VIEW,
+            REQUEST_RESPONSE_VIEWER_SELECT_RESPONSE_VIEW,
+            CLEAR_PAYLOAD_POSITIONS,
+            CYCLE_ISSUE_SEVERITY,
+            CYCLE_ISSUE_CONFIDENCE,
+            TABLE_GO_TO_ENTRY,
+            TABLE_GO_TO_TOP,
+            TABLE_GO_TO_BOTTOM,
+            CYCLE_ORGANIZER_ENTRY_STATUS,
+            MOVE_TO_NEW_COLLECTION,
+            COPY_TO_NEW_COLLECTION,
+            DUPLICATE_COLLECTION;
+
+            private final String action;
+
+            HotkeyAction() {
+                this(null);
+            }
+
+            HotkeyAction(String action) {
+                this.action = action;
+            }
+
+            public static HotkeyAction parseEnum(String s) {
+                try {
+                    String value = s.toUpperCase();
+                    return Enum.valueOf(HotkeyAction.class, value);
+                } catch (IllegalArgumentException ex) {
+                    HotkeyAction[] values = HotkeyAction.values();
+                    for (HotkeyAction v : values) {
+                        if (v.action != null && v.action.equals(s)) {
+                            return v;
+                        }
+                    }
+                }
+                throw new IllegalArgumentException("No enum constant " + HotkeyAction.class.getCanonicalName() + "." + s);
+            }
 
             @Override
             public String toString() {
-                String value = name().toLowerCase();
-                return value;
+                if (this.action == null) {
+                    String value = name().toLowerCase();
+                    return value;
+                } else {
+                    return this.action;
+                }
             }
 
         }
@@ -2878,6 +3014,7 @@ public class BurpConfig {
 
     /**
      * HotKey 取得
+     *
      * @param api
      * @return
      */
@@ -2894,6 +3031,7 @@ public class BurpConfig {
 
     /**
      * HotKey 設定
+     *
      * @param api
      * @param hotkeys
      */

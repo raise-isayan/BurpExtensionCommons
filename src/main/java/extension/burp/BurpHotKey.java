@@ -219,11 +219,55 @@ public class BurpHotKey {
                 if (token.length() == 1) {
                     keyCode = token.charAt(0);
                 } else {
-                    keyCode = mapRverseKey.getOrDefault(token, (int)KeyEvent.CHAR_UNDEFINED);
+                    keyCode = mapRverseKey.getOrDefault(token, (int) KeyEvent.CHAR_UNDEFINED);
                 }
             }
         }
         return KeyStroke.getKeyStroke(keyCode, mask);
+    }
+
+    private static final int[] BUTTON_DOWN_MASK = new int[]{
+        InputEvent.BUTTON1_DOWN_MASK,
+        InputEvent.BUTTON2_DOWN_MASK,
+        InputEvent.BUTTON3_DOWN_MASK,
+        1 << 14, 1 << 15, 1 << 16, 1 << 17, 1 << 18, 1 << 19, 1 << 20, 1 << 21,
+        1 << 22, 1 << 23, 1 << 24, 1 << 25, 1 << 26, 1 << 27, 1 << 28, 1 << 29, 1 << 30
+    };
+
+    public static String getModifiersExText(int modifiers) {
+        StringBuilder buf = new StringBuilder();
+        if ((modifiers & InputEvent.META_DOWN_MASK) != 0) {
+            buf.append("Meta");
+            buf.append("+");
+        }
+        if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0) {
+            buf.append("Ctrl");
+            buf.append("+");
+        }
+        if ((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) {
+            buf.append("Shift");
+            buf.append("+");
+        }
+        if ((modifiers & InputEvent.ALT_DOWN_MASK) != 0) {
+            buf.append("Alt");
+            buf.append("+");
+        }
+        if ((modifiers & InputEvent.ALT_GRAPH_DOWN_MASK) != 0) {
+            buf.append("Alt Graph");
+            buf.append("+");
+        }
+        int buttonNumber = 1;
+        for (int mask : BUTTON_DOWN_MASK) {
+            if ((modifiers & mask) != 0) {
+                buf.append("Button").append(buttonNumber);
+                buf.append("+");
+            }
+            buttonNumber++;
+        }
+        if (buf.length() > 0) {
+            buf.setLength(buf.length() - 1); // remove trailing '+'
+        }
+        return buf.toString();
     }
 
     public static String getKeyText(int keyCode) {
@@ -252,7 +296,7 @@ public class BurpHotKey {
 
     public static String toKeyText(KeyStroke keyStroke) {
         StringBuilder buf = new StringBuilder();
-        buf.append(KeyEvent.getModifiersExText(keyStroke.getModifiers()));
+        buf.append(getModifiersExText(keyStroke.getModifiers()));
         buf.append("+");
         buf.append(getKeyText(keyStroke.getKeyCode()));
         return buf.toString();

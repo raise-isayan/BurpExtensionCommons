@@ -714,7 +714,6 @@ public class BurpConfigTest {
 
     }
 
-
     @Test
     public void testGetHttpBambda() {
         System.out.println("testGetHttpBambda");
@@ -805,6 +804,16 @@ public class BurpConfigTest {
             System.out.println("getBrowserDataDirectory:" + browser.getBrowserDataDirectory());
         } catch (Exception ex) {
             fail(ex.getMessage(), ex);
+        }
+    }
+
+    @Test
+    public void testHotkeyAction() {
+        System.out.println("testHotkeyAction");
+        BurpConfig.Hotkey.HotkeyAction[] vals = BurpConfig.Hotkey.HotkeyAction.values();
+        for (BurpConfig.Hotkey.HotkeyAction v : vals) {
+            System.out.println("action:" + v.toString());
+            BurpConfig.Hotkey.HotkeyAction e = BurpConfig.Hotkey.HotkeyAction.parseEnum(v.toString());
         }
     }
 
