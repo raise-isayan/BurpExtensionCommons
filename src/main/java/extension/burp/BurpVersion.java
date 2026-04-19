@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 public final class BurpVersion implements Comparable<BurpVersion> {
 
     // Professional / Community 2024.2.1.3 build:28102 BuldNumber:20240201003028102
-
     private final static BurpVersion SUPPORT_MIN_VERSION = new BurpVersion("Burp suite Community Edition v2024.2.1.3", 20240201003028102L);
 
     private String productName = "";
@@ -144,7 +143,7 @@ public final class BurpVersion implements Comparable<BurpVersion> {
             return OSType.WINDOWS;
         } else if (os_name.contains("linux")) {
             return OSType.LINUX;
-        } else if (os_name.contains("mac") || os_name.contains("darwin") ) {
+        } else if (os_name.contains("mac") || os_name.contains("darwin")) {
             return OSType.MAC;
         } else {
             return OSType.UNKOWN;
@@ -176,31 +175,14 @@ public final class BurpVersion implements Comparable<BurpVersion> {
     private final String USER_CONFIG_COMMUNITY = "UserConfigCommunity.json";
     private final String USER_CONFIG_PRO = "UserConfigPro.json";
 
-    public File getBurpConfigFile() {
+    public File getBurpUserConfigFile() {
         if (isProfessional()) {
-            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_PRO);
+            final File burpConfig = new File(BurpConfig.getBurpSuiteDirectoryFile(), USER_CONFIG_PRO);
             return burpConfig;
         } else {
-            final File burpConfig = new File(getBurpConfigHome(), USER_CONFIG_COMMUNITY);
+            final File burpConfig = new File(BurpConfig.getBurpSuiteDirectoryFile(), USER_CONFIG_COMMUNITY);
             return burpConfig;
         }
-    }
-
-    public File getBurpConfigHome() {
-        if (BurpVersion.getOSType() == BurpVersion.OSType.WINDOWS) {
-            String home = System.getenv("APPDATA");
-            if (home != null) {
-                final File burpHome = new File(home, "BurpSuite");
-                return burpHome;
-            }
-        } else {
-            String home = System.getenv("HOME");
-            if (home != null) {
-                final File burpHome = new File(home, ".BurpSuite");
-                return burpHome;
-            }
-        }
-        return null;
     }
 
 }

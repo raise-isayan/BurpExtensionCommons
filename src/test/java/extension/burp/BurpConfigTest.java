@@ -90,7 +90,7 @@ public class BurpConfigTest {
         System.out.println("getUserConfig:" + BurpConfig.getUserConfig().getAbsolutePath());
         System.out.println("getUserDirPath:" + BurpConfig.getUserDirPath());
         System.out.println("getUserHomePath:" + BurpConfig.getUserHomePath());
-        System.out.println("getBurpSuiteUserPath:" + BurpConfig.getBurpSuiteUserPath());
+        System.out.println("getBurpSuiteUserPath:" + BurpConfig.getBurpSuiteDirectoryPath());
         System.out.println("getBambdaPath:" + BurpConfig.getBambdaUserPath());
     }
 

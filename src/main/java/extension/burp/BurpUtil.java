@@ -1,5 +1,6 @@
 package extension.burp;
 
+import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.core.ByteArray;
 import burp.api.montoya.core.Range;
 import burp.api.montoya.core.Version;
@@ -22,7 +23,6 @@ import burp.api.montoya.ui.contextmenu.ContextMenuEvent;
 import burp.api.montoya.ui.contextmenu.InvocationType;
 import burp.api.montoya.ui.contextmenu.MessageEditorHttpRequestResponse;
 import burp.api.montoya.ui.editor.EditorOptions;
-import static extension.burp.BurpExtensionImpl.api;
 import extension.helpers.ConvertUtil;
 import extension.helpers.StringUtil;
 import java.awt.Color;
@@ -30,6 +30,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Logger;
@@ -68,18 +70,30 @@ public class BurpUtil {
             // 古いBurpには該当のメソッド存在しない
             suiteFrame = BurpExtensionImpl.api().userInterface().swingUtils().suiteFrame();
         } catch (java.lang.NoSuchMethodError | NullPointerException ex) {
-            suiteFrame = suiteFrame("Burp Suite");
+            suiteFrame = suiteFrameName("suiteFrame");
         }
         return suiteFrame;
     }
 
-    public static Frame suiteFrame(String title) {
+    public static Frame suiteFrameTitle(String title) {
+        return suiteFrameTitle(title, false);
+    }
+
+    public static Frame suiteFrameTitle(String title, boolean visibleAll) {
         Frame suiteFrame = null;
         Frame[] frames = Frame.getFrames();
         for (Frame frame : frames) {
-            if (frame.isVisible() && frame.getTitle().startsWith(title)) {
-                suiteFrame = frame;
-                break;
+            if (visibleAll) {
+                if (frame.getTitle().startsWith(title)) {
+                    suiteFrame = frame;
+                    break;
+                }
+            }
+            else {
+                if (frame.isVisible() && frame.getTitle().startsWith(title)) {
+                    suiteFrame = frame;
+                    break;
+                }
             }
         }
         return suiteFrame;
@@ -91,6 +105,34 @@ public class BurpUtil {
             return suiteJFrame;
         }
         return null;
+    }
+
+    public static Frame suiteFrameName(String name) {
+        Frame suiteFrame = null;
+        Frame[] frames = Frame.getFrames();
+        for (Frame frame : frames) {
+            if (name.equals(frame.getName())) {
+                suiteFrame = frame;
+                break;
+            }
+        }
+        return suiteFrame;
+    }
+
+    public static Frame[] suiteFrameNames(String name) {
+        List<Frame> suiteFrames = new ArrayList<>();
+        Frame[] frames = Frame.getFrames();
+        for (Frame frame : frames) {
+            if (name.equals(frame.getName())) {
+                suiteFrames.add(frame);
+                break;
+            }
+        }
+        return suiteFrames.toArray(Frame[]::new);
+    }
+
+    public static Frame suiteSettingsFrame() {
+        return suiteFrameName("settingsWindow");
     }
 
     public static JTabbedPane suiteTabbedPane() {
@@ -247,32 +289,33 @@ public class BurpUtil {
     }
 
     public static void printComponents(Component comp, int indent) {
+        MontoyaApi api = BurpExtensionImpl.api();
         if (comp instanceof JMenuItem menu) {
-            api().logging().logToOutput("\t".repeat(indent) + "JMenuItem:" + menu.getName() + ":" + menu.getText());
+            api.logging().logToOutput("\t".repeat(indent) + "JMenuItem:" + menu.getName() + ":" + menu.getText());
         } else if (comp instanceof JPopupMenu menu) {
-            api().logging().logToOutput("\t".repeat(indent) + "JPopupMenu: " + menu.getName() + ", Value: " + menu.getLabel());
+            api.logging().logToOutput("\t".repeat(indent) + "JPopupMenu: " + menu.getName() + ", Value: " + menu.getLabel());
         } else if (comp instanceof JButton botton) {
-            api().logging().logToOutput("\t".repeat(indent) + "JButton: " + botton.getName() + ", Value: " + botton.getText());
+            api.logging().logToOutput("\t".repeat(indent) + "JButton: " + botton.getName() + ", Value: " + botton.getText());
         } else if (comp instanceof JToggleButton botton) {
-            api().logging().logToOutput("\t".repeat(indent) + "JToggleButton: " + botton.getName() + ", Value: " + botton.getText());
+            api.logging().logToOutput("\t".repeat(indent) + "JToggleButton: " + botton.getName() + ", Value: " + botton.getText());
         } else if (comp instanceof AbstractButton botton) {
-            api().logging().logToOutput("\t".repeat(indent) + "AbstractButton: " + botton.getName() + ", Value: " + botton.getText());
+            api.logging().logToOutput("\t".repeat(indent) + "AbstractButton: " + botton.getName() + ", Value: " + botton.getText());
         } else if (comp instanceof JTable table) {
-            api().logging().logToOutput("\t".repeat(indent) + "JTable: " + table.getName());
+            api.logging().logToOutput("\t".repeat(indent) + "JTable: " + table.getName());
         } else if (comp instanceof JTabbedPane tab) {
             String name = "";
             for (int i = 0; i < tab.getTabCount(); i++) {
                 name += "[" + tab.getTitleAt(i) + "]";
             }
-            api().logging().logToOutput("\t".repeat(indent) + "Tabbet: " + tab.getName() + " -> " + name);
+            api.logging().logToOutput("\t".repeat(indent) + "Tabbet: " + tab.getName() + " -> " + name);
             for (int i = 0; i < tab.getTabCount(); i++) {
-                api().logging().logToOutput("\t".repeat(indent) + "Tab:[" + tab.getTitleAt(i) + "]");
+                api.logging().logToOutput("\t".repeat(indent) + "Tab:[" + tab.getTitleAt(i) + "]");
                 Component c = tab.getTabComponentAt(i);
                 printComponents(c, indent + 1);
             }
 
-        } else {
-            api().logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName());
+        } else if (comp != null) {
+            api.logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName());
         }
         if (comp instanceof Container) {
             for (Component child : ((Container) comp).getComponents()) {

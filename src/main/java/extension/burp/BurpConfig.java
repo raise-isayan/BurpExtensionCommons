@@ -76,20 +76,54 @@ public class BurpConfig {
         return userDir;
     }
 
-    public static String getBurpSuiteUserPath() {
-        final File userHome = new File(getUserHomePath(), Path.of("AppData", "Roaming", "BurpSuite").toString());
-        return userHome.getAbsolutePath();
+    public static Path getBurpSuiteDirectoryPath() {
+        String home = "";
+        String burpDir = "";
+        BurpVersion.OSType os = BurpVersion.getOSType();
+        switch (os) {
+            case WINDOWS: {
+                home = System.getenv("APPDATA");
+                burpDir = "BurpSuite";
+                break;
+            }
+            case LINUX: {
+                home = System.getenv("HOME");
+                burpDir = ".BurpSuite";
+                break;
+            }
+            case MAC: {
+                home = System.getenv("HOME");
+                burpDir = ".BurpSuite";
+                break;
+            }
+        }
+        return Path.of(home, burpDir);
+    }
+
+    public static File getBurpSuiteDirectoryFile() {
+        return getBurpSuiteDirectoryPath().toFile();
+    }
+
+    public static File getBambdaUserFile() {
+        File bambda = new File(getBurpSuiteDirectoryFile(), "bambdas");
+        return bambda.getAbsoluteFile();
     }
 
     public static String getBambdaUserPath() {
-        File bambda = new File(getBurpSuiteUserPath(), "bambdas");
+        File bambda = new File(getBurpSuiteDirectoryFile(), "bambdas");
         return bambda.getAbsolutePath();
     }
 
+    public static File getBchecksUserFile() {
+        File bambda = new File(getBurpSuiteDirectoryFile(), "bchecks");
+        return bambda.getAbsoluteFile();
+    }
+
     public static String getBchecksUserPath() {
-        File bambda = new File(getBurpSuiteUserPath(), "bchecks");
+        File bambda = new File(getBurpSuiteDirectoryFile(), "bchecks");
         return bambda.getAbsolutePath();
     }
+
 
     private static final String CHARACTER_SETS_MODE_RECOGNIZE = "recognize_automatically";
     private static final String CHARACTER_SETS_MODE_DEFAULT = "use_the_platform_default";
@@ -437,7 +471,7 @@ public class BurpConfig {
                 case PROXY_IS_INTERCEPT: // supportApi burp 2024.7
                 {
 //                    api.proxy().isInterceptEnabled();
-                    supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null || BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame("Proxy")) != null;
+                    supportApi = BurpUtil.findSuiteIntercept(BurpUtil.suiteFrame()) != null || BurpUtil.findSuiteIntercept(BurpUtil.suiteFrameTitle("Proxy")) != null;
                     break;
                 }
                 case BURPSUITE_BAMBDA: {
