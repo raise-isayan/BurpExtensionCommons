@@ -1105,26 +1105,42 @@ public class BurpConfig {
         }
     }
 
-    private static String getFilterCategoryProperty(FilterCategory filterCategory) {
-        String property = "http_history_display_filter";
-        switch (filterCategory) {
-            case HTTP:
-                property = "http_history_display_filter";
-                break;
-            case WEBSOCKET:
-                property = "web_sockets_history_display_filter";
-                break;
-            case SITE_MAP:
-                property = "sitemap_display_filter";
-                break;
-            case LOGGER_CAPTURE:
-                property = "logger_capture_filter";
-                break;
-            case LOGGER_DISPLAY:
-                property = "logger_display_filter";
-                break;
+//    private static String getFilterCategoryProperty(FilterCategory filterCategory) {
+//        String property = "http_history_display_filter";
+//        switch (filterCategory) {
+//            case HTTP:
+//                property = "http_history_display_filter";
+//                break;
+//            case WEBSOCKET:
+//                property = "web_sockets_history_display_filter";
+//                break;
+//            case SITE_MAP:
+//                property = "sitemap_display_filter";
+//                break;
+//            case LOGGER_CAPTURE:
+//                property = "logger_capture_filter";
+//                break;
+//            case LOGGER_DISPLAY:
+//                property = "logger_display_filter";
+//                break;
+//        }
+//        return property;
+//    }
+
+    /**
+     *
+     * @param api
+     * @param filterCategory
+     * @return
+     */
+    public static String getFilterMode(MontoyaApi api, FilterCategory filterCategory) {
+        String config = api.burpSuite().exportProjectOptionsAsJson(filterCategory.toOwnerGroup() + "." + filterCategory.toFilterName());
+        JsonObject root_json = JsonUtil.parseJsonObject(config);
+        if (root_json.getAsJsonObject(filterCategory.toOwnerGroup()).has(filterCategory.toFilterName())) {
+            JsonObject filter_mode = root_json.getAsJsonObject(filterCategory.toOwnerGroup()).getAsJsonObject(filterCategory.toFilterName());
+            return filter_mode.getAsJsonPrimitive("filter_mode").getAsString();
         }
-        return property;
+        return "SETTINGS";
     }
 
     /**
@@ -1134,7 +1150,7 @@ public class BurpConfig {
      * @return
      */
     public static String getBambda(MontoyaApi api, FilterCategory filterCategory) {
-        String filter = getFilterCategoryProperty(filterCategory);
+        String filter = filterCategory.toBambdaFilterName();
         String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + filter + ".bambda");
         JsonObject root_json = JsonUtil.parseJsonObject(config);
         if (root_json.getAsJsonObject("bambda").has(filter)) {
@@ -1152,19 +1168,19 @@ public class BurpConfig {
      * @param changeFilterMode
      */
     public static void configBambda(MontoyaApi api, FilterProperty filter, boolean changeFilterMode) {
-        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + getFilterCategoryProperty(filter.getFilterCategory()) + ".bambda");
+        String config = api.burpSuite().exportProjectOptionsAsJson("bambda." + filter.getFilterCategory().toBambdaFilterName() + ".bambda");
         String updateConfig = updateBambda(config, filter, changeFilterMode);
         api.burpSuite().importProjectOptionsFromJson(updateConfig);
     }
 
     static String updateBambda(String config, FilterProperty filter, boolean changeFilterMode) {
         JsonObject root_json = JsonUtil.parseJsonObject(config);
-        JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject(getFilterCategoryProperty(filter.getFilterCategory()));
+        JsonObject history_filter = root_json.getAsJsonObject("bambda").getAsJsonObject(filter.getFilterCategory().toBambdaFilterName());
         history_filter.addProperty("bambda", filter.getBambdaQuery());
         if (changeFilterMode) {
-            JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add(getFilterCategoryProperty(filter.getFilterCategory()),
+            JsonObjectBuilder jsonBuilder = JsonBuilder.createObjectBuilder().add(filter.getFilterCategory().toFilterName(),
                     JsonBuilder.createObjectBuilder().add("filter_mode", "BAMBDA").build());
-            root_json.add("proxy", jsonBuilder.build());
+            root_json.add(filter.getFilterCategory().toOwnerGroup(), jsonBuilder.build());
         }
         String updateConfig = JsonUtil.prettyJson(root_json, true);
         return updateConfig;

@@ -31,7 +31,11 @@ public class HttpRequestWapper extends HttpMessageWapper implements HttpRequest 
     }
 
     public boolean hasHttpRequest() {
-        return this.request != null;
+        try {
+            return this.request != null && this.request.url() != null;
+        } catch (burp.api.montoya.http.message.requests.MalformedRequestException ex) {
+            return false;
+        }
     }
 
     @Override

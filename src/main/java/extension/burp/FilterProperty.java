@@ -11,14 +11,37 @@ import java.util.EnumSet;
 public class FilterProperty implements FilterHTTPProperty, FilterWebSocketProperty, FilterSiteMapProperty {
 
     public enum FilterCategory {
-        HTTP,
-        WEBSOCKET,
-        SITE_MAP,
-        LOGGER_CAPTURE,
-        LOGGER_DISPLAY,
-        REQUEST_REPLACE,
-        RESPONSE_REPLACE,
-        INTERCEPT_RECEIVE,
+        HTTP("proxy", "http_history_display_filter", "http_history_display_filter"),
+        WEBSOCKET("proxy", "web_sockets_history_display_filter", "web_sockets_history_display_filter"),
+        SITE_MAP("target", "filter", "sitemap_display_filter"),
+        LOGGER_CAPTURE("logger", "capture_filter", "logger_capture_filter"),
+        LOGGER_DISPLAY("logger", "display_filter", "logger_display_filter"),
+        REQUEST_REPLACE(null, null, null),
+        RESPONSE_REPLACE(null, null, null),
+        INTERCEPT_RECEIVE(null, null, null);
+
+        private final String ownerGroup;
+        private final String filterName;
+        private final String bambdaFilterName;
+
+        FilterCategory(String ownerGroup, String filterName, String bambdaFilterName) {
+            this.ownerGroup = ownerGroup;
+            this.filterName = filterName;
+            this.bambdaFilterName = bambdaFilterName;
+        }
+
+        public String toOwnerGroup() {
+            return this.ownerGroup;
+        }
+
+        public String toFilterName() {
+            return this.filterName;
+        }
+
+        public String toBambdaFilterName() {
+            return this.bambdaFilterName;
+        }
+
     }
 
     public enum FilterMode {

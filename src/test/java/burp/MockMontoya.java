@@ -166,16 +166,13 @@ public class MockMontoya {
             String project_json = FileUtil.stringFromFile(new File(projectFile), StandardCharsets.UTF_8);
             String userFile = MockMontoya.class.getResource("/resources/user_json.json").getPath();
             String user_json = FileUtil.stringFromFile(new File(userFile), StandardCharsets.UTF_8);
-            Mockito.when(this.mockApi.burpSuite()).thenReturn(this.burpSuteApi);
-            Mockito.when(this.burpSuteApi.version()).thenReturn(this.versionApi);
-            Mockito.when(this.burpSuteApi.exportProjectOptionsAsJson(Mockito.anyString())).thenReturn(project_json);
-            Mockito.when(this.burpSuteApi.exportUserOptionsAsJson(Mockito.anyString())).thenReturn(user_json);
+
+            loadOption(project_json, user_json);
 
             Mockito.doNothing().when(this.burpSuteApi).importProjectOptionsFromJson(Mockito.anyString());
             Mockito.doNothing().when(this.burpSuteApi).importUserOptionsFromJson(Mockito.anyString());
 
             Mockito.when(this.mockApi.ai()).thenReturn(this.aiApi);
-
 
             Mockito.when(this.mockApi.collaborator()).thenReturn(this.collaboratorApi);
             Mockito.when(this.collaboratorApi.createClient()).thenReturn(this.collaboratorClientApi);
@@ -211,6 +208,14 @@ public class MockMontoya {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
+
+    public void loadOption(String project_json, String user_json) {
+        Mockito.when(this.mockApi.burpSuite()).thenReturn(this.burpSuteApi);
+        Mockito.when(this.burpSuteApi.version()).thenReturn(this.versionApi);
+        Mockito.when(this.burpSuteApi.exportProjectOptionsAsJson(Mockito.anyString())).thenReturn(project_json);
+        Mockito.when(this.burpSuteApi.exportUserOptionsAsJson(Mockito.anyString())).thenReturn(user_json);
+    }
+
 
     public <T extends Object> T instance(Class<T> type) {
         return (T) instanceMap.get(type);

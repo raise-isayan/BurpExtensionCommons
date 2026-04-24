@@ -22,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class IpUtilTest {
 
+    private final static Logger logger = Logger.getLogger(IpUtilTest.class.getName());
+
     public IpUtilTest() {
     }
 

@@ -315,13 +315,27 @@ public class BurpUtil {
             }
 
         } else if (comp != null) {
-            api.logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName());
+            api.logging().logToOutput("\t".repeat(indent) + "Name: " + comp.getName() + ", Class: " + comp.getClass().getName() + " Inheritance:" + getInheritance(comp.getClass()));
         }
         if (comp instanceof Container) {
             for (Component child : ((Container) comp).getComponents()) {
                 printComponents(child, indent + 1);
             }
         }
+    }
+
+    private static String getInheritance(Class cls) {
+        StringBuilder buff = new StringBuilder();
+        MontoyaApi api = BurpExtensionImpl.api();
+        Class cur = cls;
+        while (cur != null) {
+            if (cur.getPackageName().startsWith("java")) {
+                buff.append(cur.getCanonicalName());
+                break;
+            }
+            cur = cur.getSuperclass();
+        }
+        return buff.toString();
     }
 
     public static BurpVersion suiteVersion() {

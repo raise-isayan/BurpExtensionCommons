@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 import java.util.zip.CRC32C;
@@ -483,6 +484,60 @@ public final class HashUtil {
         crc.reset();
         crc.update(binary);
         return crc.getValue();
+    }
+
+    /**
+     * UUIDv3値の取得
+     *
+     * @param binary 対象バイト
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toUUIDv3(byte[] binary, boolean upperCase) {
+        UUID uuidv3 = UUID.nameUUIDFromBytes(binary);
+        if (upperCase) {
+            return uuidv3.toString().toUpperCase();
+        }
+        else {
+            return uuidv3.toString().toLowerCase();
+        }
+    }
+
+    /**
+     * UUIDv3値の取得
+     *
+     * @param str 対象文字列
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     */
+    public static String toUUIDv3(String str, boolean upperCase) {
+        UUID uuidv3 = UUID.nameUUIDFromBytes(StringUtil.getBytesRaw(str));
+        if (upperCase) {
+            return uuidv3.toString().toUpperCase();
+        }
+        else {
+            return uuidv3.toString().toLowerCase();
+        }
+    }
+
+    /**
+     * UUIDv3値の取得
+     *
+     * @param str 対象文字列
+     * @param charset エンコーディング
+     * @param upperCase 大文字で出力
+     * @return ハッシュ値
+     * @throws UnsupportedEncodingException
+     */
+    public static String toUUIDv3(String str, String charset, boolean upperCase)
+            throws UnsupportedEncodingException {
+        UUID uuidv3 = UUID.nameUUIDFromBytes(StringUtil.getBytesCharset(str, charset));
+        if (upperCase) {
+            return uuidv3.toString().toUpperCase();
+        }
+        else {
+            return uuidv3.toString().toLowerCase();
+        }
     }
 
 }

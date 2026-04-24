@@ -55,9 +55,18 @@ public class BurpConfigTest {
 
     @BeforeEach
     public void setUp() {
-        this.montoya = new MockMontoya();
-        this.api = montoya.api();
-        this.mockFactory = this.montoya.instance(MockMontoya.MockMontoyaObjectFactory.class);
+        try {
+            String projectFile = MockMontoya.class.getResource("/resources/ProjectConfigOption.json").getPath();
+            String project_json = FileUtil.stringFromFile(new File(projectFile), StandardCharsets.UTF_8);
+            String userFile = MockMontoya.class.getResource("/resources/UserConfigOption.json").getPath();
+            String user_json = FileUtil.stringFromFile(new File(userFile), StandardCharsets.UTF_8);
+            this.montoya = new MockMontoya();
+            this.montoya.loadOption(project_json, user_json);
+            this.api = montoya.api();
+            this.mockFactory = this.montoya.instance(MockMontoya.MockMontoyaObjectFactory.class);
+        } catch (IOException ex) {
+            fail(ex);
+        }
     }
 
     @AfterEach
@@ -747,6 +756,27 @@ public class BurpConfigTest {
         {
             String bambda = BurpConfig.getBambda(api, FilterCategory.LOGGER_DISPLAY);
             assertEquals("return true;", bambda);
+        }
+    }
+
+    @Test
+    public void testSettingMode() {
+        System.out.println("testSettingMode");
+        {
+            String settings_mode = BurpConfig.getFilterMode(api, FilterCategory.HTTP);
+            System.out.println("http.settings_mode:" + settings_mode);
+            assertEquals("SETTINGS", settings_mode);
+
+        }
+        {
+            String settings_mode = BurpConfig.getFilterMode(api, FilterCategory.WEBSOCKET);
+            System.out.println("websockt.settings_mode:" + settings_mode);
+            assertEquals("SETTINGS", settings_mode);
+        }
+        {
+            String settings_mode = BurpConfig.getFilterMode(api, FilterCategory.SITE_MAP);
+            System.out.println("sitemap.settings_mode:" + settings_mode);
+            assertEquals("BAMBDA", settings_mode);
         }
     }
 

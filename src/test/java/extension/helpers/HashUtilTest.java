@@ -2,6 +2,7 @@ package extension.helpers;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -423,4 +424,19 @@ public class HashUtilTest {
         }
     }
 
+
+    @Test
+    public void testUUIDv3() {
+        System.out.println("testUUIDv3");
+        String name = "test";
+        UUID uuidFromName = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
+        System.out.println("Name: " + name);
+        System.out.println("v3 UUID: " + uuidFromName);
+        System.out.println("Version: " + uuidFromName.version()); // 3 と表示される
+        {
+            assertEquals(uuidFromName.toString().toLowerCase(), HashUtil.toUUIDv3(name, false));
+            assertEquals(uuidFromName.toString().toUpperCase(), HashUtil.toUUIDv3(name, true));
+        }
+
+    }
 }
