@@ -12,6 +12,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,28 @@ public class StringUtil {
 
     public static String repeat(String str, int n) {
         return String.join("", Collections.nCopies(n, str));
+    }
+
+    public static String join(String separator, String[] lines) {
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                buff.append(separator);
+            }
+            buff.append(lines[i]);
+        }
+        return buff.toString();
+    }
+
+    public static String join(String separator, List lines) {
+        StringBuilder buff = new StringBuilder();
+        for (int i = 0; i < lines.size(); i++) {
+            if (i > 0) {
+                buff.append(separator);
+            }
+            buff.append(lines.get(i));
+        }
+        return buff.toString();
     }
 
     public static boolean isPrintableChar(int codePoint) {

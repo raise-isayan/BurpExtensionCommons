@@ -196,6 +196,14 @@ public final class SwingUtil {
         return false;
     }
 
+    public static boolean removeAllItem(javax.swing.JTable srcTable) {
+        if (srcTable.getModel() instanceof DefaultTableModel model) {
+            model.setRowCount(0);
+            return true;
+        }
+        return false;
+    }
+
     public static Object[] editItem(javax.swing.JTable srcTable) {
         TableModel modelSrc = srcTable.getModel();
         int index = srcTable.getSelectedRow();

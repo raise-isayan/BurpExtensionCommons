@@ -1,6 +1,5 @@
 package extension.view.base;
 
-import extension.view.base.CustomTableModel;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;

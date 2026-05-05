@@ -99,8 +99,7 @@ public class VerticalFlowLayout implements LayoutManager {
             }
         }
         Dimension td = new Dimension(maxWidth + insets.left + insets.right,
-                totalHeight + insets.top + insets.bottom
-                + vgap * numComponents);
+                totalHeight + insets.top + insets.bottom + vgap * numComponents);
 
         return td;
     }
@@ -129,8 +128,7 @@ public class VerticalFlowLayout implements LayoutManager {
             }
         }
         Dimension td = new Dimension(maxWidth + insets.left + insets.right,
-                totalHeight + insets.top + insets.bottom
-                + vgap * numComponents);
+                totalHeight + insets.top + insets.bottom + vgap * numComponents);
 
         return td;
     }
