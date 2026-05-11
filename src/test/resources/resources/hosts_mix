@@ -1,0 +1,8 @@
+# hosts test
+
+192.0.2.1 www.example.com
+198.51.100.1 www.example.jp
+2001:db8:3333:4444:5555:6666:7777:8888 www.example.jp
+2001:db8:0000:0000:0000:0000:0000:0001 www.example.co.jp
+203.0.113.1 www.example.net www.example.org
+ 

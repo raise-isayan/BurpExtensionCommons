@@ -17,6 +17,8 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
@@ -106,6 +108,37 @@ public final class SwingUtil {
         return null;
     }
 
+    public static void addHintText(JTextField textField, String hint) {
+        JLabel label = new JLabel(hint);
+        label.setForeground(Color.LIGHT_GRAY);
+        label.setFont(textField.getFont());
+
+        // レイアウトを管理するために、TextFieldに直接JLabelを載せる
+        textField.setLayout(new BorderLayout());
+        textField.add(label);
+
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateVisibility();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateVisibility();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateVisibility();
+            }
+
+            private void updateVisibility() {
+                label.setVisible(textField.getText().isEmpty());
+            }
+        });
+    }
+
     public Component getCurrentKeyboardComponent() {
         final KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         return mgr.getPermanentFocusOwner();
@@ -164,10 +197,7 @@ public final class SwingUtil {
             if (modelSrc instanceof DefaultTableModel defaultTableModel) {
                 defaultTableModel.removeRow(rowIndex);
                 defaultTableModel.insertRow(rowIndex, items);
-            } //            else if (modelSrc instanceof DefaultObjectTableModel) {
-            //                ((DefaultObjectTableModel)modelSrc).removeRow(rowIndex);
-            //                ((DefaultObjectTableModel)modelSrc).insertRow(rowIndex, items);
-            //            }
+            }
             else {
                 throw new java.lang.ClassCastException("class cast Excaption:" + modelSrc.getClass().getName());
             }
