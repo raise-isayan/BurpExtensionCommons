@@ -20,10 +20,10 @@ public class IpUtil {
             + "|([0-9a-f]{1,4}:){5}(:[0-9a-f]{1,4}){1,2}|([0-9a-f]{1,4}:){6}(:[0-9a-f]{1,4}){1}";
 
     private final static Pattern IPv4_ADDR = Pattern.compile(IPv4_PATTERN);
-    private final static Pattern IPv6_ADDR = Pattern.compile("(" + IPv6_PATTERN + ")" + "|" + "\\[(" + IPv6_PATTERN + ")\\]");
+    private final static Pattern IPv6_ADDR = Pattern.compile("(" + IPv6_PATTERN + ")" + "|" + "\\[(" + IPv6_PATTERN + ")\\]", Pattern.CASE_INSENSITIVE);
 
-    private final static Pattern IPv4_HEX = Pattern.compile("([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})");
-    private final static Pattern IPv6_HEX = Pattern.compile("([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})");
+    private final static Pattern IPv4_HEX = Pattern.compile("([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})", Pattern.CASE_INSENSITIVE);
+    private final static Pattern IPv6_HEX = Pattern.compile("([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})", Pattern.CASE_INSENSITIVE);
 
     private final static Pattern IPv4_VALID = Pattern.compile("(?<ip>" + IPv4_PATTERN + ")(:(?<port>\\d+))?");
 

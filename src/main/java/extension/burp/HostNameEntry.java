@@ -6,6 +6,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
+import java.util.Arrays;
 /**
  *
  * @author isayan
@@ -28,10 +29,26 @@ public class HostNameEntry {
 
     public InetAddress asInetAddress() throws UnknownHostException {
         try {
+            return InetAddress.getByAddress(IpUtil.parseIPAddressByte(this.ipAddress));
+        } catch (ParseException ex) {
+            throw new UnknownHostException(ex.getMessage());
+        }
+    }
+
+    public InetAddress asHostInetAddress() throws UnknownHostException {
+        try {
             return InetAddress.getByAddress(this.hostName, IpUtil.parseIPAddressByte(this.ipAddress));
         } catch (ParseException ex) {
             throw new UnknownHostException(ex.getMessage());
         }
+    }
+
+    public boolean equalsInetAddress(String ipAddress) {
+        try {
+             return Arrays.equals(IpUtil.parseIPAddressByte(this.ipAddress), IpUtil.parseIPAddressByte(ipAddress));
+        } catch (ParseException ex) {
+        }
+        return false;
     }
 
     /**

@@ -69,4 +69,24 @@ public class HostNameTest {
         }
     }
 
+
+    @Test
+    public void testIPv6() throws Exception {
+        System.out.println("testIPv6");
+        URL hostFile = HostNameTest.class.getResource("/resources/hosts_mix");
+        List<String> lines = Files.readAllLines(Path.of(hostFile.toURI()), StandardCharsets.UTF_8);
+        {
+            HostName hostname = HostName.parseHosts(lines.stream());
+            HostNameEntry entry = hostname.resolvInetAddress("2001:db8:0:0:0:0:0:1");
+            System.out.println(entry.getHostName() + "/" + entry.getIPAddress());
+            assertEquals("www.example.co.jp", entry.getHostName());
+        }
+        {
+            HostName hostname = HostName.parseHosts(lines.stream());
+            HostNameEntry entry = hostname.resolvInetAddress("2001:db8::1");
+            System.out.println(entry.getHostName() + "/" + entry.getIPAddress());
+            assertEquals("www.example.co.jp", entry.getHostName());
+        }
+    }
+
 }

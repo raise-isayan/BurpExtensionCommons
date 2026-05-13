@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +67,17 @@ public class HostName {
         return hostname;
     }
 
-    public static Stream<String> parseHostLines(final String hosts) {
+    public static Stream<String> parseLines(final String hosts) {
         BufferedReader br = new BufferedReader(new StringReader(hosts));
         return br.lines();
     }
 
-    public static Stream<String> parseHostLines(byte[] buff, String charsetName) throws UnsupportedEncodingException {
+    public static Stream<String> parseLines(final Path host_path) throws IOException {
+        List<String> lines = Files.readAllLines(host_path, StandardCharsets.UTF_8);
+        return lines.stream();
+    }
+
+    public static Stream<String> parseLines(byte[] buff, String charsetName) throws UnsupportedEncodingException {
         BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buff), charsetName));
         return br.lines();
     }
@@ -79,12 +87,16 @@ public class HostName {
     }
 
     public HostNameEntry resolvInetAddress(String ipAddress) {
-        Optional<HostNameEntry> entry = this.hostentrys.stream().filter(e -> ipAddress.equalsIgnoreCase(e.getIPAddress())).findFirst();
-        return entry.isEmpty() ? null : entry.get();
+//        try {
+//            byte[] inetAddress = IpUtil.parseIPAddressByte(ipAddress);
+            Optional<HostNameEntry> entry = this.hostentrys.stream().filter(e -> e.equalsInetAddress(ipAddress)).findFirst();
+            return entry.isEmpty() ? null : entry.get();
+//        } catch (ParseException ex) {
+//        }
     }
 
     public List<HostNameEntry> resolvInetAddresses(String ipAddress) {
-        List<HostNameEntry> entry = this.hostentrys.stream().filter(e -> ipAddress.equalsIgnoreCase(e.getIPAddress())).collect(Collectors.toList());
+        List<HostNameEntry> entry = this.hostentrys.stream().filter(e -> e.equalsInetAddress(ipAddress)).collect(Collectors.toList());
         return entry;
     }
 
