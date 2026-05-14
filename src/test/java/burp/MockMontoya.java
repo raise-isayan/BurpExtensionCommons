@@ -27,6 +27,7 @@ import burp.api.montoya.http.Http;
 import burp.api.montoya.http.HttpMode;
 import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.RequestOptions;
+import burp.api.montoya.http.handler.RequestAction;
 import burp.api.montoya.http.handler.RequestToBeSentAction;
 import burp.api.montoya.http.handler.ResponseReceivedAction;
 import burp.api.montoya.http.message.HttpHeader;
@@ -1347,6 +1348,11 @@ public class MockMontoya {
         @Override
         public HotKey hotkey(String string, String string1) {
             throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public RequestToBeSentAction requestResult(RequestAction action, HttpRequest hr, HttpResponse hr1, Annotations antns) {
+            return this.requestToBeSentActionApi;
         }
     }
 
