@@ -8,6 +8,8 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.im.InputContext;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -137,6 +139,21 @@ public final class SwingUtil {
                 label.setVisible(textField.getText().isEmpty());
             }
         });
+
+        textField.addPropertyChangeListener("enabled", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                boolean isEnabled = (boolean) evt.getNewValue();
+                if (isEnabled) {
+                    label.setVisible(textField.getText().isEmpty());
+                }
+                else {
+                    label.setVisible(isEnabled);
+                }
+            }
+        });
+
     }
 
     public Component getCurrentKeyboardComponent() {
