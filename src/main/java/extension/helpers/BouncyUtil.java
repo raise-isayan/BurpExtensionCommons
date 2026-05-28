@@ -3715,7 +3715,12 @@ public class BouncyUtil {
         try {
             GeneralName[] generalNames = new GeneralName[hostnames.length];
             for (int i = 0; i < hostnames.length; ++i) {
-                generalNames[i] = new GeneralName(GeneralName.dNSName, hostnames[i]);
+                if (IpUtil.isIPv4Address(hostnames[i]) || IpUtil.isIPv6Address(hostnames[i])) {
+                    generalNames[i] = new GeneralName(GeneralName.iPAddress, hostnames[i]);
+                }
+                else {
+                    generalNames[i] = new GeneralName(GeneralName.dNSName, hostnames[i]);
+                }
             }
             GeneralNames subjectAltNames = new GeneralNames(generalNames);
 
