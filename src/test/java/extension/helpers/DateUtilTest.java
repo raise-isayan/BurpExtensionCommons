@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.ResolverStyle;
 import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Calendar;
@@ -100,6 +101,17 @@ public class DateUtilTest {
                 .appendLiteral(' ')
                 .appendOffset("+HHMM", "GMT") // should handle UT/Z/EST/EDT/CST/CDT/MST/MDT/PST/MDT
                 .toFormatter().withResolverStyle(ResolverStyle.SMART).withChronology(IsoChronology.INSTANCE);
+    }
+
+    @Test
+    public void testStatEndBitween() {
+        System.out.println("testStatEndBitween");
+            int numberOfUnit = 1;
+            LocalDate nowDate = LocalDate.now();
+            Date notBefore = Date.from(nowDate.minus(1, ChronoUnit.DAYS).atStartOfDay(DateUtil.ZONE_OFFSET_GMT).toInstant());
+            Date notAfter = Date.from(nowDate.minus(1, ChronoUnit.DAYS).plus(numberOfUnit, ChronoUnit.MONTHS).atStartOfDay(DateUtil.ZONE_OFFSET_GMT).toInstant());
+            System.out.println("notBefore:" + notBefore.toString());
+            System.out.println("notAfter:" + notAfter.toString());
     }
 
     /**

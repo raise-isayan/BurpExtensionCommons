@@ -1236,7 +1236,6 @@ public class BoncyUtilTest {
         }
     }
 
-
     // ヘルパー: X500Nameの値をすべてUTF8Stringに強制変換する
     private static X500Name convertToUTF8Canonical(X500Name name) {
         RDN[] rdns = name.getRDNs();
@@ -1266,6 +1265,38 @@ public class BoncyUtilTest {
             sb.append(hex);
         }
         return sb.toString();
+    }
+
+    @Test
+    public void testExportCertificatePem() {
+        System.out.println("testExportCertificatePem");
+        String storeFileName = CertUtilTest.class.getResource("/resources/burpca.p12").getPath();
+        HashMap<String, Map.Entry<Key, X509Certificate>> certMap = CertUtil.loadFromPKCS12(new File(storeFileName), "testca");
+        try {
+            for (String key : certMap.keySet()) {
+                Map.Entry<Key, X509Certificate> pair = certMap.get(key);
+                {
+                    String pem = BouncyUtil.exportCertificatePem((PrivateKey)pair.getKey(), pair.getValue());
+                    System.out.println("pem:\n" + pem);
+                    assertTrue(pem.contains("-BEGIN PRIVATE KEY-"));
+                    assertTrue(pem.contains("-END PRIVATE KEY-"));
+                    assertTrue(pem.contains("-BEGIN CERTIFICATE-"));
+                    assertTrue(pem.contains("-END CERTIFICATE-"));
+                }
+                {
+                    StringWriter sw = new StringWriter();
+                    BouncyUtil.storeCertificatePem((PrivateKey)pair.getKey(), pair.getValue(), sw);
+                    String pem = sw.toString();
+                    System.out.println("pem:\n" + pem);
+                    assertTrue(pem.contains("-BEGIN PRIVATE KEY-"));
+                    assertTrue(pem.contains("-END PRIVATE KEY-"));
+                    assertTrue(pem.contains("-BEGIN CERTIFICATE-"));
+                    assertTrue(pem.contains("-END CERTIFICATE-"));
+                }
+            }
+        } catch (IOException ex) {
+            fail(ex.getMessage(), ex);
+        }
     }
 
     @Test

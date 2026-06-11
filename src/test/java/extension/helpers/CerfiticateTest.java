@@ -1,12 +1,24 @@
 package extension.helpers;
 
+import burp.BurpPreferences;
+import java.io.IOException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
 import java.security.Security;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.EdECPrivateKey;
+import java.util.HashMap;
+import java.util.Map;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -101,5 +113,35 @@ public class CerfiticateTest {
             ex.printStackTrace();
         }
     }
+
+    @Test
+    public void testKeyStore() {
+        System.out.println("testKeyStore");
+        try {
+            KeyStore ksCA = BurpPreferences.loadCACeart();
+            HashMap<String, Map.Entry<Key, X509Certificate>> cert = CertUtil.loadFromKeyStore(ksCA, BurpPreferences.getCAPassword());
+            Map.Entry<Key, X509Certificate> rootCA = cert.get(CertUtil.getFirstAlias(ksCA));
+
+            KeyStore newKS = KeyStore.getInstance("PKCS12");
+            newKS.load(null, null);
+            Certificate[] chain = new Certificate[]{ rootCA.getValue()};
+            newKS.setKeyEntry(BurpPreferences.getCAKey(), (PrivateKey)rootCA.getKey(), "".toCharArray(), chain);
+
+            Key key = newKS.getKey(BurpPreferences.getCAKey(), "".toCharArray());
+        } catch (KeyStoreException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (CertificateException ex) {
+            ex.printStackTrace();
+        } catch (UnrecoverableKeyException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
 
 }

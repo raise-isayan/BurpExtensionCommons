@@ -2,16 +2,24 @@ package extension.view.base;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import javax.swing.table.TableCellRenderer;
 /**
  *
  * @author isayan
  */
 public class TableColumnRenderer extends DefaultTableCellRenderer {
+
+    private final TableCellRenderer delegate;
+
+    public TableColumnRenderer(TableCellRenderer delegate) {
+        this.delegate = delegate;
+    }
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus,
                                                    int row, int column) {
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        Component c = this.delegate.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (!table.isEnabled()) {
             c.setBackground(SystemColor.controlShadow); // 無効時の背景色
             c.setForeground(SystemColor.textInactiveText);       // 無効時の文字色

@@ -35,6 +35,9 @@ import java.security.interfaces.EdECPrivateKey;
 import java.security.interfaces.EdECPublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -215,8 +218,7 @@ public class BouncyUtil {
     }
 
     public static void storeCertificatePem(PrivateKey priKey, Certificate cert, File to) throws IOException {
-        storePrivateKeyPem(priKey, new FileWriter(to));
-        storeCertificatePem(cert, new FileWriter(to));
+        storeCertificatePem(priKey, cert, new FileWriter(to));
     }
 
     public static void storeCertificatePem(PrivateKey key, Certificate cert, Writer to) throws IOException {
@@ -228,11 +230,7 @@ public class BouncyUtil {
     }
 
     public static void storeKeyPairPem(KeyPair keyPair, File to) throws IOException {
-        try (JcaPEMWriter pw = new JcaPEMWriter(new FileWriter(to))) {
-            JcaPKCS8Generator pkcs8Gen = new JcaPKCS8Generator(keyPair.getPrivate(), null);
-            pw.writeObject(pkcs8Gen.generate());
-            pw.writeObject(keyPair.getPublic());
-        }
+        storeKeyPairPem(keyPair, new FileWriter(to));
     }
 
     public static void storeKeyPairPem(KeyPair keyPair, Writer to) throws IOException {
@@ -3748,28 +3746,33 @@ public class BouncyUtil {
         }
     }
 
-    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYears) throws CertificateException {
+    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYear) throws CertificateException {
+        return signCsr(csr, caCert, caPrivateKey, numberOfYear, ChronoUnit.YEARS);
+    }
+
+    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfUnit, ChronoUnit unit) throws CertificateException {
         if (caPrivateKey instanceof RSAPrivateKey) {
-            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_RSA);
+            return signCsr(csr, caCert, caPrivateKey, numberOfUnit, unit, SIGNATURE_ALGORITHM_SHA256_RSA);
         }
         else if (caPrivateKey instanceof DSAPrivateKey) {
-            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_DSA);
+            return signCsr(csr, caCert, caPrivateKey, numberOfUnit, unit, SIGNATURE_ALGORITHM_SHA256_DSA);
         }
         else if (caPrivateKey instanceof ECPrivateKey) {
-            return signCsr(csr, caCert, caPrivateKey, numberOfYears, SIGNATURE_ALGORITHM_SHA256_EC);
+            return signCsr(csr, caCert, caPrivateKey, numberOfUnit, unit, SIGNATURE_ALGORITHM_SHA256_EC);
         }
         else if (caPrivateKey instanceof EdECPrivateKey) {
             // Bouncry castle利用前提(Java標準だとAlgorithmが期待値と異なる)
-            return signCsr(csr, caCert, caPrivateKey, numberOfYears, caPrivateKey.getAlgorithm());
+            return signCsr(csr, caCert, caPrivateKey, numberOfUnit, unit, caPrivateKey.getAlgorithm());
         }
         throw new CertificateException("Not support algorithm:" + caPrivateKey.getAlgorithm());
     }
 
-    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfYears, String signatureAlgorithm) throws CertificateException {
+    public static X509Certificate signCsr(PKCS10CertificationRequest csr, X509Certificate caCert, PrivateKey caPrivateKey, int numberOfUnit, ChronoUnit unit, String signatureAlgorithm) throws CertificateException {
         try {
-            long now = System.currentTimeMillis();
-            Date notBefore = new Date(now - DateUtil.TOTAL_DAY_TIME_MILLIS);
-            Date notAfter = new Date(now + (long) (numberOfYears * 365L * DateUtil.TOTAL_DAY_TIME_MILLIS));
+            LocalDate nowDate = LocalDate.now();
+            Date notBefore = Date.from(nowDate.minus(1, ChronoUnit.DAYS).atStartOfDay(DateUtil.ZONE_OFFSET_GMT).toInstant());
+            Date notAfter = Date.from(nowDate.minus(1, ChronoUnit.DAYS).plus(numberOfUnit, unit).atStartOfDay(DateUtil.ZONE_OFFSET_GMT).toInstant());
+
             // シリアル番号
             BigInteger serialNumber = BigInteger.valueOf(System.currentTimeMillis());
 

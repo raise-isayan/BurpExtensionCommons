@@ -28,7 +28,14 @@ public class BurpPreferences {
 
     private final static Logger logger = Logger.getLogger(BurpPreferences.class.getName());
 
+    private static final String CA_KEY = "cacert";
+
     private static final String CA_PASSWORD = "/burp/media/ps.p12";
+
+    // CA alias name
+    public static String getCAKey() {
+        return CA_KEY;
+    }
 
     public static String getCAPassword() {
         return CA_PASSWORD;
@@ -67,19 +74,24 @@ public class BurpPreferences {
     }
 
     public static burp.api.montoya.persistence.Preferences extensions(String extensionName) {
+        return extensions(extensionName, false);
+    }
+
+    public static burp.api.montoya.persistence.Preferences extensions(String extensionName, boolean notExistsCreate) {
         java.util.prefs.Preferences exts = null;
         try {
             java.util.prefs.Preferences prefs = java.util.prefs.Preferences.userNodeForPackage(burp.BurpPreferences.class);
             Preferences ext = prefs.node("extensions");
-            if (ext.nodeExists("_" + extensionName)) {
+            if (ext.nodeExists("_" + extensionName) || notExistsCreate) {
                 exts = ext.node("_" + extensionName);
+                return convertPreferences(exts, extensionName);
             }
-            return convertPreferences(exts, extensionName);
         } catch (BackingStoreException ex) {
             //
         }
         return null;
     }
+
 
     public static burp.api.montoya.persistence.Preferences convertPreferences(java.util.prefs.Preferences exts, String extensionName) {
         return new burp.api.montoya.persistence.Preferences() {
