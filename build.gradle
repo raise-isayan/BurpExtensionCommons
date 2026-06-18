@@ -3,7 +3,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '9.4.2'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -87,6 +87,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.5'
     //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.5'
     //testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.5'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt
     testImplementation 'com.nimbusds:nimbus-jose-jwt:10.0.2'
