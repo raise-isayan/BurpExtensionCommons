@@ -84,6 +84,10 @@ public class StringUtil {
         return new String(message, StandardCharsets.ISO_8859_1);
     }
 
+    public static String getStringRaw(byte[] message, int offset, int length) {
+        return new String(message, offset, length, StandardCharsets.ISO_8859_1);
+    }
+
     /**
      * UTF-8のバイト文字列取得
      *
@@ -96,6 +100,10 @@ public class StringUtil {
 
     public static String getStringUTF8(byte[] message) {
         return new String(message, StandardCharsets.UTF_8);
+    }
+
+    public static String getStringUTF8(byte[] message, int offset, int length) {
+        return new String(message, offset, length, StandardCharsets.UTF_8);
     }
 
     /**

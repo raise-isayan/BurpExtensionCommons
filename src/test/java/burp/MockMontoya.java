@@ -27,6 +27,9 @@ import burp.api.montoya.http.Http;
 import burp.api.montoya.http.HttpMode;
 import burp.api.montoya.http.HttpService;
 import burp.api.montoya.http.RequestOptions;
+import burp.api.montoya.http.execution.RequestEngineOptions;
+import burp.api.montoya.http.execution.ResourcePool;
+import burp.api.montoya.http.execution.SourcedRequest;
 import burp.api.montoya.http.handler.RequestAction;
 import burp.api.montoya.http.handler.RequestToBeSentAction;
 import burp.api.montoya.http.handler.ResponseReceivedAction;
@@ -1353,6 +1356,36 @@ public class MockMontoya {
         @Override
         public RequestToBeSentAction requestResult(RequestAction action, HttpRequest hr, HttpResponse hr1, Annotations antns) {
             return this.requestToBeSentActionApi;
+        }
+
+        @Override
+        public RequestEngineOptions requestEngineOptions() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public ResourcePool resourcePool() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public ResourcePool defaultResourcePool() {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public ResourcePool existingResourcePool(String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SourcedRequest sourcedRequest(HttpRequest hr) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+
+        @Override
+        public SourcedRequest sourcedRequest(HttpRequest hr, String string) {
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
 
